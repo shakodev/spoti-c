@@ -65,8 +65,25 @@ include(cmake/Proto.cmake)
 add_library(spotic_shannon STATIC vendor/shannon.c src/protocol/shannon_adapter.c)
 target_include_directories(spotic_shannon PUBLIC src vendor)
 target_link_libraries(spotic_shannon PUBLIC spotic_build_options)
+add_library(spotic_crypto STATIC src/protocol/crypto_cng.c src/protocol/crypto_constants.c
+    src/protocol/crypto_dh.c src/protocol/crypto_hash.c src/protocol/crypto_rsa.c src/protocol/crypto_aes.c)
+target_include_directories(spotic_crypto PUBLIC src)
+target_link_libraries(spotic_crypto PUBLIC spotic_build_options bcrypt)
 
 if(BUILD_TESTING)
+    set(CRYPTO_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/crypto_vectors.h")
+    add_custom_command(OUTPUT "${CRYPTO_VECTORS}"
+        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/crypto_vectors.py"
+            --header "${CRYPTO_VECTORS}"
+        DEPENDS "${PROJECT_SOURCE_DIR}/tools/crypto_vectors.py"
+            "${PROJECT_SOURCE_DIR}/tests/fixtures/crypto-vectors.json"
+        COMMENT "Preparing independent CNG crypto fixtures" VERBATIM)
+    add_executable(test_crypto tests/test_crypto.c tests/test_crypto_dh.c
+        tests/test_crypto_faults.c "${CRYPTO_VECTORS}")
+    target_include_directories(test_crypto PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    target_link_libraries(test_crypto PRIVATE spotic_crypto)
+    add_test(NAME protocol_crypto COMMAND test_crypto)
+    set_tests_properties(protocol_crypto PROPERTIES TIMEOUT 30)
     set(SHANNON_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/shannon_vectors.h")
     add_custom_command(OUTPUT "${SHANNON_VECTORS}"
         COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/shannon_vectors.py"

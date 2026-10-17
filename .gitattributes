@@ -10,3 +10,4 @@ vendor/shannon.h text eol=lf
 vendor/licenses/shannon/** -text
 tools/shannon_reference/** text eol=lf
 tests/fixtures/shannon-vectors.json text eol=lf
+tests/fixtures/crypto-vectors.json text eol=lf
