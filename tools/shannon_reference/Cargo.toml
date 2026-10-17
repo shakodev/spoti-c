@@ -1,0 +1,10 @@
+# Optional vector oracle only. Never part of the CMake/application build.
+[package]
+name = "spotic-shannon-reference"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+shannon = "=0.2.0"
+byteorder = "=1.5.0"

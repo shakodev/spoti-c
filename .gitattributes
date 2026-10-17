@@ -5,3 +5,8 @@ proto/*.proto -whitespace
 proto/**/*.proto -whitespace
 proto/LICENSE.librespot -whitespace
 vendor/nanopb/** -text -whitespace
+vendor/shannon.c text eol=lf
+vendor/shannon.h text eol=lf
+vendor/licenses/shannon/** -text
+tools/shannon_reference/** text eol=lf
+tests/fixtures/shannon-vectors.json text eol=lf

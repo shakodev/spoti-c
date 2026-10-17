@@ -62,8 +62,29 @@ add_library(spotic_core STATIC
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options)
 include(cmake/Proto.cmake)
+add_library(spotic_shannon STATIC vendor/shannon.c src/protocol/shannon_adapter.c)
+target_include_directories(spotic_shannon PUBLIC src vendor)
+target_link_libraries(spotic_shannon PUBLIC spotic_build_options)
 
 if(BUILD_TESTING)
+    set(SHANNON_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/shannon_vectors.h")
+    add_custom_command(OUTPUT "${SHANNON_VECTORS}"
+        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/shannon_vectors.py"
+            --header "${SHANNON_VECTORS}"
+        DEPENDS "${PROJECT_SOURCE_DIR}/tools/shannon_vectors.py"
+            "${PROJECT_SOURCE_DIR}/tests/fixtures/shannon-vectors.json"
+            "${PROJECT_SOURCE_DIR}/tools/shannon_reference/Cargo.lock"
+            "${PROJECT_SOURCE_DIR}/tools/shannon_reference/src/main.rs"
+            "${PROJECT_SOURCE_DIR}/vendor/manifest.json"
+            "${PROJECT_SOURCE_DIR}/vendor/shannon.c"
+            "${PROJECT_SOURCE_DIR}/vendor/shannon.h"
+            "${PROJECT_SOURCE_DIR}/vendor/licenses/shannon/LICENSE"
+        COMMENT "Preparing pinned Shannon known-answer fixtures" VERBATIM)
+    add_executable(test_shannon tests/test_shannon.c tests/test_shannon_adapter.c "${SHANNON_VECTORS}")
+    target_link_libraries(test_shannon PRIVATE spotic_shannon)
+    target_include_directories(test_shannon PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    add_test(NAME protocol_shannon COMMAND test_shannon)
+    set_tests_properties(protocol_shannon PROPERTIES TIMEOUT 30)
     add_executable(test_proto_codec tests/test_proto_codec.c tests/test_proto_messages.c)
     target_link_libraries(test_proto_codec PRIVATE spotic_proto)
     target_include_directories(test_proto_codec PRIVATE tests)

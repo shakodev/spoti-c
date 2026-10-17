@@ -148,5 +148,31 @@
         "sha256": "1a50d0822c5ba4395297755b11864af952053be3e0dc44c860f988b1b73c3c55"
       }
     ]
+  },
+  {
+    "name": "shannon",
+    "implementation": "Pure C port with checked lifecycle and fragmented-word MAC fix",
+    "license": "MIT",
+    "reference": {
+      "name": "shannon",
+      "version": "0.2.0",
+      "source": "https://static.crates.io/crates/shannon/shannon-0.2.0.crate",
+      "sha256": "7ea5b41c9427b56caa7b808cb548a04fb50bb5b9e98590b53f28064ff4174561",
+      "source_sha256": "f80d3e850b112bb8e14fe27c3bba4f07934bc7282af6f67f26351ecc8c262d07"
+    },
+    "files": [
+      {
+        "path": "vendor/shannon.c",
+        "sha256": "4a4ddada834bac5f9e00a194384665d52f0c692bdab2fafd71c133eb9b38741f"
+      },
+      {
+        "path": "vendor/shannon.h",
+        "sha256": "773e6015c72561f83145ac49439efb0cd4f7d99fdaff5bbe2968bb271b5b4dd4"
+      },
+      {
+        "path": "vendor/licenses/shannon/LICENSE",
+        "sha256": "f5ef0994287249bb54a9855c4968b93f02addbe4c11a59be2583ab31cd28cbda"
+      }
+    ]
   }
 ]
