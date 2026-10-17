@@ -26,6 +26,10 @@ endif()
 
 if(MSVC)
     target_compile_options(spotic_build_options INTERFACE /W4 /WX)
+    if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+        # Enable MSVC's C11/C17 atomics; clang-cl supports them directly.
+        target_compile_options(spotic_build_options INTERFACE /experimental:c11atomics)
+    endif()
     if(ENABLE_ASAN)
         # CMake enables /RTC1 by default; MSVC ASan cannot be combined with it.
         string(REGEX REPLACE "/RTC[1su]+" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
@@ -52,7 +56,7 @@ target_link_libraries(spotic_windows INTERFACE
     d3d11 dxgi d3dcompiler dwrite winhttp bcrypt ws2_32)
 
 include(CTest)
-add_library(spotic_core STATIC src/core/arena.c)
+add_library(spotic_core STATIC src/core/arena.c src/core/spsc_ring.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options)
 
@@ -66,6 +70,11 @@ if(BUILD_TESTING)
     target_link_libraries(test_arena PRIVATE spotic_core)
     add_test(NAME core_arena COMMAND test_arena)
     set_tests_properties(core_arena PROPERTIES TIMEOUT 10)
+
+    add_executable(test_spsc_ring tests/test_spsc_ring.c)
+    target_link_libraries(test_spsc_ring PRIVATE spotic_core)
+    add_test(NAME core_spsc COMMAND test_spsc_ring)
+    set_tests_properties(core_spsc PROPERTIES TIMEOUT 60)
     if(ENABLE_ASAN AND (CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE STREQUAL "Debug"))
         foreach(mode IN ITEMS reset rewind overrun)
             add_test(NAME core_arena_asan_${mode}
