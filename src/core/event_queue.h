@@ -3,6 +3,7 @@
 
 #include "arena.h"
 #include "memory_budget.h"
+#include "metrics.h"
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -25,6 +26,7 @@ typedef struct Event {
 typedef struct EventQueue {
     SRWLOCK lock;
     HANDLE wake;
+    MetricsHandle wake_metric;
     Event *slots;
     size_t capacity, head, count;
     bool closed;

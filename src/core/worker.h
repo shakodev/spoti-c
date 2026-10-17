@@ -47,6 +47,8 @@ typedef struct WorkerStats {
 typedef struct Worker {
     SRWLOCK lock;
     HANDLE wake, cancel, idle, thread;
+    Metrics *metrics;
+    MetricsHandle wake_metric, cancel_metric, idle_metric, thread_metric;
     WorkerSlot *slots;
     size_t capacity;
     CoreClock clock;

@@ -58,11 +58,16 @@ target_link_libraries(spotic_windows INTERFACE
 include(CTest)
 add_library(spotic_core STATIC
     src/core/arena.c src/core/spsc_ring.c src/core/clock.c
-    src/core/event_queue.c src/core/worker.c)
+    src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options)
 
 if(BUILD_TESTING)
+    add_library(spotic_test_support STATIC
+        tests/support/fixture_clock.c tests/support/fixture_http.c tests/support/fixture_http_client.c)
+    target_link_libraries(spotic_test_support PUBLIC spotic_core ws2_32)
+    target_include_directories(spotic_test_support PUBLIC tests)
+
     add_executable(test_smoke tests/test_smoke.c)
     target_link_libraries(test_smoke PRIVATE spotic_build_options spotic_windows)
     add_test(NAME smoke COMMAND test_smoke)
@@ -82,6 +87,21 @@ if(BUILD_TESTING)
     target_link_libraries(test_event_queue PRIVATE spotic_core)
     add_test(NAME core_event_queue COMMAND test_event_queue)
     set_tests_properties(core_event_queue PROPERTIES TIMEOUT 60)
+
+    add_executable(test_log tests/test_log.c)
+    target_link_libraries(test_log PRIVATE spotic_test_support)
+    add_test(NAME core_log COMMAND test_log)
+    set_tests_properties(core_log PROPERTIES TIMEOUT 30)
+
+    add_executable(test_metrics tests/test_metrics.c)
+    target_link_libraries(test_metrics PRIVATE spotic_test_support)
+    add_test(NAME core_metrics COMMAND test_metrics)
+    set_tests_properties(core_metrics PROPERTIES TIMEOUT 30)
+
+    add_executable(test_fixtures tests/test_fixtures.c)
+    target_link_libraries(test_fixtures PRIVATE spotic_test_support)
+    add_test(NAME fixture_http COMMAND test_fixtures)
+    set_tests_properties(fixture_http PROPERTIES TIMEOUT 30)
     if(ENABLE_ASAN AND (CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE STREQUAL "Debug"))
         foreach(mode IN ITEMS reset rewind overrun)
             add_test(NAME core_arena_asan_${mode}

@@ -19,11 +19,12 @@ HANDLE worker_cancel_handle(const CancelToken *token)
     return token == NULL ? NULL : token->wake;
 }
 
-static bool close_owned(HANDLE *handle)
+static bool close_owned(HANDLE *handle, MetricsHandle *lease)
 {
     if (*handle != NULL) {
         if (!CloseHandle(*handle)) { return false; }
         *handle = NULL;
+        if (lease->owner != NULL && !metrics_handle_release(lease)) { return false; }
     }
     return true;
 }
@@ -105,7 +106,11 @@ static DWORD WINAPI worker_main(void *context)
         if (worker->stats.pending == 0) { SetEvent(worker->idle); }
         timeout = core_deadline_wait(now, next);
         ReleaseSRWLockExclusive(&worker->lock);
-        if (WaitForSingleObject(worker->wake, timeout) == WAIT_FAILED) {
+        DWORD waited = WaitForSingleObject(worker->wake, timeout);
+        if (waited == WAIT_OBJECT_0 || waited == WAIT_TIMEOUT) {
+            metrics_count(worker->metrics, METRIC_WAKE, 1);
+        }
+        if (waited == WAIT_FAILED) {
             DWORD error = GetLastError();
             (void)worker_stop(worker);
             AcquireSRWLockExclusive(&worker->lock);
@@ -135,6 +140,7 @@ CoreResult worker_start(Arena *core, size_t capacity, CoreClock clock, Worker **
     InitializeSRWLock(&worker->lock);
     worker->capacity = capacity;
     worker->clock = clock;
+    worker->metrics = metrics_arena_owner(core);
     for (size_t i = 0; i < capacity; ++i) {
         worker->slots[i].state = SLOT_FREE;
         atomic_init(&worker->slots[i].cancel.requested, false);
@@ -142,20 +148,36 @@ CoreResult worker_start(Arena *core, size_t capacity, CoreClock clock, Worker **
     worker->wake = CreateEventW(NULL, TRUE, FALSE, NULL);
     worker->cancel = CreateEventW(NULL, TRUE, FALSE, NULL);
     worker->idle = CreateEventW(NULL, TRUE, FALSE, NULL);
-    if (worker->wake != NULL && worker->cancel != NULL && worker->idle != NULL) {
+    bool tracked = true;
+    if (worker->metrics != NULL) {
+        if (worker->wake != NULL) { tracked &= metrics_handle_acquire(worker->metrics,
+            &worker->wake_metric, (uintptr_t)worker->wake); }
+        if (worker->cancel != NULL) { tracked &= metrics_handle_acquire(worker->metrics,
+            &worker->cancel_metric, (uintptr_t)worker->cancel); }
+        if (worker->idle != NULL) { tracked &= metrics_handle_acquire(worker->metrics,
+            &worker->idle_metric, (uintptr_t)worker->idle); }
+    }
+    if (tracked && worker->wake != NULL && worker->cancel != NULL && worker->idle != NULL) {
         /* Publish the thread handle before the new owner can enter its loop. */
         AcquireSRWLockExclusive(&worker->lock);
         worker->thread = CreateThread(NULL, 0, worker_main, worker, 0, NULL);
+        if (worker->thread != NULL && worker->metrics != NULL) {
+            tracked = metrics_handle_acquire(worker->metrics, &worker->thread_metric,
+                (uintptr_t)worker->thread);
+        }
         ReleaseSRWLockExclusive(&worker->lock);
     }
     if (worker->thread == NULL) {
-        (void)close_owned(&worker->wake);
-        (void)close_owned(&worker->cancel);
-        (void)close_owned(&worker->idle);
+        (void)close_owned(&worker->wake, &worker->wake_metric);
+        (void)close_owned(&worker->cancel, &worker->cancel_metric);
+        (void)close_owned(&worker->idle, &worker->idle_metric);
         (void)arena_rewind(core, mark);
         return CORE_OS_ERROR;
     }
     *output = worker;
+    /* Overflow is already recorded by metrics. The live worker must still be
+     * returned to its owner for ordered stop/join rather than orphaning it. */
+    (void)tracked;
     return CORE_OK;
 }
 
@@ -242,8 +264,10 @@ CoreResult worker_join(Worker *worker, DWORD timeout_ms)
     wait = WaitForSingleObject(worker->thread, timeout_ms);
     if (wait == WAIT_TIMEOUT) { return CORE_TIMEOUT; }
     if (wait != WAIT_OBJECT_0) { return CORE_OS_ERROR; }
-    if (!close_owned(&worker->wake) || !close_owned(&worker->cancel) ||
-        !close_owned(&worker->idle) || !close_owned(&worker->thread)) { return CORE_OS_ERROR; }
+    if (!close_owned(&worker->wake, &worker->wake_metric) ||
+        !close_owned(&worker->cancel, &worker->cancel_metric) ||
+        !close_owned(&worker->idle, &worker->idle_metric) ||
+        !close_owned(&worker->thread, &worker->thread_metric)) { return CORE_OS_ERROR; }
     return worker->stats.error == ERROR_SUCCESS ? CORE_OK : CORE_OS_ERROR;
 }
 

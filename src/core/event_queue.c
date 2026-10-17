@@ -25,6 +25,10 @@ CoreResult event_queue_create(Arena *core, size_t capacity, EventQueue **output)
     InitializeSRWLock(&queue->lock);
     queue->wake = wake;
     queue->capacity = capacity;
+    Metrics *metrics = metrics_arena_owner(core);
+    if (metrics != NULL && !metrics_handle_acquire(metrics, &queue->wake_metric, (uintptr_t)wake)) {
+        CloseHandle(wake); (void)arena_rewind(core, mark); return CORE_EXHAUSTED;
+    }
     *output = queue;
     return CORE_OK;
 }
@@ -42,6 +46,7 @@ CoreResult event_post(EventQueue *queue, const Event *event)
     else {
         queue->slots[(queue->head + queue->count) % queue->capacity] = *event;
         ++queue->count;
+        metrics_count(queue->wake_metric.owner, METRIC_SIGNAL, 1);
     }
     ReleaseSRWLockExclusive(&queue->lock);
     return result;
@@ -89,6 +94,7 @@ CoreResult event_queue_destroy(EventQueue *queue)
     if (queue == NULL || queue->wake == NULL) { return CORE_INVALID; }
     if (!queue->closed || queue->count != 0) { return CORE_INVALID; }
     if (!CloseHandle(queue->wake)) { return CORE_OS_ERROR; }
+    if (queue->wake_metric.owner != NULL) { (void)metrics_handle_release(&queue->wake_metric); }
     queue->wake = NULL;
     return CORE_OK;
 }
