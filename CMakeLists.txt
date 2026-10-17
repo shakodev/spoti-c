@@ -56,7 +56,9 @@ target_link_libraries(spotic_windows INTERFACE
     d3d11 dxgi d3dcompiler dwrite winhttp bcrypt ws2_32)
 
 include(CTest)
-add_library(spotic_core STATIC src/core/arena.c src/core/spsc_ring.c)
+add_library(spotic_core STATIC
+    src/core/arena.c src/core/spsc_ring.c src/core/clock.c
+    src/core/event_queue.c src/core/worker.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options)
 
@@ -75,6 +77,11 @@ if(BUILD_TESTING)
     target_link_libraries(test_spsc_ring PRIVATE spotic_core)
     add_test(NAME core_spsc COMMAND test_spsc_ring)
     set_tests_properties(core_spsc PROPERTIES TIMEOUT 60)
+
+    add_executable(test_event_queue tests/test_event_queue.c tests/test_worker.c)
+    target_link_libraries(test_event_queue PRIVATE spotic_core)
+    add_test(NAME core_event_queue COMMAND test_event_queue)
+    set_tests_properties(core_event_queue PROPERTIES TIMEOUT 60)
     if(ENABLE_ASAN AND (CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE STREQUAL "Debug"))
         foreach(mode IN ITEMS reset rewind overrun)
             add_test(NAME core_arena_asan_${mode}
