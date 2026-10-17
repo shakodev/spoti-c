@@ -1,0 +1,7 @@
+# Bounded strings/bytes; repeated fields stream through callbacks.
+* max_size:257
+* fallback_type:FT_CALLBACK
+spotify.metadata.* type:FT_CALLBACK
+# Recursive messages are always explicit callbacks.
+spotify.metadata.Restriction.countries_allowed type:FT_STATIC
+spotify.metadata.Restriction.countries_forbidden type:FT_STATIC

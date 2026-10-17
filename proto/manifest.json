@@ -1,0 +1,172 @@
+{
+  "repository": "https://github.com/librespot-org/librespot",
+  "revision": "19959512c212cbc48a3ff64382fe204f52c659a7",
+  "roots": [
+    "keyexchange.proto",
+    "authentication.proto",
+    "mercury.proto",
+    "pubsub.proto",
+    "metadata.proto",
+    "spirc.proto",
+    "connect.proto",
+    "transfer_state.proto",
+    "storage-resolve.proto",
+    "extended_metadata.proto",
+    "spotify/clienttoken/v0/clienttoken_http.proto",
+    "spotify/login5/v3/login5.proto"
+  ],
+  "files": [
+    {
+      "path": "keyexchange.proto",
+      "sha256": "1945bc894b2c7574ae239b0e8be3cb50455b7f956cfcf2420c3cbdad23609494"
+    },
+    {
+      "path": "authentication.proto",
+      "sha256": "a3b7ce5a38a0b9d702adb3961f9c6d4cf833496a4cb6fc5148243c589772bf12"
+    },
+    {
+      "path": "mercury.proto",
+      "sha256": "0995ebf3d509b4f888fca0298b0a04e303c342fe29be27d34cdd2f20544096cf"
+    },
+    {
+      "path": "pubsub.proto",
+      "sha256": "16203779fdd60de3fa6bbd99af00eb4857c002106924797ea1637eba71593a5b"
+    },
+    {
+      "path": "metadata.proto",
+      "sha256": "4fa2ec6c079263c572e01be11403d1197b29617d0e65091d93b69d3acdf7a325"
+    },
+    {
+      "path": "spirc.proto",
+      "sha256": "78a750979d47c53a48bd11f4d275abc5bfecfd285f2ca7eeaedae6a1f158f41a"
+    },
+    {
+      "path": "connect.proto",
+      "sha256": "d8b66c23cb098074e8060f8d81fd6a7ab1b2b89d36821e8b746a5f35ab215bde"
+    },
+    {
+      "path": "player.proto",
+      "sha256": "4bec9a054050f3d08538448eddcc086c05287ca5767266941aa8af13d792efcd"
+    },
+    {
+      "path": "devices.proto",
+      "sha256": "835b44ba40cefa74f583ece09160c89960cce84df41072a2891c9da191472799"
+    },
+    {
+      "path": "media.proto",
+      "sha256": "52047ef06b8cb49c720b65e0c08a52d2e923110e0b3f29b5dce0105a54e6d2e6"
+    },
+    {
+      "path": "transfer_state.proto",
+      "sha256": "8082d52e167267a59772bc186ec86bc85b45ce7674b07e07d2a7b7cadada6a92"
+    },
+    {
+      "path": "context_player_options.proto",
+      "sha256": "ed00192e6d52bde264e71fe1289260ebcba922ca244d53c04c630a6f8e8ff217"
+    },
+    {
+      "path": "playback.proto",
+      "sha256": "ba95773b2483378718e7b4df924e6655bb90e5bc70ea7358e9a89ff6740a015a"
+    },
+    {
+      "path": "context_track.proto",
+      "sha256": "4bf9788041a0bb4c7de4069f63b10d6171f2ec0323c1d1eae6a491311abe1f85"
+    },
+    {
+      "path": "play_history.proto",
+      "sha256": "cd7b4e9645577ad820170bb87e5bba335d718f12642f3ffb64548bcb09dd9941"
+    },
+    {
+      "path": "session.proto",
+      "sha256": "7ad7902723cd4a209cf56297c6336f11e27de91f65288b6a6afbb7373a31228f"
+    },
+    {
+      "path": "context.proto",
+      "sha256": "ab561889cc5e2ca5197b967246abe77121ee51fe7adef651e54d400a1371183d"
+    },
+    {
+      "path": "context_page.proto",
+      "sha256": "e81e5f219f8d60b3e3434b1e47a2a10d316a89cd45def4a576463176d9fd6116"
+    },
+    {
+      "path": "restrictions.proto",
+      "sha256": "3c92979968601f628611eb635f4aa804f138094f0e1c2e914f420977c915ea18"
+    },
+    {
+      "path": "play_origin.proto",
+      "sha256": "d386ee6a62d733e320658f3a8fe812f175efc39c0d730e85face0f0eb5a9257c"
+    },
+    {
+      "path": "suppressions.proto",
+      "sha256": "9d5b4ce2e1672abb64ec6d9a42e12ee148bf0bfd99a0be4e201c46fd731ceb23"
+    },
+    {
+      "path": "instrumentation_params.proto",
+      "sha256": "42234b88ad7e67f41392943aec8e1f76aef29e06e30b42edc15218e77175e61b"
+    },
+    {
+      "path": "queue.proto",
+      "sha256": "629de090cbda40d6e9a5b3759c32df7da74acb54ada289a8b86bdb1978640b00"
+    },
+    {
+      "path": "storage-resolve.proto",
+      "sha256": "257690803c79ee79936204713b2d01e0deb17661f1370b9fdc4b76a04f0f6cf8"
+    },
+    {
+      "path": "extended_metadata.proto",
+      "sha256": "d6cdd0755ba09e4522ae2cf99c333ee676ea83fe94fba5de52db8664b4b206a2"
+    },
+    {
+      "path": "extension_kind.proto",
+      "sha256": "ead13b1904db0c6a92302a07a74005a178ad2b0215f6108ea263e1ab756926f4"
+    },
+    {
+      "path": "entity_extension_data.proto",
+      "sha256": "506a9d2b3c135ae0b92ca460af67ac2a962c23557d01730b8281084c8bcaee07"
+    },
+    {
+      "path": "google/protobuf/any.proto",
+      "sha256": "cfc8d66116459234dd46c8b9587fc08889ea164d8a59770bbe885b27c698d82a"
+    },
+    {
+      "path": "spotify/clienttoken/v0/clienttoken_http.proto",
+      "sha256": "897e6a8c4d06d389e2f33daaf5571bd10d6acef8948f12beda802526ddd6346e"
+    },
+    {
+      "path": "connectivity.proto",
+      "sha256": "01c2b906c3efdb3d7c53022bd19cc10a5fe3bcce1a0d56cdd3d4df7638714a88"
+    },
+    {
+      "path": "spotify/login5/v3/login5.proto",
+      "sha256": "0c3f439603bbfc013eee6da7dc6f05a8eb9edb5d7aab6f55b87871adab01de46"
+    },
+    {
+      "path": "spotify/login5/v3/client_info.proto",
+      "sha256": "a799cbf4999e4061425c0982389ebc6715d78dd2174d915f8016d3b9957406e8"
+    },
+    {
+      "path": "spotify/login5/v3/user_info.proto",
+      "sha256": "591f454d179658e0516bc5e8ea7c676c6af9f997759feb9968939d60767d50ea"
+    },
+    {
+      "path": "spotify/login5/v3/challenges/code.proto",
+      "sha256": "6db8ef9990299c02041b9506db6f5ecb7497e7a14d1f7168491235311dfd2077"
+    },
+    {
+      "path": "spotify/login5/v3/challenges/hashcash.proto",
+      "sha256": "617a90747e3ee85e12ca9df0ce0b35805ae5a2ec49745f003d576f48b63e7807"
+    },
+    {
+      "path": "google/protobuf/duration.proto",
+      "sha256": "d8dd28df065ee978d2ca504f9c48cea6af36aaec15ff9f410c4b9ad0e700aaaa"
+    },
+    {
+      "path": "spotify/login5/v3/credentials/credentials.proto",
+      "sha256": "9b1f6d02d55f2492b2f06d9a482dc6641d030244efb44d09ee6b443a9e933461"
+    },
+    {
+      "path": "spotify/login5/v3/identifiers/identifiers.proto",
+      "sha256": "0ed864f12da4fa4b06dd4219a78e2b2a45ba39fb4095c35831362b346420f2fe"
+    }
+  ]
+}

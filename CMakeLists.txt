@@ -61,8 +61,17 @@ add_library(spotic_core STATIC
     src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options)
+include(cmake/Proto.cmake)
 
 if(BUILD_TESTING)
+    add_executable(test_proto_codec tests/test_proto_codec.c tests/test_proto_messages.c)
+    target_link_libraries(test_proto_codec PRIVATE spotic_proto)
+    target_include_directories(test_proto_codec PRIVATE tests)
+    add_test(NAME protocol_proto COMMAND test_proto_codec)
+    set_tests_properties(protocol_proto PROPERTIES TIMEOUT 30)
+    add_test(NAME protocol_proto_codegen COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/tools/check_proto.py" --build "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(protocol_proto_codegen PROPERTIES TIMEOUT 60)
     add_library(spotic_test_support STATIC
         tests/support/fixture_clock.c tests/support/fixture_http.c tests/support/fixture_http_client.c)
     target_link_libraries(spotic_test_support PUBLIC spotic_core ws2_32)

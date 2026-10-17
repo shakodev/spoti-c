@@ -1,0 +1,4 @@
+# Bounded strings/bytes; repeated fields stream through callbacks.
+* max_size:257
+* fallback_type:FT_CALLBACK
+* max_count:8

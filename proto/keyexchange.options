@@ -1,0 +1,7 @@
+# Fixed authentication structs; reject overflow instead of allocating.
+* max_size:1024 max_count:8
+LoginCryptoDiffieHellmanHello.gc max_size:96
+LoginCryptoDiffieHellmanChallenge.gs max_size:96
+LoginCryptoDiffieHellmanChallenge.gs_signature max_size:256
+ClientHello.client_nonce max_size:16
+APChallenge.server_nonce max_size:16

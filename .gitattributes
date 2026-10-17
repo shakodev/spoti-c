@@ -1,0 +1,7 @@
+# Preserve the bytes covered by the upstream SHA-256 manifests on every OS.
+proto/** -text whitespace=cr-at-eol
+# Upstream files retain their original whitespace as part of the pinned hashes.
+proto/*.proto -whitespace
+proto/**/*.proto -whitespace
+proto/LICENSE.librespot -whitespace
+vendor/nanopb/** -text -whitespace
