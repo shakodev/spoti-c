@@ -47,6 +47,10 @@ typedef struct HttpRequest {
     uint32_t max_retries; /* <= 3; GET/HEAD only; no replay after delivery. */
     uint32_t max_redirects; /* <= 5; GET/HEAD only, no TLS downgrade. */
     uint32_t max_expansion; /* Zero: 16. Decoded/native compressed byte cap. */
+    /* Typed public representation headers do not need a sensitive-header origin
+     * allowlist. They never carry credentials. Range is inclusive, GET only. */
+    bool range, identity_encoding;
+    uint64_t range_first, range_last;
 } HttpRequest;
 typedef struct HttpCompletion {
     HttpRequestId id;

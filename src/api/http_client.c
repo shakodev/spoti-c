@@ -12,7 +12,7 @@ static HttpSlot *find_slot(HttpClient *client, HttpRequestId id)
 static bool copy_headers(HttpSlot *slot, const HttpRequest *request)
 {
     static const wchar_t *const forbidden[] = {L"Host", L"Content-Length", L"Transfer-Encoding",
-        L"Connection", L"Accept-Encoding", L"Proxy-Authorization", L"Upgrade", L"Expect", L"TE"};
+        L"Connection", L"Accept-Encoding", L"Proxy-Authorization", L"Upgrade", L"Expect", L"TE", L"Range"};
     size_t used = 0;
     for (size_t i = 0; i < request->header_count; ++i) {
         const wchar_t *name = request->headers[i].name, *value = request->headers[i].value;
@@ -54,6 +54,7 @@ HttpResult http_submit(HttpClient *client, const HttpRequest *request, HttpReque
         ((request->method == HTTP_GET || request->method == HTTP_HEAD) && request->upload_bytes != 0) ||
         (request->body_capacity != 0 && request->body == NULL) ||
         (request->stream && request->body_capacity < HTTP_BLOCK_SIZE) ||
+        (request->range && (request->method != HTTP_GET || request->range_first > request->range_last)) ||
         !http_origin_parse(request->url, &origin, NULL, 0)) { return HTTP_INVALID; }
     if (client->stopping) { return HTTP_CLOSED; }
     if (!http_origin_valid(client, &origin) ||

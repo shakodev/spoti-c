@@ -80,6 +80,7 @@ void http_on_headers(HttpSlot *slot)
     }
     if (http_query_header(slot, WINHTTP_QUERY_CONTENT_ENCODING, NULL, value, sizeof(value)) &&
         _wcsicmp(value, L"identity") != 0) {
+        if (slot->request.identity_encoding) { http_finish(slot, HTTP_ENCODING); return; }
         if ((_wcsicmp(value, L"gzip") != 0 && _wcsicmp(value, L"deflate") != 0) ||
             !slot->has_length || slot->wire_length == 0) { http_finish(slot, HTTP_ENCODING); return; }
         slot->encoded = true;

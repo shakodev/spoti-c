@@ -3,7 +3,7 @@
 #include <winsock2.h>
 #include "core/metrics.h"
 
-#define TEST_HTTP_RESPONSES 8u
+#define TEST_HTTP_RESPONSES 16u
 typedef struct TestHttpResponse {
     const char *headers;
     const void *body;

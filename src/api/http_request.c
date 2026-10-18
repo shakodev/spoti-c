@@ -66,7 +66,7 @@ HttpResult http_start(HttpSlot *slot)
     }
     DWORD disable = WINHTTP_DISABLE_REDIRECTS | WINHTTP_DISABLE_COOKIES | WINHTTP_DISABLE_AUTHENTICATION;
     DWORD header_limit = HTTP_HEADER_LIMIT, drain = 0;
-    DWORD decompress = WINHTTP_DECOMPRESSION_FLAG_GZIP | WINHTTP_DECOMPRESSION_FLAG_DEFLATE;
+    DWORD decompress = slot->request.identity_encoding ? 0 : WINHTTP_DECOMPRESSION_FLAG_GZIP | WINHTTP_DECOMPRESSION_FLAG_DEFLATE;
     if (!WinHttpSetOption(slot->handle, WINHTTP_OPTION_DISABLE_FEATURE, &disable, sizeof(disable)) ||
         !WinHttpSetOption(slot->handle, WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE, &header_limit, sizeof(header_limit)) ||
         !WinHttpSetOption(slot->handle, WINHTTP_OPTION_MAX_RESPONSE_DRAIN_SIZE, &drain, sizeof(drain)) ||
@@ -74,6 +74,14 @@ HttpResult http_start(HttpSlot *slot)
         !WinHttpSetTimeouts(slot->handle, 5000, 5000, 5000, 5000) ||
         (!slot->stripped && slot->headers[0] != L'\0' && !WinHttpAddRequestHeaders(slot->handle,
             slot->headers, (DWORD)-1, WINHTTP_ADDREQ_FLAG_ADD))) { return last_error(); }
+    if (slot->request.identity_encoding && !WinHttpAddRequestHeaders(slot->handle,
+        L"Accept-Encoding: identity\r\n", (DWORD)-1, WINHTTP_ADDREQ_FLAG_ADD)) { return last_error(); }
+    if (slot->request.range) {
+        wchar_t range[100];
+        if (swprintf_s(range, 100, L"Range: bytes=%llu-%llu\r\n",
+            (unsigned long long)slot->request.range_first, (unsigned long long)slot->request.range_last) < 0 ||
+            !WinHttpAddRequestHeaders(slot->handle, range, (DWORD)-1, WINHTTP_ADDREQ_FLAG_ADD)) { return last_error(); }
+    }
     slot->state = HS_SEND;
     if (!WinHttpSendRequest(slot->handle, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
         (void *)slot->request.upload, (DWORD)slot->request.upload_bytes,

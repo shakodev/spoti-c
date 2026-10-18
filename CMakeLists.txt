@@ -120,7 +120,19 @@ add_library(spotic_media STATIC src/protocol/media_source.c src/protocol/media_h
 target_include_directories(spotic_media PUBLIC src)
 target_link_libraries(spotic_media PUBLIC spotic_audio_key spotic_tokens spotic_proto winhttp)
 
+add_library(spotic_range STATIC src/audio/range_fetcher.c src/audio/range_leases.c
+    src/audio/range_headers.c src/audio/range_http.c src/audio/range_schedule.c src/audio/range_poll.c
+    src/audio/audio_cache.c src/audio/cache_format.c src/audio/cache_disk.c src/audio/cache_store.c)
+target_include_directories(spotic_range PUBLIC src vendor)
+target_link_libraries(spotic_range PUBLIC spotic_http spotic_core)
+
 if(BUILD_TESTING)
+    add_executable(test_range_cache tests/test_range_cache.c tests/test_cache_disk.c
+        tests/test_range_errors.c tests/test_range_races.c tests/range_test_support.c tests/support/http_server.c)
+    target_include_directories(test_range_cache PRIVATE tests)
+    target_link_libraries(test_range_cache PRIVATE spotic_range ws2_32)
+    add_test(NAME audio_range_cache COMMAND test_range_cache)
+    set_tests_properties(audio_range_cache PROPERTIES TIMEOUT 90)
     add_executable(test_media_source tests/test_media_source.c tests/test_metadata.c
         tests/test_storage_resolve.c tests/support/http_server.c)
     target_include_directories(test_media_source PRIVATE tests)
