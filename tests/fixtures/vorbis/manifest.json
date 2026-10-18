@@ -1,0 +1,330 @@
+{
+  "schema": 1,
+  "oracle": "libsndfile / libvorbis, independent of stb",
+  "soundfile": "0.13.1",
+  "libsndfile": "1.2.2",
+  "numpy": "2.2.6",
+  "max_absolute_error": 3e-05,
+  "files": [
+    {
+      "name": "mono22",
+      "sample_rate": 22050,
+      "channels": 1,
+      "frames": 27317,
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 58,
+          "granule": 0,
+          "flags": 2
+        },
+        {
+          "offset": 58,
+          "bytes": 3671,
+          "granule": 0,
+          "flags": 0
+        },
+        {
+          "offset": 3729,
+          "bytes": 4245,
+          "granule": 12416,
+          "flags": 0
+        },
+        {
+          "offset": 7974,
+          "bytes": 4228,
+          "granule": 25216,
+          "flags": 0
+        },
+        {
+          "offset": 12202,
+          "bytes": 785,
+          "granule": 27317,
+          "flags": 4
+        }
+      ],
+      "ogg": {
+        "bytes": 12987,
+        "sha256": "31245979f8dd8a5445c3aae7400ce39ee1aafc7be755efd0019d5f453ab75d0c"
+      },
+      "f32": {
+        "bytes": 109268,
+        "sha256": "cddfaae32f3d7166a2b1e55fe079ed063236c7a365c4deb102cf23e717934e0c"
+      }
+    },
+    {
+      "name": "stereo44",
+      "sample_rate": 44100,
+      "channels": 2,
+      "frames": 141127,
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 58,
+          "granule": 0,
+          "flags": 2
+        },
+        {
+          "offset": 58,
+          "bytes": 4275,
+          "granule": 0,
+          "flags": 0
+        },
+        {
+          "offset": 4333,
+          "bytes": 4422,
+          "granule": 12992,
+          "flags": 0
+        },
+        {
+          "offset": 8755,
+          "bytes": 4333,
+          "granule": 26304,
+          "flags": 0
+        },
+        {
+          "offset": 13088,
+          "bytes": 4328,
+          "granule": 39616,
+          "flags": 0
+        },
+        {
+          "offset": 17416,
+          "bytes": 4306,
+          "granule": 52928,
+          "flags": 0
+        },
+        {
+          "offset": 21722,
+          "bytes": 4358,
+          "granule": 66240,
+          "flags": 0
+        },
+        {
+          "offset": 26080,
+          "bytes": 4318,
+          "granule": 79552,
+          "flags": 0
+        },
+        {
+          "offset": 30398,
+          "bytes": 4323,
+          "granule": 92864,
+          "flags": 0
+        },
+        {
+          "offset": 34721,
+          "bytes": 4255,
+          "granule": 106176,
+          "flags": 0
+        },
+        {
+          "offset": 38976,
+          "bytes": 4234,
+          "granule": 119488,
+          "flags": 0
+        },
+        {
+          "offset": 43210,
+          "bytes": 4313,
+          "granule": 132800,
+          "flags": 0
+        },
+        {
+          "offset": 47523,
+          "bytes": 2751,
+          "granule": 141127,
+          "flags": 4
+        }
+      ],
+      "ogg": {
+        "bytes": 50274,
+        "sha256": "2a5ce1812c173ad547db4eac7557a8811dc7880fb8bdce2d1d2c61ded6930f64"
+      },
+      "f32": {
+        "bytes": 1129016,
+        "sha256": "3acaf80e6ae1b049c74a2d39a6ed70cf6a6b1dea85bc04e07fe15dee545d2b7f"
+      }
+    },
+    {
+      "name": "stereo48",
+      "sample_rate": 48000,
+      "channels": 2,
+      "frames": 432137,
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 58,
+          "granule": 0,
+          "flags": 2
+        },
+        {
+          "offset": 58,
+          "bytes": 3616,
+          "granule": 0,
+          "flags": 0
+        },
+        {
+          "offset": 3674,
+          "bytes": 4300,
+          "granule": 20160,
+          "flags": 0
+        },
+        {
+          "offset": 7974,
+          "bytes": 4244,
+          "granule": 40640,
+          "flags": 0
+        },
+        {
+          "offset": 12218,
+          "bytes": 4156,
+          "granule": 61120,
+          "flags": 0
+        },
+        {
+          "offset": 16374,
+          "bytes": 4201,
+          "granule": 81600,
+          "flags": 0
+        },
+        {
+          "offset": 20575,
+          "bytes": 4162,
+          "granule": 102080,
+          "flags": 0
+        },
+        {
+          "offset": 24737,
+          "bytes": 4311,
+          "granule": 123584,
+          "flags": 0
+        },
+        {
+          "offset": 29048,
+          "bytes": 4256,
+          "granule": 144064,
+          "flags": 0
+        },
+        {
+          "offset": 33304,
+          "bytes": 4267,
+          "granule": 164544,
+          "flags": 0
+        },
+        {
+          "offset": 37571,
+          "bytes": 4209,
+          "granule": 185024,
+          "flags": 0
+        },
+        {
+          "offset": 41780,
+          "bytes": 4284,
+          "granule": 205504,
+          "flags": 0
+        },
+        {
+          "offset": 46064,
+          "bytes": 4260,
+          "granule": 225984,
+          "flags": 0
+        },
+        {
+          "offset": 50324,
+          "bytes": 4329,
+          "granule": 246464,
+          "flags": 0
+        },
+        {
+          "offset": 54653,
+          "bytes": 4312,
+          "granule": 266944,
+          "flags": 0
+        },
+        {
+          "offset": 58965,
+          "bytes": 4286,
+          "granule": 287424,
+          "flags": 0
+        },
+        {
+          "offset": 63251,
+          "bytes": 4346,
+          "granule": 307904,
+          "flags": 0
+        },
+        {
+          "offset": 67597,
+          "bytes": 4300,
+          "granule": 328384,
+          "flags": 0
+        },
+        {
+          "offset": 71897,
+          "bytes": 4285,
+          "granule": 348864,
+          "flags": 0
+        },
+        {
+          "offset": 76182,
+          "bytes": 4153,
+          "granule": 368320,
+          "flags": 0
+        },
+        {
+          "offset": 80335,
+          "bytes": 4210,
+          "granule": 387776,
+          "flags": 0
+        },
+        {
+          "offset": 84545,
+          "bytes": 4353,
+          "granule": 408256,
+          "flags": 0
+        },
+        {
+          "offset": 88898,
+          "bytes": 4316,
+          "granule": 428736,
+          "flags": 0
+        },
+        {
+          "offset": 93214,
+          "bytes": 848,
+          "granule": 432137,
+          "flags": 4
+        }
+      ],
+      "ogg": {
+        "bytes": 94062,
+        "sha256": "264ce8f2f5a3e06c1123c84ab866ef4cd947d7f42571e7d721d29fe9a33e0c50"
+      },
+      "f32": {
+        "bytes": 3457096,
+        "sha256": "a30a5aea01c0fb46148bdb93367ff41054742ba1cbcf53ac20b619c3ded3c348"
+      }
+    }
+  ],
+  "conversions": [
+    {
+      "source": "mono22",
+      "sample_rate": 48000,
+      "channels": 2,
+      "frames": 59466,
+      "file": "mono22-to-48000-2.f32",
+      "bytes": 475728,
+      "sha256": "7e1f4c564ea5843580efde07657ebda900bbe7a9b39062d8615ca615aa9bbbb2"
+    },
+    {
+      "source": "stereo44",
+      "sample_rate": 32000,
+      "channels": 1,
+      "frames": 102406,
+      "file": "stereo44-to-32000-1.f32",
+      "bytes": 409624,
+      "sha256": "29a0574ab523ec84640f52d22a41fa76503c64b48c76443208f0c4f875512db4"
+    }
+  ]
+}

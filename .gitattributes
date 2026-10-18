@@ -13,3 +13,8 @@ tests/fixtures/shannon-vectors.json text eol=lf
 tests/fixtures/crypto-vectors.json text eol=lf
 tests/fixtures/decrypt/*.bin binary
 tests/fixtures/decrypt/manifest.json text eol=lf
+vendor/stb_vorbis.c -text -whitespace
+vendor/licenses/stb/LICENSE -text
+tests/fixtures/vorbis/*.ogg binary
+tests/fixtures/vorbis/*.f32 binary
+tests/fixtures/vorbis/manifest.json text eol=lf

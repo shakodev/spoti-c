@@ -130,7 +130,25 @@ add_library(spotic_decrypt STATIC src/audio/decrypt_stream.c src/audio/spotify_h
 target_include_directories(spotic_decrypt PUBLIC src)
 target_link_libraries(spotic_decrypt PUBLIC spotic_range spotic_media spotic_crypto)
 
+add_library(spotic_vorbis STATIC src/audio/vorbis_codec.c src/audio/vorbis_decoder.c
+    src/audio/vorbis_input.c src/audio/vorbis_seek.c src/audio/ogg_index.c src/audio/audio_convert.c)
+target_include_directories(spotic_vorbis PUBLIC src PRIVATE vendor)
+target_link_libraries(spotic_vorbis PUBLIC spotic_core)
+
 if(BUILD_TESTING)
+    add_executable(test_vorbis_stream tests/test_vorbis_stream.c tests/test_vorbis_errors.c
+        tests/test_audio_convert.c tests/test_vorbis_limits.c tests/vorbis_test_support.c)
+    target_include_directories(test_vorbis_stream PRIVATE tests vendor)
+    target_compile_definitions(test_vorbis_stream PRIVATE VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
+    target_link_libraries(test_vorbis_stream PRIVATE spotic_vorbis)
+    add_test(NAME audio_vorbis_stream COMMAND test_vorbis_stream)
+    set_tests_properties(audio_vorbis_stream PROPERTIES TIMEOUT 90)
+    add_executable(test_audio_seek tests/test_audio_seek.c tests/test_ogg_index.c tests/vorbis_test_support.c)
+    target_include_directories(test_audio_seek PRIVATE tests vendor)
+    target_compile_definitions(test_audio_seek PRIVATE VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
+    target_link_libraries(test_audio_seek PRIVATE spotic_vorbis)
+    add_test(NAME audio_seek COMMAND test_audio_seek)
+    set_tests_properties(audio_seek PROPERTIES TIMEOUT 90)
     add_executable(test_decrypt_stream tests/test_decrypt_stream.c tests/test_decrypt_errors.c
         tests/test_decrypt_lifecycle.c)
     target_include_directories(test_decrypt_stream PRIVATE tests)
