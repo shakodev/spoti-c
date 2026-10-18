@@ -126,7 +126,24 @@ add_library(spotic_range STATIC src/audio/range_fetcher.c src/audio/range_leases
 target_include_directories(spotic_range PUBLIC src vendor)
 target_link_libraries(spotic_range PUBLIC spotic_http spotic_core)
 
+add_library(spotic_decrypt STATIC src/audio/decrypt_stream.c src/audio/spotify_header.c)
+target_include_directories(spotic_decrypt PUBLIC src)
+target_link_libraries(spotic_decrypt PUBLIC spotic_range spotic_media spotic_crypto)
+
 if(BUILD_TESTING)
+    add_executable(test_decrypt_stream tests/test_decrypt_stream.c tests/test_decrypt_errors.c
+        tests/test_decrypt_lifecycle.c)
+    target_include_directories(test_decrypt_stream PRIVATE tests)
+    target_compile_definitions(test_decrypt_stream PRIVATE
+        DECRYPT_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/decrypt")
+    target_link_libraries(test_decrypt_stream PRIVATE spotic_decrypt)
+    add_test(NAME audio_ctr_stream COMMAND test_decrypt_stream)
+    set_tests_properties(audio_ctr_stream PROPERTIES TIMEOUT 60)
+    add_executable(test_spotify_header tests/test_spotify_header.c)
+    target_include_directories(test_spotify_header PRIVATE tests)
+    target_link_libraries(test_spotify_header PRIVATE spotic_decrypt)
+    add_test(NAME audio_spotify_header COMMAND test_spotify_header)
+    set_tests_properties(audio_spotify_header PROPERTIES TIMEOUT 15)
     add_executable(test_range_cache tests/test_range_cache.c tests/test_cache_disk.c
         tests/test_range_errors.c tests/test_range_races.c tests/range_test_support.c tests/support/http_server.c)
     target_include_directories(test_range_cache PRIVATE tests)

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "oracle": "Python cryptography AES-128 CTR, big-endian counter",
+  "key_hex": "000102030405060708090a0b0c0d0e0f",
+  "iv_hex": "72e067fbddcbcf77ebe8bc643f630d93",
+  "carry_offsets": [
+    1744,
+    992976,
+    51704178384
+  ],
+  "windows": [
+    {
+      "file": "carry16.bin",
+      "offset": 992944,
+      "bytes": 96
+    },
+    {
+      "file": "carry32.bin",
+      "offset": 51704178352,
+      "bytes": 96
+    }
+  ],
+  "sha256": {
+    "continuous.bin": "4fdc29c0ab2b3b46a9990a272b665575ca4bb02d48a5f4472cc0117479eb22ef",
+    "carry16.bin": "269a4c8be3f0afa57d68114811df13ab54a38f60755186dd0311c9b2bcd6001e",
+    "carry32.bin": "7eb9cabb6ffdea72ce728840f0d78838472a5ed518f613810e20d9ae6588405d"
+  }
+}

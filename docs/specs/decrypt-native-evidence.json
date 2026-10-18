@@ -1,0 +1,267 @@
+{
+    "schema":  1,
+    "acquired":  "2026-10-18",
+    "transport":  "REA 6.5.0 MCP tools via bounded local stdio session",
+    "artifact":  {
+                     "path":  "C:\\Users\\Daan\\AppData\\Roaming\\Spotify\\Spotify.dll",
+                     "format":  "pe",
+                     "kind":  "executable",
+                     "sha256":  "ae772df4dca26c53c73ea720836db77584dc431d14d3ab3b5c4b49b0bd2b8fde",
+                     "architecture":  "x86_64"
+                 },
+    "evidence":  {
+                     "evidence_id":  "ev_d2bf33fb6c5016c00a1bb3f2662ff5631cbbe193a5ab0f86172e5fdc483fd221",
+                     "subject":  {
+                                     "name":  "Spotify.dll",
+                                     "digest":  {
+                                                    "sha256":  "ae772df4dca26c53c73ea720836db77584dc431d14d3ab3b5c4b49b0bd2b8fde"
+                                                },
+                                     "local_path":  "C:\\Users\\Daan\\AppData\\Roaming\\Spotify\\Spotify.dll",
+                                     "format":  "pe",
+                                     "architecture":  "x86_64"
+                                 },
+                     "provider":  {
+                                      "id":  "ghidra",
+                                      "name":  "Ghidra",
+                                      "version":  "12.1.4"
+                                  },
+                     "analysis_profile":  {
+                                              "provider":  {
+                                                               "id":  "ghidra",
+                                                               "name":  "Ghidra",
+                                                               "version":  "12.1.4"
+                                                           },
+                                              "parameters":  {
+                                                                 "target_kind":  "executable",
+                                                                 "target_format":  "pe",
+                                                                 "executable_role":  "shared-library",
+                                                                 "managed":  false,
+                                                                 "native_aot_metadata":  {
+                                                                                             "contract_revision":  "rtr-9.1-x64-pe-read-only-v3",
+                                                                                             "source_bytes":  134217728,
+                                                                                             "work_units":  67108864,
+                                                                                             "working_memory_bytes":  67108864,
+                                                                                             "report_bytes":  4194304
+                                                                                         },
+                                                                 "architecture":  "x86_64",
+                                                                 "available_architectures":  [
+                                                                                                 "x86_64"
+                                                                                             ],
+                                                                 "import_mode":  "ephemeral-source-immutable",
+                                                                 "pdb_observations":  "program-info-v1",
+                                                                 "annotation_policy":  "atomic-function-entry-metadata-v1",
+                                                                 "load_image_observations":  "source-mappings-entry-context-v2",
+                                                                 "function_body_evidence":  "complete-inclusive-ranges-v1",
+                                                                 "function_references":  "complete-body-and-entry-reference-manager-v2",
+                                                                 "call_relationship_coverage":  "function-body-call-coverage-v5",
+                                                                 "function_dossier_coverage":  "observed-facets-and-call-relationships-v1",
+                                                                 "string_inventory_evidence":  "defined-data-coverage-v1",
+                                                                 "location_resolution":  "explicit-address-exact-entry-symbol-first-v3",
+                                                                 "procedure_file_offset_resolution":  "address-first-unique-target-source-mapping-v2",
+                                                                 "instruction_flow_evidence":  "decoded-return-pcode-v1",
+                                                                 "instruction_references":  "exact-address-incoming-v1",
+                                                                 "function_boundary_observations":  "ghidra-function-boundary-limitations-v3",
+                                                                 "no_return_repair":  "disabled-windows-p0",
+                                                                 "process_launch":  "official-headless-script-v1",
+                                                                 "jump_table_evidence":  "typed-case-default-blocks-v1",
+                                                                 "decompiler_jump_loads":  true,
+                                                                 "loader":  "auto-from-header",
+                                                                 "language_id":  "auto-from-header",
+                                                                 "compiler_spec_id":  "auto-default",
+                                                                 "analyzer_preset":  "ghidra-default+disabled:Disassemble Entry Points,Subroutine References,External Entry References,Reference,Data Reference,Function ID,x86 Constant Reference Analyzer,Create Address Tables,Windows x86 PE RTTI Analyzer,Non-Returning Functions - Known,Non-Returning Functions - Discovered,Decompiler Switch Analysis,Stack,Decompiler Parameter ID,Demangler Microsoft,Windows x86 PE Exception Handling",
+                                                                 "analysis_options":  {
+                                                                                          "disabled_analyzers":  [
+                                                                                                                     "Disassemble Entry Points",
+                                                                                                                     "Subroutine References",
+                                                                                                                     "External Entry References",
+                                                                                                                     "Reference",
+                                                                                                                     "Data Reference",
+                                                                                                                     "Function ID",
+                                                                                                                     "x86 Constant Reference Analyzer",
+                                                                                                                     "Create Address Tables",
+                                                                                                                     "Windows x86 PE RTTI Analyzer",
+                                                                                                                     "Non-Returning Functions - Known",
+                                                                                                                     "Non-Returning Functions - Discovered",
+                                                                                                                     "Decompiler Switch Analysis",
+                                                                                                                     "Stack",
+                                                                                                                     "Decompiler Parameter ID",
+                                                                                                                     "Demangler Microsoft",
+                                                                                                                     "Windows x86 PE Exception Handling"
+                                                                                                                 ]
+                                                                                      }
+                                                             },
+                                              "digest":  "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df"
+                                          },
+                     "predicate_type":  "rea.analysis",
+                     "operation":  "search_bytes",
+                     "parameters":  {
+                                        "pattern":  "72 e0 67 fb dd cb cf 77 eb e8 bc 64 3f 63 0d 93",
+                                        "limit":  10
+                                    },
+                     "raw_result":  {
+                                        "matches":  [
+
+                                                    ],
+                                        "searched":  {
+                                                         "blocks":  [
+                                                                        {
+                                                                            "segment":  "Headers",
+                                                                            "start":  "0x180000000",
+                                                                            "end":  "0x1800003ff",
+                                                                            "bytes":  1024
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".text",
+                                                                            "start":  "0x180001000",
+                                                                            "end":  "0x1819711ff",
+                                                                            "bytes":  26673664
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".rdata",
+                                                                            "start":  "0x181972000",
+                                                                            "end":  "0x181fa4dff",
+                                                                            "bytes":  6499840
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".data",
+                                                                            "start":  "0x181fa5000",
+                                                                            "end":  "0x182805393",
+                                                                            "bytes":  8782740
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".pdata",
+                                                                            "start":  "0x182806000",
+                                                                            "end":  "0x1829535ff",
+                                                                            "bytes":  1365504
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".fptable",
+                                                                            "start":  "0x182954000",
+                                                                            "end":  "0x1829541ff",
+                                                                            "bytes":  512
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".rsrc",
+                                                                            "start":  "0x182955000",
+                                                                            "end":  "0x1829667ff",
+                                                                            "bytes":  71680
+                                                                        },
+                                                                        {
+                                                                            "segment":  ".reloc",
+                                                                            "start":  "0x182967000",
+                                                                            "end":  "0x1829b8fff",
+                                                                            "bytes":  335872
+                                                                        },
+                                                                        {
+                                                                            "segment":  "tdb",
+                                                                            "start":  "0xff00000000",
+                                                                            "end":  "0xff0000184f",
+                                                                            "bytes":  6224
+                                                                        }
+                                                                    ],
+                                                         "bytes":  43737060,
+                                                         "skipped_uninitialized":  [
+
+                                                                                   ],
+                                                         "skipped_not_loaded":  [
+
+                                                                                ]
+                                                     },
+                                        "complete":  true,
+                                        "next_cursor":  null
+                                    },
+                     "normalized_result":  {
+                                               "matches":  [
+
+                                                           ],
+                                               "searched":  {
+                                                                "blocks":  [
+                                                                               {
+                                                                                   "segment":  "Headers",
+                                                                                   "start":  "0x180000000",
+                                                                                   "end":  "0x1800003ff",
+                                                                                   "bytes":  1024
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".text",
+                                                                                   "start":  "0x180001000",
+                                                                                   "end":  "0x1819711ff",
+                                                                                   "bytes":  26673664
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".rdata",
+                                                                                   "start":  "0x181972000",
+                                                                                   "end":  "0x181fa4dff",
+                                                                                   "bytes":  6499840
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".data",
+                                                                                   "start":  "0x181fa5000",
+                                                                                   "end":  "0x182805393",
+                                                                                   "bytes":  8782740
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".pdata",
+                                                                                   "start":  "0x182806000",
+                                                                                   "end":  "0x1829535ff",
+                                                                                   "bytes":  1365504
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".fptable",
+                                                                                   "start":  "0x182954000",
+                                                                                   "end":  "0x1829541ff",
+                                                                                   "bytes":  512
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".rsrc",
+                                                                                   "start":  "0x182955000",
+                                                                                   "end":  "0x1829667ff",
+                                                                                   "bytes":  71680
+                                                                               },
+                                                                               {
+                                                                                   "segment":  ".reloc",
+                                                                                   "start":  "0x182967000",
+                                                                                   "end":  "0x1829b8fff",
+                                                                                   "bytes":  335872
+                                                                               },
+                                                                               {
+                                                                                   "segment":  "tdb",
+                                                                                   "start":  "0xff00000000",
+                                                                                   "end":  "0xff0000184f",
+                                                                                   "bytes":  6224
+                                                                               }
+                                                                           ],
+                                                                "bytes":  43737060,
+                                                                "skipped_uninitialized":  [
+
+                                                                                          ],
+                                                                "skipped_not_loaded":  [
+
+                                                                                       ]
+                                                            },
+                                               "complete":  true,
+                                               "next_cursor":  null
+                                           },
+                     "confidence":  "observed",
+                     "authority":  "shipped-artifact",
+                     "environment":  null,
+                     "limitations":  [
+                                         "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+                                         "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+                                         "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+                                         "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use \u003cpercent-encoded-space\u003e:0x\u003chex\u003e.",
+                                         "Searches initialized loader-adjusted memory independently per block, in provider address order. Bounds and page coverage ends are inclusive. Uninitialized blocks are listed separately. Overlapping matches are included; patterns never cross block boundaries. A cursor resumes the same target, profile and query. Cancellation discards the active search and returns no successful partial page.",
+                                         "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+                                         "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+                                         "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+                                         "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+                                     ],
+                     "relationship_coverage":  null,
+                     "locations":  [
+
+                                   ],
+                     "evidence_links":  [
+
+                                        ]
+                 }
+}
