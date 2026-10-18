@@ -21,9 +21,9 @@ void range_cache_complete(void *context, uint64_t ticket, CacheResult result, co
 
 RangeResult range_http_poll(RangeFetcher *f)
 {
-    if (http_pump(f->config.http) != HTTP_OK) { return RANGE_HTTP_ERROR; }
+    if (range_transfer_pump(f) != HTTP_OK) { return RANGE_HTTP_ERROR; }
     if (f->active < 0) { return RANGE_OK; }
-    HttpCompletion completion; HttpResult consumed = http_consume(f->config.http, f->http_id, &completion);
+    HttpCompletion completion; HttpResult consumed = range_transfer_consume(f, f->http_id, &completion);
     if (consumed == HTTP_PENDING) { return RANGE_OK; }
     RangeBlock *b = &f->blocks[f->active]; f->active = -1;
     RangeSourceRecord *s = range_source(f, b->source);

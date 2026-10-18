@@ -20,3 +20,10 @@ vendor/licenses/stb/LICENSE -text
 tests/fixtures/vorbis/*.ogg binary
 tests/fixtures/vorbis/*.f32 binary
 tests/fixtures/vorbis/manifest.json text eol=lf
+
+tests/fixtures/audio/*.ogg binary
+tests/fixtures/audio/*.f32 binary
+tests/fixtures/audio/*.enc binary
+tests/fixtures/audio/*.crt text eol=lf
+tests/fixtures/audio/*.fixture text eol=lf
+tests/fixtures/audio/*.json text eol=lf

@@ -3,6 +3,7 @@
 #include "audio_cache.h"
 #include "api/http_client.h"
 #include "protocol/media_source.h"
+#include "range_transport.h"
 
 enum { RANGE_BLOCKS = 8, RANGE_BLOCK_BYTES = 65536, RANGE_REQUESTS = 16, RANGE_LEASES = 16, RANGE_SOURCES = 4 };
 typedef struct RangeFetcher RangeFetcher;
@@ -16,6 +17,7 @@ typedef enum RangeState { RANGE_EMPTY, RANGE_FETCHING, RANGE_READY, RANGE_PINNED
 typedef enum RangePriority { RANGE_CURRENT, RANGE_PREFETCH } RangePriority;
 typedef struct RangeSpan { const uint8_t *data; size_t bytes; uint64_t offset; } RangeSpan;
 typedef struct RangeLease { uint64_t ticket; RangeSource source; size_t count, bytes; RangeSpan spans[RANGE_BLOCKS]; } RangeLease;
+
 typedef struct RangeConfig {
     HttpClient *http;
     AudioCache *cache; /* Optional. Keep alive until fetcher shutdown completes. */
@@ -27,6 +29,7 @@ typedef struct RangeConfig {
     MediaResult (*refresh)(void *, RangeSource, MediaSource *);
     void *context;
     bool fixture_loopback_http; /* Explicit local fixture opt-in only. */
+    const RangeTransport *transport; /* NULL selects the existing WinHTTP client. */
 } RangeConfig;
 typedef struct RangeStats {
     size_t states[4], pending, leases, block_pool_bytes;

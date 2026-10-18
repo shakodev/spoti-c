@@ -1,92 +1,56 @@
 {
   "scope": "image pages only, not total process residency",
-  "resident_image_bytes": 7782400,
+  "resident_image_bytes": 4853760,
   "modules": [
     {
       "module": "ntdll.dll",
-      "resident_image_bytes": 2019328
+      "resident_image_bytes": 2002944
     },
     {
       "module": "KERNELBASE.dll",
-      "resident_image_bytes": 978944
-    },
-    {
-      "module": "WINHTTP.dll",
-      "resident_image_bytes": 671744
-    },
-    {
-      "module": "RPCRT4.dll",
-      "resident_image_bytes": 655360
+      "resident_image_bytes": 880640
     },
     {
       "module": "ucrtbase.dll",
-      "resident_image_bytes": 552960
-    },
-    {
-      "module": "webio.dll",
-      "resident_image_bytes": 524288
-    },
-    {
-      "module": "combase.dll",
-      "resident_image_bytes": 339968
+      "resident_image_bytes": 528384
     },
     {
       "module": "KERNEL32.DLL",
-      "resident_image_bytes": 303104
+      "resident_image_bytes": 278528
     },
     {
       "module": "bench_headless.exe",
-      "resident_image_bytes": 221184
+      "resident_image_bytes": 225280
     },
     {
       "module": "WS2_32.dll",
-      "resident_image_bytes": 208896
+      "resident_image_bytes": 204800
     },
     {
       "module": "mswsock.dll",
       "resident_image_bytes": 180224
     },
     {
-      "module": "msvcrt.dll",
-      "resident_image_bytes": 176128
-    },
-    {
       "module": "bcryptprimitives.dll",
       "resident_image_bytes": 163840
-    },
-    {
-      "module": "advapi32.dll",
-      "resident_image_bytes": 159744
-    },
-    {
-      "module": "sechost.dll",
-      "resident_image_bytes": 147456
-    },
-    {
-      "module": "SspiCli.dll",
-      "resident_image_bytes": 135168
     },
     {
       "module": "bcrypt.dll",
       "resident_image_bytes": 122880
     },
     {
-      "module": "IPHLPAPI.DLL",
+      "module": "sechost.dll",
+      "resident_image_bytes": 110592
+    },
+    {
+      "module": "RPCRT4.dll",
       "resident_image_bytes": 94208
     },
     {
       "module": "VCRUNTIME140.dll",
       "resident_image_bytes": 61440
-    },
-    {
-      "module": "WINNSI.DLL",
-      "resident_image_bytes": 40960
-    },
-    {
-      "module": "NSI.dll",
-      "resident_image_bytes": 24576
     }
   ],
-  "captured_at_utc": "2026-10-18T16:02:59.3964245Z",
-  "benchmark_sha256": "3cae3f8aa9e6f596b50cb81838f22febc2e71bae2b9067adede4db5dec4268dc"
+  "captured_at_utc": "2026-10-18T17:07:11.3783586Z",
+  "benchmark_sha256": "5db2dd974a56ab2df1534d6857d6345fcf7802ae6fcc939535b6fa68b7b0899e"
 }

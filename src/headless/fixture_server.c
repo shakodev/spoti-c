@@ -45,6 +45,7 @@ static bool response(HeadlessServer *s)
         "Content-Range: bytes %llu-%llu/%llu\r\nContent-Length: %llu\r\nConnection: close\r\n\r\n",
         first + (fault == 1),last,(unsigned long long)s->bytes,last-first+1);
     if (n <= 0 || !send_all(s, header, (size_t)n)) { return false; }
+    if (fault == 4) { (void)WaitForSingleObject(s->stop,INFINITE); return false; }
     LARGE_INTEGER pos; pos.QuadPart = (LONGLONG)first;
     if (!SetFilePointerEx(s->file, pos, NULL, FILE_BEGIN)) { return false; }
     uint64_t left = last - first + 1; if (fault == 2) { left /= 2; }

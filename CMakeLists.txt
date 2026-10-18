@@ -20,6 +20,7 @@ option(ENABLE_LIVE_OAUTH_TEST "Enable browser/account-dependent OAuth and AP com
 option(ENABLE_LIVE_MEDIA_TEST "Enable browser/account-dependent playable media resolution smoke" OFF)
 option(ENABLE_LIVE_AUDIO_TEST "Enable physical WASAPI/default-device-change test" OFF)
 option(ENABLE_LIVE_HEADLESS_TEST "Enable account/WASAPI headless playback acceptance" OFF)
+option(ENABLE_LIVE_CDN_TEST "Enable public-network native CDN HTTPS compatibility test" OFF)
 
 add_library(spotic_build_options INTERFACE)
 target_compile_features(spotic_build_options INTERFACE c_std_17)
@@ -123,10 +124,14 @@ target_include_directories(spotic_media PUBLIC src)
 target_link_libraries(spotic_media PUBLIC spotic_audio_key spotic_tokens spotic_proto winhttp)
 
 add_library(spotic_range STATIC src/audio/range_fetcher.c src/audio/range_leases.c
-    src/audio/range_headers.c src/audio/range_http.c src/audio/range_schedule.c src/audio/range_poll.c
+    src/audio/range_headers.c src/audio/range_http.c src/audio/range_transport.c src/audio/range_schedule.c src/audio/range_poll.c
     src/audio/audio_cache.c src/audio/cache_format.c src/audio/cache_disk.c src/audio/cache_store.c)
 target_include_directories(spotic_range PUBLIC src vendor)
 target_link_libraries(spotic_range PUBLIC spotic_http spotic_core)
+add_library(spotic_cdn STATIC src/api/cdn_client.c src/api/cdn_url.c src/api/cdn_headers.c
+    src/api/cdn_socket.c src/api/cdn_tls.c src/api/cdn_exchange.c)
+target_include_directories(spotic_cdn PUBLIC src)
+target_link_libraries(spotic_cdn PUBLIC spotic_core ws2_32 secur32)
 
 add_library(spotic_decrypt STATIC src/audio/decrypt_stream.c src/audio/spotify_header.c)
 target_include_directories(spotic_decrypt PUBLIC src)
@@ -154,12 +159,13 @@ add_library(spotic_headless STATIC src/headless/runtime.c src/headless/network.c
     src/headless/sources.c src/headless/decode.c src/headless/commands.c
     src/headless/diagnostics.c src/headless/fixture_media.c src/headless/live.c)
 target_include_directories(spotic_headless PUBLIC src)
-target_link_libraries(spotic_headless PUBLIC spotic_player spotic_decrypt spotic_ap spotic_json_base psapi)
+target_link_libraries(spotic_headless PUBLIC spotic_player spotic_decrypt spotic_ap spotic_json_base spotic_cdn psapi)
 if(MSVC)
     # Fixture/fake output does not need the COM device or credential DLLs.
     # Keep the same binary's opt-in WASAPI/account paths available on demand.
     target_link_options(spotic_headless INTERFACE
-        /DELAYLOAD:ole32.dll /DELAYLOAD:USER32.dll /DELAYLOAD:CRYPT32.dll)
+        /DELAYLOAD:ole32.dll /DELAYLOAD:USER32.dll /DELAYLOAD:CRYPT32.dll
+        /DELAYLOAD:WINHTTP.dll /DELAYLOAD:Secur32.dll)
     target_link_libraries(spotic_headless INTERFACE delayimp)
 endif()
 add_library(spotic_headless_fixture STATIC src/headless/fixture_server.c)
@@ -169,6 +175,21 @@ add_executable(spotic-headless src/headless/main.c)
 target_link_libraries(spotic-headless PRIVATE spotic_headless_fixture spotic_headless)
 
 if(BUILD_TESTING)
+    add_executable(test_cdn tests/test_cdn.c tests/cdn_tls_peer.c)
+    target_include_directories(test_cdn PRIVATE tests)
+    target_compile_definitions(test_cdn PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio")
+    target_compile_definitions(test_cdn PRIVATE CDN_PYTHON="${Python3_EXECUTABLE}"
+        CDN_SERVER_SCRIPT="${CMAKE_CURRENT_SOURCE_DIR}/tools/cdn_tls_peer.py")
+    target_link_libraries(test_cdn PRIVATE spotic_cdn spotic_headless_fixture)
+    add_test(NAME audio_cdn_transport COMMAND test_cdn)
+    set_tests_properties(audio_cdn_transport PROPERTIES TIMEOUT 90)
+    if(ENABLE_LIVE_CDN_TEST)
+        add_executable(test_cdn_live tests/test_cdn_live.c)
+        target_include_directories(test_cdn_live PRIVATE tests)
+        target_link_libraries(test_cdn_live PRIVATE spotic_cdn)
+        add_test(NAME audio_cdn_live COMMAND test_cdn_live)
+        set_tests_properties(audio_cdn_live PROPERTIES TIMEOUT 30 LABELS "live;network")
+    endif()
     add_executable(test_headless tests/test_headless.c tests/headless_support.c)
     target_include_directories(test_headless PRIVATE tests)
     target_compile_definitions(test_headless PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio"

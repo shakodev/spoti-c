@@ -23,8 +23,9 @@ Source references consulted: `ref/librespot/playback/src/player.rs:45,588,1094,
 
 ## Integration ownership
 
-The network owner drives HTTP, cache, resolver, range requests and lease
-retirement. The decode/device owner drives the player and sink. Each of the
+The network owner drives control HTTP, cache, resolver, range requests and lease
+retirement. One native CDN worker owns payload sockets and Schannel, returning
+borrowed buffers only after I/O retirement. The decode/device owner drives the player and sink. Each of the
 two source slots carries one bounded read request and one prepared decryption
 operation. Publication uses release/acquire atomics and events. Retire is
 acknowledged only after the decoder relinquishes the source, outstanding
@@ -42,6 +43,11 @@ Fixture mode serves original synthetic encrypted Vorbis through IPv4 loopback
 HTTP, the actual encrypted disk cache and the same decryption/read handoff as
 live playback. Fixture keys are public synthetic test data. Account credentials
 are supplied separately through a private DPAPI credential record.
+
+The user authorized native CDN transport on 2026-10-18 after an isolated WinHTTP
+probe exceeded the full-process resident target before audio allocation. JSON
+and internal API traffic remains on WinHTTP. See `cdn-transport.md`; plaintext
+fixture requests and live HTTPS use the same bounded range worker/parser.
 
 ## Acceptance policy
 

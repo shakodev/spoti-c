@@ -44,7 +44,9 @@ typedef struct MediaConfig {
     MediaPolicy policy; /* Catalogue is copied; utc_ms is read per response. */
     uint32_t timeout_ms; /* Zero: 15000 for complete resolution, including admission. */
     /* Explicit fixture override: IPv4 loopback HTTP origin only. With this
-     * override tokens may be NULL. Never redirects auth or fixture traffic. */
+     * override tokens may be NULL. NULL http permits explicit offline source
+     * injection only, and media_source_resolve rejects admission in that mode.
+     * Never redirects auth or fixture traffic. */
     const wchar_t *fixture_origin;
 } MediaConfig;
 typedef void (*MediaCallback)(void *, MediaId, MediaResult);

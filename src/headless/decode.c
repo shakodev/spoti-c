@@ -17,7 +17,7 @@ static const SinkBackend fake = {fake_open,fake_start,fake_stop,fake_close,fake_
 DWORD WINAPI hl_decode(void *ctx)
 {
     Headless *h = ctx; crypto_init(&h->crypto);
-    bool ok = sink_open(&h->sink, h->pcm, h->config.wasapi ? NULL : &fake, h) == AUDIO_OK;
+    bool ok = sink_open_with_buffer(&h->sink,h->pcm,sizeof(h->pcm),h->config.wasapi ? NULL : &fake,h) == AUDIO_OK;
     if (ok) {
         PlayerConfig pc = {.sink = &h->sink, .codec = {&h->arenas[7],&h->arenas[8]}, .work = {&h->arenas[9],&h->arenas[10]}};
         ok = player_create(&h->arenas[0], &pc, &h->player) == PLAYER_OK;

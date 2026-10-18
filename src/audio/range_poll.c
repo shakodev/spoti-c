@@ -10,7 +10,7 @@ RangeResult range_poll(RangeFetcher *f)
     for (size_t i = 0; i < RANGE_BLOCKS; ++i) {
         RangeBlock *b = &f->blocks[i];
         if (b->state == RANGE_FETCHING && !range_reserved(f, b, false)) {
-            if (f->active == (int)i) { b->preempted = true; (void)http_cancel(f->config.http, f->http_id); }
+            if (f->active == (int)i) { b->preempted = true; (void)range_transfer_cancel(f, f->http_id); }
             if (b->disk_ticket != 0) { (void)audio_cache_cancel(f->config.cache, b->disk_ticket); }
             range_clear_block(f, b);
         }
@@ -20,7 +20,7 @@ RangeResult range_poll(RangeFetcher *f)
 size_t range_wait_handles(const RangeFetcher *f, HANDLE handles[3])
 {
     if (f == NULL || handles == NULL) { return 0; }
-    size_t count = 0; HANDLE wake = http_wait_handle(f->config.http);
+    size_t count = 0; HANDLE wake = range_transfer_event(f);
     if (wake != NULL) { handles[count++] = wake; }
     if (f->config.cache != NULL) {
         wake = audio_cache_wait_handle(f->config.cache); if (wake != NULL) { handles[count++] = wake; }
@@ -36,7 +36,7 @@ uint32_t range_next_wait_ms(const RangeFetcher *f)
         const RangeRequest *r = &f->requests[i];
         if (r->id.value != 0 && r->result == RANGE_PENDING && r->deadline < deadline) { deadline = r->deadline; }
     }
-    uint32_t wait = core_deadline_wait(core_clock_now(&f->config.clock), deadline), http = http_next_wait_ms(f->config.http);
+    uint32_t wait = core_deadline_wait(core_clock_now(&f->config.clock), deadline), http = range_transfer_wait(f);
     return http < wait ? http : wait;
 }
 RangeResult range_fetcher_shutdown(RangeFetcher *f)

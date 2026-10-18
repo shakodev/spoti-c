@@ -97,6 +97,12 @@ bool headless_close(Headless *h, HeadlessMetrics *out)
     if (h->network_thread && !h->resources_released) { return false; } /* Retain live dependency storage on timeout. */
     HANDLE handles[] = {h->network_thread,h->read_wake,h->decode_ready,h->ready};
     for (unsigned i = 0; i < 4; ++i) { if (handles[i]) { ok &= CloseHandle(handles[i]) != 0; } }
-    SecureZeroMemory(h, sizeof(*h)); ok &= VirtualFree(h, 0, MEM_RELEASE) != FALSE;
+    /* Arena owners already wiped every byte ever allocated before disposal.
+     * PCM is the only fixed payload buffer outside those arenas; scratch and
+     * all inline secrets live in the header. Do not fault unused VM capacity
+     * into memory merely to overwrite pages which have always been zero. */
+    if (h->player) { SecureZeroMemory(h->pcm, sizeof(h->pcm)); }
+    SecureZeroMemory(h, offsetof(Headless, core));
+    ok &= VirtualFree(h, 0, MEM_RELEASE) != FALSE;
     return headless_process_metrics(out) && ok;
 }

@@ -9,7 +9,7 @@ typedef struct HeadlessServer {
     HANDLE stop, network, thread, file;
     uint64_t bytes;
     _Atomic uint64_t requests;
-    _Atomic unsigned fault; /* 1: wrong range; 2: truncated response; 3: ciphertext corruption. */
+    _Atomic unsigned fault; /* 1: wrong range; 2: truncated response; 3: ciphertext corruption; 4: stall. */
     bool winsock;
     unsigned short port;
 } HeadlessServer;

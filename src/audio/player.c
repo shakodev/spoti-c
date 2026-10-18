@@ -14,7 +14,7 @@ PlayerResult player_create(Arena *core, const PlayerConfig *config, Player **out
         }
         uintptr_t a = (uintptr_t)arenas[i]->base, cb = (uintptr_t)core->base, pcm = (uintptr_t)config->sink->pcm;
         if ((a < cb + core->capacity && cb < a + arenas[i]->capacity) ||
-            (a < pcm + MEMORY_BUDGET_PCM && pcm < a + arenas[i]->capacity)) { return PLAYER_INVALID; }
+            (a < pcm + config->sink->pcm_bytes && pcm < a + arenas[i]->capacity)) { return PLAYER_INVALID; }
         for (unsigned j = 0; j < i; ++j) {
             uintptr_t b = (uintptr_t)arenas[j]->base;
             if (a < b + arenas[j]->capacity && b < a + arenas[i]->capacity) { return PLAYER_INVALID; }

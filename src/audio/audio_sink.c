@@ -19,13 +19,18 @@ static void producer_leave(AudioSink *s)
 }
 AudioResult sink_open(AudioSink *s, void *pcm, const SinkBackend *backend, void *context)
 {
+    return sink_open_with_buffer(s,pcm,MEMORY_BUDGET_PCM,backend,context);
+}
+AudioResult sink_open_with_buffer(AudioSink *s, void *pcm, size_t pcm_bytes, const SinkBackend *backend, void *context)
+{
     if (s == NULL || pcm == NULL || s->opened || core_thread_is_gui()) { return AUDIO_INVALID; }
+    if (pcm_bytes < 4096 || pcm_bytes > MEMORY_BUDGET_PCM || (pcm_bytes & (pcm_bytes-1))) { return AUDIO_INVALID; }
     if (backend == NULL) { backend = &sink_wasapi_backend; }
     if (!backend->open || !backend->start || !backend->stop || !backend->close || !backend->clock) {
         return AUDIO_INVALID;
     }
     memset(s, 0, sizeof(*s));
-    s->backend = backend; s->backend_context = context; s->pcm = pcm;
+    s->backend = backend; s->backend_context = context; s->pcm = pcm; s->pcm_bytes = pcm_bytes;
     s->owner = GetCurrentThreadId();
     atomic_init(&s->state, SINK_STOPPED); atomic_init(&s->gain, 65536);
     atomic_init(&s->invalidated, 0);
@@ -50,7 +55,7 @@ AudioResult sink_open(AudioSink *s, void *pcm, const SinkBackend *backend, void 
         s->format.sample_rate == 0 || s->format.channels == 0 || s->format.channels > 2)) {
         r = AUDIO_UNSUPPORTED;
     }
-    if (r == AUDIO_OK && !spsc_init_pcm(&s->ring, pcm, MEMORY_BUDGET_PCM,
+    if (r == AUDIO_OK && !spsc_init_pcm(&s->ring, pcm, pcm_bytes,
         s->format.channels * sizeof(float))) { r = AUDIO_INVALID; }
     if (r == AUDIO_OK) {
         atomic_store(&s->producer_gate, 1);
@@ -132,19 +137,20 @@ AudioResult sink_stop(AudioSink *s)
     if (atomic_load(&s->invalidated)) { atomic_store(&s->state, SINK_LOST); }
     atomic_store(&s->wake_armed, 0);
     /* Both endpoints now quiescent; no live reset. */
-    (void)spsc_init_pcm(&s->ring, s->pcm, MEMORY_BUDGET_PCM, s->format.channels * sizeof(float));
+    (void)spsc_init_pcm(&s->ring, s->pcm, s->pcm_bytes, s->format.channels * sizeof(float));
     return r;
 }
 AudioResult sink_switch(AudioSink *s)
 {
     if (!owner(s)) { return AUDIO_BAD_STATE; }
     const SinkBackend *backend = s->backend; void *ctx = s->backend_context, *pcm = s->pcm;
+    size_t pcm_bytes = s->pcm_bytes;
     (void)sink_stop(s);
     s->backend->close(s->backend_context);
     CloseHandle(s->producer_event); CloseHandle(s->control_event); s->opened = false;
     /* Production backend context was owned and released by close. */
     if (backend == &sink_wasapi_backend) { ctx = NULL; }
-    return sink_open(s, pcm, backend, ctx);
+    return sink_open_with_buffer(s, pcm, pcm_bytes, backend, ctx);
 }
 AudioResult sink_close(AudioSink *s)
 {

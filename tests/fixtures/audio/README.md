@@ -15,3 +15,12 @@ Reproduce deliberately with the pinned test environments:
 verified. Encoder writes use bounded chunks to avoid a libsndfile Windows stack
 overflow with large single writes. Production code does not link Python or
 the oracle libraries. Serve only the ciphertext file through fixture mode.
+
+`untrusted-cdn.crt` and `untrusted-cdn-key.fixture` form a **public synthetic**
+localhost TLS identity. They contain no account credentials. The certificate
+is deliberately untrusted; the Schannel regression must report
+`SEC_E_UNTRUSTED_ROOT`, leave the body untouched, and close its security handles.
+An independent local Python/OpenSSL peer serves it only during that test.
+Neither process installs certificates or changes Windows trust/key stores.
+`untrusted-cdn.json` pins the asset digests. `python tools/cdn_tls_fixture.py`
+verifies them; `--write` deliberately generates a new synthetic identity.

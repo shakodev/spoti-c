@@ -169,6 +169,14 @@ static DWORD WINAPI run_tests(void *ctx)
 {
     (void)ctx;
     consumption(); wrap_and_wake(); lifecycle(); allocation_limits(); handle_lifetime(); sink_race_tests();
+    FakeSink f; fake_init(&f);
+    CHECK(sink_open_with_buffer(&sink,pcm,4095,&fake_sink_backend,&f)==AUDIO_INVALID);
+    CHECK(sink_open_with_buffer(&sink,pcm,65537,&fake_sink_backend,&f)==AUDIO_INVALID);
+    CHECK(sink_open_with_buffer(&sink,pcm,65536,&fake_sink_backend,&f)==AUDIO_OK);
+    CHECK(sink.ring.capacity==8192 && sink.pcm_bytes==65536);
+    CHECK(sink_start(&sink)==AUDIO_OK && sink_stop(&sink)==AUDIO_OK);
+    CHECK(sink.ring.capacity==8192 && sink_switch(&sink)==AUDIO_OK && sink.ring.capacity==8192);
+    CHECK(sink_close(&sink)==AUDIO_OK);
     puts("audio sink: passed"); return 0;
 }
 static DWORD WINAPI gui_owner(void *ctx)

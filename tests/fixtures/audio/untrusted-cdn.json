@@ -1,0 +1,16 @@
+{
+  "purpose": "PUBLIC untrusted localhost TLS fixture; never account credentials",
+  "files": {
+    "untrusted-cdn.crt": {
+      "bytes": 1062,
+      "sha256": "5dadc742942427b51ccb7141668acba8d2c8501db769d1702e5a30f618d291c6"
+    },
+    "untrusted-cdn-key.fixture": {
+      "bytes": 1704,
+      "sha256": "fd67926bd70d115eda4f67f1c64ae3ddd37efd9324d33fa4796900fceb0ee7e5"
+    }
+  },
+  "trust_store_changes": false,
+  "windows_key_store_changes": false,
+  "account_credentials": false
+}

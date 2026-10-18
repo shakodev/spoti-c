@@ -43,7 +43,7 @@ struct AudioSink {
     void *backend_context, *pcm;
     HANDLE producer_event, control_event;
     DWORD owner;
-    size_t low_water, os_buffer_bytes;
+    size_t low_water, os_buffer_bytes, pcm_bytes;
     _Atomic unsigned state, producer_gate, gain, wake_armed, invalidated;
     _Atomic uint64_t media_frames, submitted_frames, underrun_frames, producer_wakes;
     _Atomic uint64_t callback_ticks, callback_count;
@@ -62,6 +62,9 @@ struct AudioSink {
  * pcm points to exactly 256 KiB caller storage, disjoint from sink metadata.
  * NULL backend selects production WASAPI; otherwise all operations required. */
 AudioResult sink_open(AudioSink *, void *pcm, const SinkBackend *, void *context);
+/* Explicit fixed power-of-two PCM capacity, 4..256 KiB. No heap fallback;
+ * stop and device reopen preserve the caller's exact storage limit. */
+AudioResult sink_open_with_buffer(AudioSink *, void *pcm, size_t bytes, const SinkBackend *, void *context);
 AudioResult sink_start(AudioSink *);
 AudioResult sink_prepare(AudioSink *); /* Owner: reopen PCM admission while stopped, for prebuffering. */
 AudioResult sink_pause(AudioSink *);

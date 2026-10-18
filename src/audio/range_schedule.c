@@ -89,7 +89,7 @@ static RangeResult fetch(RangeFetcher *f, RangeBlock *b, const RangeRequest *req
         .body = data, .body_capacity = RANGE_BLOCK_BYTES, .body_limit = RANGE_BLOCK_BYTES,
         .timeout_ms = core_deadline_wait(now, request->deadline)};
     if (description.timeout_ms == 0) { return RANGE_TIMEOUT; }
-    HttpResult result = http_submit(f->config.http, &description, &f->http_id);
+    HttpResult result = range_transfer_submit(f, &description, &f->http_id);
     if (result == HTTP_FULL) { return RANGE_PENDING; }
     if (result != HTTP_OK) { return RANGE_HTTP_ERROR; }
     b->url = url; b->priority = request->priority; ++b->attempts; ++f->stats.network_attempts;

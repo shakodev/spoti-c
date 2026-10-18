@@ -58,4 +58,10 @@ RangeResult range_schedule(RangeFetcher *);
 RangeResult range_parse_response(const HttpCompletion *, uint64_t first, uint64_t last,
     uint64_t *total, size_t *bytes, wchar_t etag[128]);
 bool range_urls_valid(const RangeFetcher *, const MediaSource *);
+HttpResult range_transfer_submit(RangeFetcher *, const HttpRequest *, HttpRequestId *);
+HttpResult range_transfer_pump(RangeFetcher *);
+HttpResult range_transfer_consume(RangeFetcher *, HttpRequestId, HttpCompletion *);
+HttpResult range_transfer_cancel(RangeFetcher *, HttpRequestId);
+HANDLE range_transfer_event(const RangeFetcher *);
+uint32_t range_transfer_wait(const RangeFetcher *);
 #endif

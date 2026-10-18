@@ -53,7 +53,9 @@ RangeResult range_fetcher_create(Arena *metadata, Arena *blocks, const RangeConf
 {
     if (out == NULL) { return RANGE_INVALID; } *out = NULL;
     if (metadata == NULL || blocks == NULL || metadata == blocks || blocks->capacity > MEMORY_BUDGET_ENCRYPTED_BLOCKS ||
-        config == NULL || config->http == NULL || config->max_attempts > 8) { return RANGE_INVALID; }
+        config == NULL || (!config->http && !config->transport) || config->max_attempts > 8) { return RANGE_INVALID; }
+    const RangeTransport *t = config->transport;
+    if (t && (!t->submit || !t->pump || !t->consume || !t->cancel || !t->wait_handle || !t->next_wait_ms)) { return RANGE_INVALID; }
     ArenaMark mark = arena_mark(metadata);
     RangeFetcher *f = arena_alloc(metadata, sizeof(*f), _Alignof(RangeFetcher));
     if (f == NULL) { return RANGE_FULL; }
@@ -108,7 +110,7 @@ RangeResult range_request(RangeFetcher *f, RangeSource source, uint64_t offset, 
         *id = r->id; f->needs_drive = true;
         if (priority == RANGE_CURRENT && f->active >= 0 && f->blocks[f->active].priority == RANGE_PREFETCH) {
             RangeBlock *b = &f->blocks[f->active];
-            if (!range_reserved(f, b, true)) { b->preempted = true; (void)http_cancel(f->config.http, f->http_id); ++f->stats.preemptions; }
+            if (!range_reserved(f, b, true)) { b->preempted = true; (void)range_transfer_cancel(f, f->http_id); ++f->stats.preemptions; }
         }
         return RANGE_OK;
     }
@@ -136,7 +138,7 @@ RangeResult range_cancel_generation(RangeFetcher *f, RangeSource id)
     }
     for (size_t i = 0; i < RANGE_BLOCKS; ++i) {
         RangeBlock *b = &f->blocks[i]; if (b->state == RANGE_EMPTY || !range_same(b->source, id)) { continue; }
-        if (f->active == (int)i) { (void)http_cancel(f->config.http, f->http_id); }
+        if (f->active == (int)i) { (void)range_transfer_cancel(f, f->http_id); }
         if (b->disk_ticket != 0) { (void)audio_cache_cancel(f->config.cache, b->disk_ticket); }
         range_clear_block(f, b);
     }

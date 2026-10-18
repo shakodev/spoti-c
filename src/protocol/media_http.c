@@ -42,6 +42,7 @@ static MediaResult body_received(MediaResolver *m, MediaSlot *s, size_t bytes)
 
 MediaResult media_http_poll(MediaResolver *m)
 {
+    if (!m->config.http) { return m->active_slot < 0 ? MEDIA_OK : MEDIA_BAD_STATE; }
     if (http_pump(m->config.http) != HTTP_OK) { return MEDIA_HTTP_ERROR; }
     if (m->active_slot < 0) { return MEDIA_OK; }
     HttpCompletion completion;
@@ -116,7 +117,7 @@ MediaResult media_source_poll(MediaResolver *m)
     uint64_t now = core_clock_now(&m->config.clock);
     for (size_t i = 0; i < MEDIA_SOURCE_SLOTS; ++i) {
         MediaSlot *s = &m->slots[i];
-        if (s->stage == MS_READY) {
+        if (s->stage == MS_READY && m->config.http) {
             bool due = false;
             for (size_t j = 0; j < s->source.url_count; ++j) { due |= core_deadline_expired(now, s->source.urls[j].refresh_at); }
             if (due) { s->stage = MS_STORAGE; s->deadline = core_deadline_after(now, m->config.timeout_ms); }

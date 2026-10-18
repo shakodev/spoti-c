@@ -5,6 +5,7 @@
 #include "core/memory_budget.h"
 #include "protocol/ap_session.h"
 #include "protocol/ap_auth.h"
+#include "api/cdn_client.h"
 #include <string.h>
 
 enum { HL_ARENAS = 12 };
@@ -43,6 +44,7 @@ struct Headless {
     Worker *disk;
     AudioCache *cache;
     HttpClient *http;
+    CdnClient *cdn;
     MediaResolver *media;
     RangeFetcher *ranges;
     HeadlessSource sources[2];
@@ -65,7 +67,7 @@ struct Headless {
     _Alignas(16) uint8_t range_meta[65536], cache_meta[MEMORY_BUDGET_METADATA];
     _Alignas(16) uint8_t blocks[MEMORY_BUDGET_ENCRYPTED_BLOCKS];
     _Alignas(16) uint8_t codecs[2][DECODER_CODEC_BYTES], work[2][DECODER_WORK_BYTES];
-    _Alignas(64) uint8_t pcm[MEMORY_BUDGET_PCM];
+    _Alignas(64) uint8_t pcm[64 * MEMORY_KIB];
     _Alignas(16) uint8_t token_memory[TOKEN_SECRET_LIMIT];
 };
 #if defined(_MSC_VER)

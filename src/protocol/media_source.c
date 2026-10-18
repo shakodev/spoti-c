@@ -17,19 +17,29 @@ MediaSlot *media_slot(MediaResolver *m, MediaId id)
 static bool origin_valid(const wchar_t *origin, bool fixture)
 {
     if (origin == NULL || wcsnlen_s(origin, 256) == 256) { return false; }
+    if (fixture) {
+        if (_wcsnicmp(origin,L"http://127.0.0.1",16)) { return false; }
+        const wchar_t *p = origin+16; if (!*p) { return true; }
+        if (*p++ != L':') { return false; }
+        unsigned port = 0; bool digit = false;
+        while (*p >= L'0' && *p <= L'9') {
+            unsigned value = (unsigned)(*p++-L'0');
+            if (port > (65535u-value)/10) { return false; } port = port*10+value; digit = true;
+        }
+        return digit && port && !*p;
+    }
     URL_COMPONENTS u = {0}; u.dwStructSize = sizeof(u);
     u.dwHostNameLength = u.dwUrlPathLength = u.dwExtraInfoLength = (DWORD)-1;
     u.dwUserNameLength = u.dwPasswordLength = (DWORD)-1;
     if (!WinHttpCrackUrl(origin, 0, 0, &u) || u.dwHostNameLength == 0 || u.dwUrlPathLength != 0 ||
         u.dwExtraInfoLength != 0 || u.dwUserNameLength != 0 || u.dwPasswordLength != 0) { return false; }
-    if (fixture) { return u.nScheme == INTERNET_SCHEME_HTTP && u.dwHostNameLength == 9 && wcsncmp(u.lpszHostName, L"127.0.0.1", 9) == 0; }
     return u.nScheme == INTERNET_SCHEME_HTTPS;
 }
 
 MediaResult media_resolver_create(Arena *arena, const MediaConfig *config, MediaResolver **out)
 {
     if (out == NULL) { return MEDIA_INVALID; } *out = NULL;
-    if (arena == NULL || config == NULL || config->http == NULL || config->keys == NULL ||
+    if (arena == NULL || config == NULL || (!config->http && !config->fixture_origin) || config->keys == NULL ||
         config->policy.catalogue == NULL || strnlen_s(config->policy.catalogue, 33) == 0 ||
         strnlen_s(config->policy.catalogue, 33) == 33 || config->policy.country[0] < 'A' || config->policy.country[0] > 'Z' ||
         config->policy.country[1] < 'A' || config->policy.country[1] > 'Z' || config->policy.country[2] != 0) { return MEDIA_INVALID; }
@@ -70,6 +80,7 @@ void media_finish(MediaSlot *s, MediaResult result)
 MediaResult media_source_resolve(MediaResolver *m, const char *uri, MediaCallback callback, void *context, MediaId *out)
 {
     if (m == NULL || callback == NULL || out == NULL) { return MEDIA_INVALID; }
+    if (!m->config.http) { return MEDIA_BAD_STATE; } /* Explicit source injection only. */
     if (m->busy) { return MEDIA_BAD_STATE; }
     if (m->shutdown) { return MEDIA_CLOSED; }
     uint8_t gid[16]; MediaResult result = media_gid_from_uri(uri, gid);
