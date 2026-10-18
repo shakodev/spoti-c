@@ -65,6 +65,29 @@ static DWORD WINAPI serve(void *context)
             if (n > 0) { used += (size_t)n; s->requests[i][used] = '\0'; continue; }
             if (n == 0 || WSAGetLastError() != WSAEWOULDBLOCK || !network_wait(s, s->peer)) { goto finished; }
         }
+        if (r->capture_upload) {
+            const char *end = strstr(s->requests[i], "\r\n\r\n");
+            size_t expected = (size_t)(end + 4 - s->requests[i]), body = 0;
+            for (const char *line = s->requests[i]; line < end;) {
+                const char *next = strstr(line, "\r\n");
+                if (next == NULL) { goto finished; }
+                if (next - line >= 16 && _strnicmp(line, "Content-Length: ", 16) == 0) {
+                    const char *p = line + 16;
+                    for (; p < next; ++p) {
+                        if (*p < '0' || *p > '9' || body > 4096) { goto finished; }
+                        body = body * 10 + (size_t)(*p - '0');
+                    }
+                }
+                line = next + 2;
+            }
+            if (body >= sizeof(s->requests[i]) - expected) { goto finished; }
+            expected += body;
+            while (used < expected) {
+                int n = recv(s->peer, s->requests[i] + used, (int)(expected - used), 0);
+                if (n > 0) { used += (size_t)n; s->requests[i][used] = 0; continue; }
+                if (n == 0 || WSAGetLastError() != WSAEWOULDBLOCK || !network_wait(s, s->peer)) { goto finished; }
+            }
+        }
         atomic_fetch_add(&s->accepted, 1); SetEvent(s->seen);
         if (r->hold_headers && !gate(s, s->release_headers)) { goto finished; }
         if (!send_bytes(s, r->headers, strlen(r->headers), 0, 0)) { goto finished; }

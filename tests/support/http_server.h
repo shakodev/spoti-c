@@ -9,6 +9,7 @@ typedef struct TestHttpResponse {
     const void *body;
     size_t bytes, fragment;
     bool hold_headers, hold_body;
+    bool capture_upload; /* Capture bounded Content-Length body before responding. */
     unsigned char fill; /* body==NULL: generate bytes without a body allocation. */
 } TestHttpResponse;
 typedef struct TestHttpServer {

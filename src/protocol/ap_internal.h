@@ -3,6 +3,7 @@
 #include "ap_socket.h"
 #include "ap_handshake.h"
 #include "core/memory_budget.h"
+#include "authentication.pb.h"
 
 typedef enum ApKeepalive { AK_PING, AK_PONG, AK_ACK } ApKeepalive;
 struct ApSession {
@@ -36,4 +37,7 @@ ApResult ap_route_packet(ApSession *session);
 ApResult ap_timers(ApSession *session);
 ApResult ap_resolve_event(ApSession *session);
 ApResult ap_flush_tx(ApSession *session);
+ApResult ap_auth_send(ApSession *session);
+ApResult ap_auth_accept(ApSession *session, const APWelcome *welcome);
+void ap_auth_closed(ApSession *session, ApResult result, bool continuing);
 #endif

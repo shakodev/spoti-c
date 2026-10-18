@@ -60,6 +60,7 @@ ApResult ap_close(ApSession *s, ApResult result, bool retry)
 {
     s->result = result;
     s->state = retry && s->attempts < s->config.max_attempts ? AP_STATE_BACKOFF : AP_STATE_CLOSED;
+    ap_auth_closed(s, result, s->state == AP_STATE_BACKOFF);
     s->deadline = s->state == AP_STATE_BACKOFF ? core_deadline_after(core_clock_now(&s->config.clock),
         core_backoff_ms(250, 2000, s->attempts == 0 ? 0 : s->attempts - 1)) : CORE_CLOCK_NEVER;
     s->frame_deadline = s->keepalive_at = s->tx_deadline = CORE_CLOCK_NEVER;

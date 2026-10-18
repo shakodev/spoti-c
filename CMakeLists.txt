@@ -16,6 +16,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(ENABLE_ASAN "Enable AddressSanitizer in Debug builds" ON)
+option(ENABLE_LIVE_OAUTH_TEST "Enable browser/account-dependent OAuth and AP compatibility test" OFF)
 
 add_library(spotic_build_options INTERFACE)
 target_compile_features(spotic_build_options INTERFACE c_std_17)
@@ -81,11 +82,19 @@ add_library(spotic_json_base STATIC src/api/json_base.c)
 target_include_directories(spotic_json_base PUBLIC src)
 target_link_libraries(spotic_json_base PUBLIC spotic_core spotic_yyjson)
 
+add_library(spotic_credentials STATIC src/protocol/credential_store.c)
+target_include_directories(spotic_credentials PUBLIC src)
+target_link_libraries(spotic_credentials PUBLIC spotic_crypto crypt32 advapi32)
+add_library(spotic_oauth STATIC src/api/oauth.c src/api/oauth_loopback.c src/api/oauth_token.c)
+target_include_directories(spotic_oauth PUBLIC src)
+target_link_libraries(spotic_oauth PUBLIC spotic_http spotic_json_base spotic_credentials shell32 ws2_32)
+
 add_library(spotic_ap STATIC src/protocol/ap_packet.c src/protocol/ap_handshake.c
     src/protocol/ap_resolve.c src/protocol/ap_session.c src/protocol/ap_socket.c
     src/protocol/ap_io.c src/protocol/ap_route.c)
+target_sources(spotic_ap PRIVATE src/protocol/ap_auth.c)
 target_include_directories(spotic_ap PUBLIC src)
-target_link_libraries(spotic_ap PUBLIC spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base ws2_32)
+target_link_libraries(spotic_ap PUBLIC spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
 
 if(BUILD_TESTING)
     add_executable(test_json_base tests/test_json_base.c)
@@ -141,6 +150,24 @@ if(BUILD_TESTING)
         COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/ap_vectors.py" --header "${AP_VECTORS}"
         DEPENDS "${PROJECT_SOURCE_DIR}/tools/ap_vectors.py" "${PROJECT_SOURCE_DIR}/tests/fixtures/crypto-vectors.json"
         COMMENT "Preparing independent AP transcript fixtures" VERBATIM)
+    add_executable(test_oauth tests/test_oauth.c tests/test_oauth_http.c tests/support/http_server.c)
+    target_include_directories(test_oauth PRIVATE tests)
+    target_link_libraries(test_oauth PRIVATE spotic_oauth)
+    add_test(NAME api_oauth COMMAND test_oauth)
+    set_tests_properties(api_oauth PROPERTIES TIMEOUT 60)
+    add_executable(test_credential_store tests/test_credential_store.c tests/test_ap_auth.c
+        tests/test_ap_session.c tests/test_ap_keepalive.c "${AP_VECTORS}")
+    target_include_directories(test_credential_store PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    target_link_libraries(test_credential_store PRIVATE spotic_ap)
+    add_test(NAME protocol_credentials COMMAND test_credential_store)
+    set_tests_properties(protocol_credentials PROPERTIES TIMEOUT 30)
+    if(ENABLE_LIVE_OAUTH_TEST)
+        add_executable(test_oauth_live tests/test_oauth_live.c)
+        target_include_directories(test_oauth_live PRIVATE tests)
+        target_link_libraries(test_oauth_live PRIVATE spotic_oauth spotic_ap)
+        add_test(NAME api_oauth_live COMMAND test_oauth_live)
+        set_tests_properties(api_oauth_live PROPERTIES TIMEOUT 300 LABELS "live;account" SKIP_RETURN_CODE 77)
+    endif()
     add_executable(test_ap_handshake tests/test_ap_handshake.c tests/test_ap_session.c
         tests/test_ap_keepalive.c tests/test_ap_socket.c tests/test_ap_resolve.c tests/test_ap_http.c
         tests/support/ap_server.c tests/support/http_server.c "${AP_VECTORS}")

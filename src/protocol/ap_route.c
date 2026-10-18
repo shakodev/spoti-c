@@ -35,8 +35,15 @@ ApResult ap_route_packet(ApSession *s)
         APWelcome welcome = APWelcome_init_zero;
         ProtoResult result = proto_decode(APWelcome_fields, view.body, view.bytes, &welcome);
         bool valid = result == PROTO_OK && welcome.canonical_username[0] != '\0' && welcome.reusable_auth_credentials.size != 0;
+        ApResult accepted = valid ? ap_auth_accept(s, &welcome) : AP_MALFORMED;
         SecureZeroMemory(&welcome, sizeof(welcome));
-        if (!valid) { return ap_close(s, AP_MALFORMED, false); }
+        if (accepted == AP_RECONNECT) {
+            /* A fresh handshake is required for the returned stored credential.
+             * This one-time transition has its own retry budget. */
+            s->attempts = 0;
+            return ap_close(s, AP_RECONNECT, true);
+        }
+        if (accepted != AP_OK) { return ap_close(s, accepted, false); }
         s->state = AP_STATE_AUTHENTICATED; s->result = AP_OK; s->deadline = CORE_CLOCK_NEVER;
         s->keepalive = AK_PING; s->keepalive_at = core_deadline_after(now, 20000);
     } else if (view.command == AP_CMD_AUTH_FAILURE) {

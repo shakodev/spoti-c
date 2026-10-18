@@ -111,6 +111,10 @@ ApResult ap_drive_io(ApSession *s)
         s->deadline = core_deadline_after(core_clock_now(&s->config.clock), s->config.auth_timeout_ms);
     }
     if (s->state == AP_STATE_FRAMED || s->state == AP_STATE_AUTHENTICATED) {
+        if (s->state == AP_STATE_FRAMED) {
+            ApResult auth = ap_auth_send(s);
+            if (auth != AP_OK) { return auth; }
+        }
         ApResult result = ap_flush_tx(s);
         if (result != AP_OK && result != AP_PENDING) { return result; }
         return framed_read(s);

@@ -3,6 +3,7 @@
 #include "ap_resolve.h"
 
 typedef struct ApSession ApSession;
+struct ApAuth;
 typedef enum ApState { AP_STATE_RESOLVE, AP_STATE_CONNECT, AP_STATE_HELLO,
     AP_STATE_CHALLENGE, AP_STATE_FRAMED, AP_STATE_AUTHENTICATED,
     AP_STATE_BACKOFF, AP_STATE_CLOSED } ApState;
@@ -31,6 +32,7 @@ typedef struct ApConfig {
     ApTransport transport; /* All NULL selects native asynchronous Winsock. */
     ApPacketHandler on_packet; /* Borrowed verified view, valid during callback. */
     void *context;
+    struct ApAuth *auth; /* Optional owned credential controller, borrowed through shutdown. */
 } ApConfig;
 typedef enum ApEventType { AP_EVENT_HTTP, AP_EVENT_SOCKET, AP_EVENT_TIMER, AP_EVENT_CANCEL } ApEventType;
 typedef struct ApEvent { ApEventType type; uint32_t generation; } ApEvent;
