@@ -70,7 +70,30 @@ add_library(spotic_crypto STATIC src/protocol/crypto_cng.c src/protocol/crypto_c
 target_include_directories(spotic_crypto PUBLIC src)
 target_link_libraries(spotic_crypto PUBLIC spotic_build_options bcrypt)
 
+add_library(spotic_yyjson STATIC vendor/yyjson.c)
+target_include_directories(spotic_yyjson PUBLIC vendor)
+target_link_libraries(spotic_yyjson PUBLIC spotic_build_options)
+add_library(spotic_http STATIC src/api/http_client.c src/api/http_pool.c
+    src/api/http_request.c src/api/http_response.c src/api/http_retry.c)
+target_include_directories(spotic_http PUBLIC src)
+target_link_libraries(spotic_http PUBLIC spotic_core winhttp)
+add_library(spotic_json_base STATIC src/api/json_base.c)
+target_include_directories(spotic_json_base PUBLIC src)
+target_link_libraries(spotic_json_base PUBLIC spotic_core spotic_yyjson)
+
 if(BUILD_TESTING)
+    add_executable(test_json_base tests/test_json_base.c)
+    target_include_directories(test_json_base PRIVATE tests)
+    target_link_libraries(test_json_base PRIVATE spotic_json_base)
+    add_test(NAME api_json_base COMMAND test_json_base)
+    set_tests_properties(api_json_base PROPERTIES TIMEOUT 15)
+
+    add_executable(test_http_client tests/test_http_client.c tests/test_http_lifetime.c tests/test_http_policy.c
+        tests/support/http_server.c)
+    target_include_directories(test_http_client PRIVATE tests)
+    target_link_libraries(test_http_client PRIVATE spotic_http ws2_32)
+    add_test(NAME api_http COMMAND test_http_client)
+    set_tests_properties(api_http PROPERTIES TIMEOUT 60)
     set(CRYPTO_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/crypto_vectors.h")
     add_custom_command(OUTPUT "${CRYPTO_VECTORS}"
         COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/crypto_vectors.py"
