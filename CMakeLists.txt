@@ -81,6 +81,12 @@ add_library(spotic_json_base STATIC src/api/json_base.c)
 target_include_directories(spotic_json_base PUBLIC src)
 target_link_libraries(spotic_json_base PUBLIC spotic_core spotic_yyjson)
 
+add_library(spotic_ap STATIC src/protocol/ap_packet.c src/protocol/ap_handshake.c
+    src/protocol/ap_resolve.c src/protocol/ap_session.c src/protocol/ap_socket.c
+    src/protocol/ap_io.c src/protocol/ap_route.c)
+target_include_directories(spotic_ap PUBLIC src)
+target_link_libraries(spotic_ap PUBLIC spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base ws2_32)
+
 if(BUILD_TESTING)
     add_executable(test_json_base tests/test_json_base.c)
     target_include_directories(test_json_base PRIVATE tests)
@@ -125,6 +131,23 @@ if(BUILD_TESTING)
     target_include_directories(test_shannon PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
     add_test(NAME protocol_shannon COMMAND test_shannon)
     set_tests_properties(protocol_shannon PROPERTIES TIMEOUT 30)
+    add_executable(test_ap_packet tests/test_ap_packet.c "${SHANNON_VECTORS}")
+    target_link_libraries(test_ap_packet PRIVATE spotic_ap)
+    target_include_directories(test_ap_packet PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    add_test(NAME protocol_ap_packet COMMAND test_ap_packet)
+    set_tests_properties(protocol_ap_packet PROPERTIES TIMEOUT 30)
+    set(AP_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/ap_vectors.h")
+    add_custom_command(OUTPUT "${AP_VECTORS}"
+        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/ap_vectors.py" --header "${AP_VECTORS}"
+        DEPENDS "${PROJECT_SOURCE_DIR}/tools/ap_vectors.py" "${PROJECT_SOURCE_DIR}/tests/fixtures/crypto-vectors.json"
+        COMMENT "Preparing independent AP transcript fixtures" VERBATIM)
+    add_executable(test_ap_handshake tests/test_ap_handshake.c tests/test_ap_session.c
+        tests/test_ap_keepalive.c tests/test_ap_socket.c tests/test_ap_resolve.c tests/test_ap_http.c
+        tests/support/ap_server.c tests/support/http_server.c "${AP_VECTORS}")
+    target_link_libraries(test_ap_handshake PRIVATE spotic_ap)
+    target_include_directories(test_ap_handshake PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    add_test(NAME protocol_ap_handshake COMMAND test_ap_handshake)
+    set_tests_properties(protocol_ap_handshake PROPERTIES TIMEOUT 60)
     add_executable(test_proto_codec tests/test_proto_codec.c tests/test_proto_messages.c)
     target_link_libraries(test_proto_codec PRIVATE spotic_proto)
     target_include_directories(test_proto_codec PRIVATE tests)

@@ -1,0 +1,535 @@
+{
+  "evidence_id": "ev_2845fa6e92a497a19a24dbbc4021f8c9e12173f6a89dff33e13e266dea615162",
+  "subject": null,
+  "provider": {
+    "id": "rea-playwright-browser-scenario",
+    "name": "REA Playwright browser scenario capture provider",
+    "version": "1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.browser-scenario-capture",
+  "operation": "capture_browser_scenario",
+  "parameters": {
+    "browser": {
+      "mode": "launch",
+      "executable_path": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "headless": true
+    },
+    "start_url": {
+      "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+      "query": []
+    },
+    "environment": {
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "device_scale_factor": 1
+      },
+      "locale": "en-US",
+      "timezone": "UTC",
+      "color_scheme": "light",
+      "reduced_motion": "reduce",
+      "service_workers": "block"
+    },
+    "actions": [
+      {
+        "step_id": "resolver-response",
+        "action": "wait_for_timeout",
+        "duration_ms": 1000
+      }
+    ],
+    "storage": {
+      "cookies": [],
+      "local_storage": [],
+      "session_storage": []
+    },
+    "secrets": [],
+    "capture": {
+      "after_each_step": [],
+      "at_end": [
+        "dom",
+        "url"
+      ],
+      "events": [
+        "network"
+      ],
+      "network": {
+        "request_body": false,
+        "response_body": true,
+        "header_values": true
+      }
+    },
+    "scenario_sha256": "469858604be0c2ae18bbaac39662f992a96bd8e8b7e94d08fb748df404d34015"
+  },
+  "raw_result": null,
+  "normalized_result": {
+    "browser": {
+      "mode": "launch",
+      "process_ownership": "provider-owned",
+      "cleanup": "terminated-owned-process",
+      "product": "Chromium",
+      "version": "155.0.8059.84"
+    },
+    "scenario": {
+      "start_origin": "https://apresolve.spotify.com",
+      "action_count": 1,
+      "secret_references": [],
+      "network_content": {
+        "request_body": false,
+        "response_body": true,
+        "header_values": true
+      },
+      "event_families": [
+        "network"
+      ]
+    },
+    "duration_ms": 11631,
+    "steps": [
+      {
+        "step_index": 0,
+        "step_id": "scenario_start",
+        "action": "goto_start",
+        "elapsed_ms": 10357,
+        "before_url": {
+          "url": "about:blank",
+          "origin": null,
+          "query_parameter_names": [],
+          "redacted": false
+        },
+        "after_url": {
+          "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+          "origin": "https://apresolve.spotify.com",
+          "query_parameter_names": [
+            "type",
+            "type",
+            "type"
+          ],
+          "redacted": false
+        },
+        "event_sequence_start": 1,
+        "event_sequence_end": 4,
+        "artifacts": {
+          "screenshot": {
+            "state": "not_requested"
+          },
+          "dom": {
+            "state": "not_requested"
+          },
+          "accessibility": {
+            "state": "not_requested"
+          },
+          "url": {
+            "state": "not_requested"
+          },
+          "history": {
+            "state": "not_requested"
+          },
+          "storage": {
+            "state": "not_requested"
+          }
+        },
+        "completeness": {
+          "status": "complete",
+          "equality_eligible": true,
+          "missing_sections": [],
+          "truncated_sections": []
+        },
+        "status": "completed",
+        "error": null
+      },
+      {
+        "step_index": 1,
+        "step_id": "resolver-response",
+        "action": "wait_for_timeout",
+        "elapsed_ms": 1017,
+        "before_url": {
+          "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+          "origin": "https://apresolve.spotify.com",
+          "query_parameter_names": [
+            "type",
+            "type",
+            "type"
+          ],
+          "redacted": false
+        },
+        "after_url": {
+          "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+          "origin": "https://apresolve.spotify.com",
+          "query_parameter_names": [
+            "type",
+            "type",
+            "type"
+          ],
+          "redacted": false
+        },
+        "event_sequence_start": 5,
+        "event_sequence_end": 5,
+        "artifacts": {
+          "screenshot": {
+            "state": "not_requested"
+          },
+          "dom": {
+            "state": "captured",
+            "value": {
+              "sha256": "0de09d444aeb91fa990bbc3658f566aa80fe58630271043c156870e0f7e30984",
+              "bytes": 608,
+              "text": "<html><head><meta name=\"color-scheme\" content=\"light dark\"><meta charset=\"utf-8\"></head><body><pre>{\"accesspoint\":[\"ap-gew4.spotify.com:4070\",\"ap-gew4.spotify.com:443\",\"ap-gew4.spotify.com:80\",\"ap-guc3.spotify.com:4070\",\"ap-gue1.spotify.com:443\",\"ap-gew1.spotify.com:80\"],\"dealer\":[\"gew4-dealer.spotify.com:443\",\"guc3-dealer.spotify.com:443\",\"gue1-dealer.spotify.com:443\",\"gew1-dealer.spotify.com:443\"],\"spclient\":[\"gew4-spclient.spotify.com:443\",\"guc3-spclient.spotify.com:443\",\"gue1-spclient.spotify.com:443\",\"gew1-spclient.spotify.com:443\"]}</pre><div class=\"json-formatter-container\"></div></body></html>"
+            }
+          },
+          "accessibility": {
+            "state": "not_requested"
+          },
+          "url": {
+            "state": "captured",
+            "value": {
+              "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+              "origin": "https://apresolve.spotify.com",
+              "query_parameter_names": [
+                "type",
+                "type",
+                "type"
+              ],
+              "redacted": false
+            }
+          },
+          "history": {
+            "state": "not_requested"
+          },
+          "storage": {
+            "state": "not_requested"
+          }
+        },
+        "completeness": {
+          "status": "complete",
+          "equality_eligible": true,
+          "missing_sections": [],
+          "truncated_sections": []
+        },
+        "status": "completed",
+        "error": null
+      }
+    ],
+    "events": {
+      "retained": 5,
+      "dropped": 0,
+      "items": [
+        {
+          "sequence": 1,
+          "step_index": 0,
+          "transaction_id": "request-1",
+          "redirected_from_transaction_id": null,
+          "redirected_from_transaction_state": "root",
+          "method": "GET",
+          "url": {
+            "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+            "origin": "https://apresolve.spotify.com",
+            "query_parameter_names": [
+              "type",
+              "type",
+              "type"
+            ],
+            "redacted": false
+          },
+          "resource_type": "document",
+          "header_names": [
+            "accept-language",
+            "sec-ch-ua",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-platform",
+            "upgrade-insecure-requests",
+            "user-agent"
+          ],
+          "kind": "request",
+          "status": null,
+          "failure": null
+        },
+        {
+          "sequence": 2,
+          "step_index": 0,
+          "transaction_id": "request-1",
+          "redirected_from_transaction_id": null,
+          "redirected_from_transaction_state": "root",
+          "method": "GET",
+          "url": {
+            "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+            "origin": "https://apresolve.spotify.com",
+            "query_parameter_names": [
+              "type",
+              "type",
+              "type"
+            ],
+            "redacted": false
+          },
+          "resource_type": "document",
+          "header_names": [
+            "access-control-allow-origin",
+            "alt-svc",
+            "cache-control",
+            "content-encoding",
+            "content-length",
+            "content-type",
+            "date",
+            "server",
+            "strict-transport-security",
+            "via",
+            "x-content-type-options"
+          ],
+          "kind": "response",
+          "status": 200,
+          "failure": null
+        },
+        {
+          "sequence": 3,
+          "step_index": 0,
+          "kind": "network-content",
+          "transaction_id": "request-1",
+          "source_event_sequence": 1,
+          "phase": "request",
+          "headers": {
+            "state": "captured",
+            "items": [
+              {
+                "name": ":authority",
+                "value": "apresolve.spotify.com",
+                "redacted": false
+              },
+              {
+                "name": ":method",
+                "value": "GET",
+                "redacted": false
+              },
+              {
+                "name": ":path",
+                "value": "/?type=accesspoint&type=dealer&type=spclient",
+                "redacted": false
+              },
+              {
+                "name": ":scheme",
+                "value": "https",
+                "redacted": false
+              },
+              {
+                "name": "accept",
+                "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "redacted": false
+              },
+              {
+                "name": "accept-encoding",
+                "value": "gzip, deflate, br, zstd",
+                "redacted": false
+              },
+              {
+                "name": "accept-language",
+                "value": "en-US",
+                "redacted": false
+              },
+              {
+                "name": "priority",
+                "value": "u=0, i",
+                "redacted": false
+              },
+              {
+                "name": "sec-ch-ua",
+                "value": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+                "redacted": false
+              },
+              {
+                "name": "sec-ch-ua-mobile",
+                "value": "?0",
+                "redacted": false
+              },
+              {
+                "name": "sec-ch-ua-platform",
+                "value": "\"Windows\"",
+                "redacted": false
+              },
+              {
+                "name": "sec-fetch-dest",
+                "value": "document",
+                "redacted": false
+              },
+              {
+                "name": "sec-fetch-mode",
+                "value": "navigate",
+                "redacted": false
+              },
+              {
+                "name": "sec-fetch-site",
+                "value": "none",
+                "redacted": false
+              },
+              {
+                "name": "sec-fetch-user",
+                "value": "?1",
+                "redacted": false
+              },
+              {
+                "name": "upgrade-insecure-requests",
+                "value": "1",
+                "redacted": false
+              },
+              {
+                "name": "user-agent",
+                "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "redacted": false
+              }
+            ]
+          },
+          "body": {
+            "state": "not_requested"
+          }
+        },
+        {
+          "sequence": 4,
+          "step_index": 0,
+          "transaction_id": "request-1",
+          "redirected_from_transaction_id": null,
+          "redirected_from_transaction_state": "root",
+          "method": "GET",
+          "url": {
+            "url": "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient",
+            "origin": "https://apresolve.spotify.com",
+            "query_parameter_names": [
+              "type",
+              "type",
+              "type"
+            ],
+            "redacted": false
+          },
+          "resource_type": "document",
+          "header_names": [
+            "accept-language",
+            "sec-ch-ua",
+            "sec-ch-ua-mobile",
+            "sec-ch-ua-platform",
+            "upgrade-insecure-requests",
+            "user-agent"
+          ],
+          "kind": "request-finished",
+          "status": null,
+          "failure": null
+        },
+        {
+          "sequence": 5,
+          "step_index": 1,
+          "kind": "network-content",
+          "transaction_id": "request-1",
+          "source_event_sequence": 2,
+          "phase": "response",
+          "headers": {
+            "state": "captured",
+            "items": [
+              {
+                "name": "access-control-allow-origin",
+                "value": "*",
+                "redacted": false
+              },
+              {
+                "name": "alt-svc",
+                "value": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+                "redacted": false
+              },
+              {
+                "name": "alt-svc",
+                "value": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+                "redacted": false
+              },
+              {
+                "name": "cache-control",
+                "value": "no-cache",
+                "redacted": false
+              },
+              {
+                "name": "content-encoding",
+                "value": "gzip",
+                "redacted": false
+              },
+              {
+                "name": "content-length",
+                "value": "151",
+                "redacted": false
+              },
+              {
+                "name": "content-type",
+                "value": "application/json; charset=utf-8",
+                "redacted": false
+              },
+              {
+                "name": "date",
+                "value": "Sun, 18 Oct 2026 10:06:31 GMT",
+                "redacted": false
+              },
+              {
+                "name": "server",
+                "value": "envoy",
+                "redacted": false
+              },
+              {
+                "name": "strict-transport-security",
+                "value": "max-age=31536000",
+                "redacted": false
+              },
+              {
+                "name": "via",
+                "value": "HTTP/2 edgeproxy, 1.1 google",
+                "redacted": false
+              },
+              {
+                "name": "x-content-type-options",
+                "value": "nosniff",
+                "redacted": false
+              }
+            ]
+          },
+          "body": {
+            "state": "captured",
+            "representation": "playwright-response-body-bytes",
+            "encoding": "base64",
+            "content": "eyJhY2Nlc3Nwb2ludCI6WyJhcC1nZXc0LnNwb3RpZnkuY29tOjQwNzAiLCJhcC1nZXc0LnNwb3RpZnkuY29tOjQ0MyIsImFwLWdldzQuc3BvdGlmeS5jb206ODAiLCJhcC1ndWMzLnNwb3RpZnkuY29tOjQwNzAiLCJhcC1ndWUxLnNwb3RpZnkuY29tOjQ0MyIsImFwLWdldzEuc3BvdGlmeS5jb206ODAiXSwiZGVhbGVyIjpbImdldzQtZGVhbGVyLnNwb3RpZnkuY29tOjQ0MyIsImd1YzMtZGVhbGVyLnNwb3RpZnkuY29tOjQ0MyIsImd1ZTEtZGVhbGVyLnNwb3RpZnkuY29tOjQ0MyIsImdldzEtZGVhbGVyLnNwb3RpZnkuY29tOjQ0MyJdLCJzcGNsaWVudCI6WyJnZXc0LXNwY2xpZW50LnNwb3RpZnkuY29tOjQ0MyIsImd1YzMtc3BjbGllbnQuc3BvdGlmeS5jb206NDQzIiwiZ3VlMS1zcGNsaWVudC5zcG90aWZ5LmNvbTo0NDMiLCJnZXcxLXNwY2xpZW50LnNwb3RpZnkuY29tOjQ0MyJdfQ==",
+            "bytes": 445,
+            "sha256": "a15ba5d066eecf202fbd22390fec1dfa6fa58ff5827db993f7c0cc3f80e53a3a",
+            "media_type": "application/json; charset=utf-8",
+            "redacted": false
+          }
+        }
+      ]
+    },
+    "completeness": {
+      "status": "complete",
+      "equality_eligible": true,
+      "missing_sections": [],
+      "truncated_sections": []
+    },
+    "limitations": [
+      "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+      "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+      "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+      "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+      "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+      "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+      "Storage values are hashed only after declared-secret redaction."
+    ]
+  },
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "environment": {
+    "id": "Chromium@155.0.8059.84",
+    "platform": "unknown",
+    "architecture": "unknown",
+    "isolation": "process"
+  },
+  "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Browser host platform and architecture were not observed."
+  ],
+  "relationship_coverage": null,
+  "locations": [],
+  "evidence_links": []
+}
