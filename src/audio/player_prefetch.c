@@ -82,6 +82,8 @@ AudioResult player_slot_read(Player *p, unsigned at)
     }
     s->frames = s->offset = 0;
     AudioResult r = decoder_read_frames(s->decoder, s->decoder_generation, s->block, PLAYER_BLOCK_FRAMES, &s->frames);
+    DecoderInfo info = decoder_info(s->decoder);
+    if (info.length_known) { p->durations[s->index] = info.total_frames; }
     if (r == AUDIO_EOF) { s->eof = true; }
     return r;
 }

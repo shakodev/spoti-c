@@ -14,12 +14,18 @@ typedef struct PlayerSnapshot {
     uint64_t generation;
     uint8_t track_id[16];
     uint64_t position_frames;
+    uint64_t duration_frames; /* Zero until decoder length is known. */
     uint32_t rate;
     float volume;
     PlayerState state;
     AudioResult error;
     bool timeline_valid;
 } PlayerSnapshot;
+typedef struct PlayerQueueSnapshot {
+    PlayerSnapshot player;
+    uint8_t ids[PLAYER_QUEUE_CAP][16];
+    unsigned count, index;
+} PlayerQueueSnapshot;
 /* Network-owner handoff. Context remains live until its RETIRE acknowledgement.
  * read_at executes only on the decode owner and must copy already prepared
  * logical decrypted Vorbis bytes or return NEED_MORE. It receives the source
@@ -30,8 +36,15 @@ typedef enum PlayerCommandType {
     PLAYER_LOAD, PLAYER_PLAY, PLAYER_PAUSE, PLAYER_STOP, PLAYER_SEEK, PLAYER_VOLUME,
     PLAYER_QUEUE_APPEND, PLAYER_QUEUE_CLEAR, PLAYER_NEXT, PLAYER_PREVIOUS,
     PLAYER_REPEAT, PLAYER_SHUFFLE, PLAYER_SHUTDOWN,
+    PLAYER_TRANSFER,
     PLAYER_SOURCE_READY, PLAYER_SOURCE_FAILED, PLAYER_SOURCE_RETIRED, PLAYER_DATA_READY
 } PlayerCommandType;
+
+typedef struct PlayerTransfer {
+    uint8_t ids[PLAYER_QUEUE_CAP][16]; /* Current track first, then finite queue. */
+    uint32_t count, position_ms;
+    bool play;
+} PlayerTransfer;
 typedef struct PlayerCommand {
     PlayerCommandType type;
     uint8_t track_id[16];
@@ -39,8 +52,11 @@ typedef struct PlayerCommand {
     float volume;
     uint32_t value; /* repeat enum or shuffle seed (0 disables) */
     bool play; /* LOAD starts playing when true, otherwise prepares paused. */
+    bool seek_ms; /* SEEK: convert position_ms on the decode owner after format changes. */
+    uint32_t position_ms;
     PlayerSource source;
     AudioResult error;
+    const PlayerTransfer *transfer; /* TRANSFER: copied synchronously on submit. */
 } PlayerCommand;
 typedef enum PlayerRequestType { PLAYER_RESOLVE, PLAYER_RETIRE } PlayerRequestType;
 typedef struct PlayerRequest {
@@ -64,6 +80,9 @@ PlayerResult player_create(Arena *core, const PlayerConfig *, Player **);
  * A successful SHUTDOWN closes control admission but allows retire replies. */
 PlayerResult player_submit(Player *, const PlayerCommand *);
 PlayerSnapshot player_snapshot(Player *); /* Immutable copy, short publication lock. */
+void player_queue_snapshot(Player *, PlayerQueueSnapshot *);
+HANDLE player_state_event(Player *); /* Borrowed manual reset, one network consumer. */
+void player_take_state(Player *, PlayerQueueSnapshot *); /* Copy and reset atomically. */
 /* One network owner consumes requests and maps IDs to existing media/range/
  * decrypt modules. RETIRE must cancel HTTP generations and finish leases,
  * then submit SOURCE_RETIRED. READY/FAILED replies carry the exact ticket.

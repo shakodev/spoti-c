@@ -26,8 +26,10 @@ PlayerResult player_create(Arena *core, const PlayerConfig *config, Player **out
     InitializeSRWLock(&p->lock);
     p->wake = CreateEventW(NULL, TRUE, FALSE, NULL);
     p->requests_ready = CreateEventW(NULL, TRUE, FALSE, NULL);
-    if (!p->wake || !p->requests_ready) {
+    p->state_changed = CreateEventW(NULL, TRUE, FALSE, NULL);
+    if (!p->wake || !p->requests_ready || !p->state_changed) {
         if (p->wake) { CloseHandle(p->wake); } if (p->requests_ready) { CloseHandle(p->requests_ready); }
+        if (p->state_changed) { CloseHandle(p->state_changed); }
         (void)arena_rewind(core, mark); return PLAYER_NO_MEMORY;
     }
     p->current = p->next = -1; p->view.volume = 1;
@@ -61,6 +63,7 @@ static void device_change(Player *p)
     AudioResult r = sink_switch(p->config.sink);
     if (r != AUDIO_OK) { player_fail(p, r); return; }
     p->view.rate = p->config.sink->format.sample_rate;
+    memset(p->durations, 0, sizeof(p->durations));
     if (p->epoch == UINT64_MAX) { player_fail(p, AUDIO_LIMIT); return; }
     p->view.generation = ++p->epoch;
     (void)sink_set_volume(p->config.sink, p->view.volume);
@@ -121,6 +124,6 @@ PlayerResult player_destroy(Player *p)
     if (p->command_count || p->request_count || p->slots[0].state != PS_FREE || p->slots[1].state != PS_FREE) {
         ReleaseSRWLockExclusive(&p->lock); return PLAYER_BAD_STATE;
     }
-    p->destroyed = true; CloseHandle(p->wake); CloseHandle(p->requests_ready);
-    p->wake = p->requests_ready = NULL; ReleaseSRWLockExclusive(&p->lock); return PLAYER_OK;
+    p->destroyed = true; CloseHandle(p->wake); CloseHandle(p->requests_ready); CloseHandle(p->state_changed);
+    p->wake = p->requests_ready = p->state_changed = NULL; ReleaseSRWLockExclusive(&p->lock); return PLAYER_OK;
 }

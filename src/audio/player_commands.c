@@ -31,8 +31,16 @@ void player_command(Player *p, const PlayerCommand *c)
     if (c->type >= PLAYER_SOURCE_READY) { source_reply(p, c); return; }
     if (p->closing) { return; }
     switch (c->type) {
+    case PLAYER_TRANSFER:
+        stop(p); p->queue_count = c->transfer->count; memset(p->durations, 0, sizeof(p->durations));
+        for (unsigned i = 0; i < p->queue_count; ++i) {
+            memcpy(p->ids[i], c->transfer->ids[i], 16); p->order[i] = i;
+        }
+        p->repeat = PLAYER_REPEAT_OFF; p->shuffle = 0; p->want_play = c->transfer->play;
+        player_begin(p, 0, (uint64_t)c->transfer->position_ms * p->view.rate / 1000, PLAYER_LOADING);
+        AcquireSRWLockExclusive(&p->lock); p->transfer_pending = false; ReleaseSRWLockExclusive(&p->lock); break;
     case PLAYER_LOAD:
-        stop(p); p->queue_count = 1; p->order[0] = 0; memcpy(p->ids[0], c->track_id, 16);
+        stop(p); p->queue_count = 1; p->order[0] = 0; p->durations[0] = 0; memcpy(p->ids[0], c->track_id, 16);
         p->want_play = c->play; player_begin(p, 0, c->position_frames, PLAYER_LOADING); break;
     case PLAYER_PLAY:
         p->want_play = true;
@@ -50,14 +58,15 @@ void player_command(Player *p, const PlayerCommand *c)
     case PLAYER_STOP: stop(p); break;
     case PLAYER_SEEK:
         if (p->queue_count && p->view.state != PLAYER_STOPPED) {
-            player_begin(p, audible_index(p), c->position_frames, PLAYER_SEEKING);
+            uint64_t position = c->seek_ms ? (uint64_t)c->position_ms * p->view.rate / 1000 : c->position_frames;
+            player_begin(p, audible_index(p), position, PLAYER_SEEKING);
         } break;
     case PLAYER_VOLUME:
         p->view.volume = c->volume < 0 ? 0 : c->volume > 1 ? 1 : c->volume;
         if (sink_set_volume(p->config.sink, p->view.volume) != AUDIO_OK) { player_fail(p, AUDIO_BAD_STATE); } break;
     case PLAYER_QUEUE_APPEND:
         if (p->queue_count < PLAYER_QUEUE_CAP) {
-            unsigned i = p->queue_count++; p->order[i] = i; memcpy(p->ids[i], c->track_id, 16);
+            unsigned i = p->queue_count++; p->order[i] = i; p->durations[i] = 0; memcpy(p->ids[i], c->track_id, 16);
         } break;
     case PLAYER_QUEUE_CLEAR: {
         unsigned i = audible_index(p); uint64_t position = p->view.position_frames;
@@ -65,7 +74,7 @@ void player_command(Player *p, const PlayerCommand *c)
             uint8_t id[16]; memcpy(id, p->ids[i], 16);
             bool active = p->view.state != PLAYER_STOPPED && p->view.state != PLAYER_ENDED;
             if (active) { player_begin(p, i, position, p->want_play ? PLAYER_SEEKING : PLAYER_PAUSED); }
-            memcpy(p->ids[0], id, 16); p->queue_count = 1; p->order[0] = 0; p->desired_index = 0;
+            memcpy(p->ids[0], id, 16); p->durations[0] = p->durations[i]; p->queue_count = 1; p->order[0] = 0; p->desired_index = 0;
         } break;
     }
     case PLAYER_NEXT: {

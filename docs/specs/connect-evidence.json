@@ -1,0 +1,161 @@
+{
+  "source": {
+    "file": "Spotify.dll",
+    "version": "1.3.4.258",
+    "sha256": "ae772df4dca26c53c73ea720836db77584dc431d14d3ab3b5c4b49b0bd2b8fde"
+  },
+  "classification": "Static original-byte observations through analyst-derived data-only PE containers",
+  "extraction": {
+    "classification": "analyst-derived inspection containers, not shipped binaries",
+    "source_sha256": "ae772df4dca26c53c73ea720836db77584dc431d14d3ab3b5c4b49b0bd2b8fde",
+    "image_base": "0x180000000",
+    "ranges": [
+      {
+        "source_offset": 28472832,
+        "rva": "0x1b29000",
+        "bytes": 4096,
+        "container_offset": 1024,
+        "sha256": "9229bd7949999370f06df4e00ba5cf3799ae34403febbf27429765468e90042f"
+      },
+      {
+        "source_offset": 28489216,
+        "rva": "0x1b2d000",
+        "bytes": 4096,
+        "container_offset": 5120,
+        "sha256": "32543cb77415dc18e1fe0f4aa61d30bf9665f89fd63965aaf90be8786995923c"
+      },
+      {
+        "source_offset": 28558848,
+        "rva": "0x1b3e000",
+        "bytes": 4096,
+        "container_offset": 9216,
+        "sha256": "d9dd18fd7701f8ef11d90a0920c6c32fe5ee01be697caaf43f999bcc3e17a32f"
+      },
+      {
+        "source_offset": 29517312,
+        "rva": "0x1c28000",
+        "bytes": 4096,
+        "container_offset": 13312,
+        "sha256": "9d0378b3a76733401a5f551e33541277b7847e75baeb30a696b13746532d0753"
+      },
+      {
+        "source_offset": 29554176,
+        "rva": "0x1c31000",
+        "bytes": 4096,
+        "container_offset": 17408,
+        "sha256": "66c4bd1d64bd7a93b88fb21ac0bb444cfb4914ef8dcabfef95ff699d93e8f06d"
+      }
+    ],
+    "artifacts": [
+      {
+        "file": "clienttoken-inspection.dll",
+        "entry": "0x181305dcc",
+        "sha256": "65f7de001e2ee26abe190c448fe6c4f3efb98eac5fd9a9a69f6ecf5371d37762"
+      },
+      {
+        "file": "login5-inspection.dll",
+        "entry": "0x181340da8",
+        "sha256": "96a7ffaf046317ee708723af5dd7b0029d06031c7728b4e4f2bb8c546df91c67"
+      }
+    ],
+    "limitations": [
+      "Synthesized PE headers; no imports, exports, exceptions or relocations",
+      "Only selected original pages are mapped; missing callees/data remain unknown",
+      "Static disassembly only; never execute these containers"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev_1185f029bc9d9ca4221c60c7d0e03d655903e0e4487d9e8688ff51dd744cf69b",
+      "operation": "read_bytes",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "profile_digest": "dcc676845881c04a2d22833fb35d26569462e033daee5e99a95edac5aa61ac05",
+      "inspection_sha256": "65f7de001e2ee26abe190c448fe6c4f3efb98eac5fd9a9a69f6ecf5371d37762",
+      "address": "0x181b29518",
+      "source_offset": 28474136,
+      "bytes": 160,
+      "sha256": "fb24e2cf77730ba216c95944fda686e47051b689b2dbf0c634e3ec1c97f36e49",
+      "bytes_hex": "636f6e6e6563742d73746174652f76312f646576696365732f000000000000003f77616b652d646576696365733d00002f746f2f00000000636f6e6e6563742d73746174652f76312f706c617965722f636f6d6d616e642f66726f6d2f000000636f6e6e6563742d73746174652f76312f636f6e6e6563742f7472616e736665722f66726f6d2f00636f6e6e6563742d73746174652f76312f636f6e6e656374",
+      "original_bytes_verified": true
+    },
+    {
+      "evidence_id": "ev_c4c75bd03c7aa3a31607e4c17d182809ed873ee57d6c94a7a6ab89ce6f3b31e8",
+      "operation": "read_bytes",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "profile_digest": "dcc676845881c04a2d22833fb35d26569462e033daee5e99a95edac5aa61ac05",
+      "inspection_sha256": "65f7de001e2ee26abe190c448fe6c4f3efb98eac5fd9a9a69f6ecf5371d37762",
+      "address": "0x181b3eb38",
+      "source_offset": 28561720,
+      "bytes": 21,
+      "sha256": "e33c82ed31b50ea92f3c527e70591b4ca793f5df7f144a00a96693d14bc5e4e4",
+      "bytes_hex": "53706f746966792d436f6e6e656374696f6e2d4964",
+      "original_bytes_verified": true
+    },
+    {
+      "evidence_id": "ev_c6a981c4bebd20a5ec5281441c0a8aff440a0927fd9dfeab5aa30aed0a44ab2d",
+      "operation": "read_bytes",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "profile_digest": "dcc676845881c04a2d22833fb35d26569462e033daee5e99a95edac5aa61ac05",
+      "inspection_sha256": "65f7de001e2ee26abe190c448fe6c4f3efb98eac5fd9a9a69f6ecf5371d37762",
+      "address": "0x181c31bd0",
+      "source_offset": 29557200,
+      "bytes": 46,
+      "sha256": "91f317159b6e010ef374646b16c551f39cb5d08286bdac38b609b92fbd37e6cf",
+      "bytes_hex": "582d53706f746966792d436f6e6e656374696f6e2d496400636f6e6e656374696f6e5f69645f6465636f7261746f",
+      "original_bytes_verified": true
+    },
+    {
+      "evidence_id": "ev_0e3a133ae05d9ff2a4e33eae92c1f82100431232596c84e42183631cecda4765",
+      "operation": "read_bytes",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "profile_digest": "dcc676845881c04a2d22833fb35d26569462e033daee5e99a95edac5aa61ac05",
+      "inspection_sha256": "65f7de001e2ee26abe190c448fe6c4f3efb98eac5fd9a9a69f6ecf5371d37762",
+      "address": "0x181b2d040",
+      "source_offset": 28489280,
+      "bytes": 150,
+      "sha256": "18aeeee3e8a19ae3a80cc8ea1550fe6d5a720fe64d67d92b36ba0a719147a7d8",
+      "bytes_hex": "686d3a2f2f636f6e6e6563742d73746174652f76312f706c617965722f636f6d6d616e6400000000686d3a2f2f636f6e6e6563742d73746174652f76312f70696e67000000000000686d3a2f2f636f6e6e6563742d73746174652f76312f636f6e6e6563742f70726f78795f7472616e7366657200000000686d3a2f2f636f6e6e6563742d73746174652f76312f636f6e6e6563742f",
+      "original_bytes_verified": true
+    },
+    {
+      "evidence_id": "ev_bae06eff03799a0415b26fa7cf1ce6450e108a529bca358a77b223d6833d19ab",
+      "operation": "read_bytes",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.4"
+      },
+      "profile_digest": "dcc676845881c04a2d22833fb35d26569462e033daee5e99a95edac5aa61ac05",
+      "inspection_sha256": "65f7de001e2ee26abe190c448fe6c4f3efb98eac5fd9a9a69f6ecf5371d37762",
+      "address": "0x181c2839d",
+      "source_offset": 29518237,
+      "bytes": 100,
+      "sha256": "92a52566066f4b5dbe70d1760d8a789d4e4522c30c20b67221f9c19e20b3aa3c",
+      "bytes_hex": "636f6e6e65637473746174652e436c75737465725207636c7573746572124f0a0d7570646174655f726561736f6e18022001280e32292e73706f746966792e636f6e6e65637473746174652e436c7573746572557064617465526561736f6e520d757064",
+      "original_bytes_verified": true
+    }
+  ],
+  "limitations": [
+    "No Spotify code executed and no service request observed",
+    "Synthesized PE headers/entrypoints; selected original pages unchanged",
+    "REA reads prove exact literal bytes, not request construction or runtime reachability",
+    "Methods and envelope semantics use the separately pinned librespot reference",
+    "The XPUI semantic graph was partial; 269 files were outside its selected scope"
+  ]
+}

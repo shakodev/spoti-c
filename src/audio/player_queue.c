@@ -22,8 +22,14 @@ PlayerResult player_submit(Player *p, const PlayerCommand *c)
         ((c->type == PLAYER_LOAD || c->type == PLAYER_QUEUE_APPEND) && !player_id_valid(c->track_id)) ||
         (c->type == PLAYER_VOLUME && !isfinite(c->volume)) ||
         (c->type == PLAYER_REPEAT && c->value > PLAYER_REPEAT_ALL) ||
+        (c->type == PLAYER_TRANSFER && (!c->transfer || !c->transfer->count || c->transfer->count > PLAYER_QUEUE_CAP)) ||
         (c->type == PLAYER_SOURCE_READY && (!c->source.read_at || c->source.bytes == 0 || c->source.bytes > UINT32_MAX))) {
         return PLAYER_INVALID;
+    }
+    if (c->type == PLAYER_TRANSFER) {
+        for (uint32_t i = 0; i < c->transfer->count; ++i) {
+            if (!player_id_valid(c->transfer->ids[i])) { return PLAYER_INVALID; }
+        }
     }
     PlayerResult result = PLAYER_OK;
     AcquireSRWLockExclusive(&p->lock);
@@ -34,13 +40,18 @@ PlayerResult player_submit(Player *p, const PlayerCommand *c)
         if (slot < 0 || (p->retiring[slot] != (c->type == PLAYER_SOURCE_RETIRED))) { result = PLAYER_STALE; }
     }
     if (result == PLAYER_OK) {
-        if (p->command_count == PLAYER_COMMAND_CAP) { result = PLAYER_FULL; }
+        if (p->command_count == PLAYER_COMMAND_CAP || (c->type == PLAYER_TRANSFER && p->transfer_pending)) { result = PLAYER_FULL; }
         else if (c->type == PLAYER_QUEUE_APPEND && p->queue_admitted == PLAYER_QUEUE_CAP) { result = PLAYER_FULL; }
         else {
             p->commands[(p->command_head + p->command_count) % PLAYER_COMMAND_CAP] = *c;
+            if (c->type == PLAYER_TRANSFER) {
+                p->transfer = *c->transfer; p->transfer_pending = true;
+                p->commands[(p->command_head + p->command_count) % PLAYER_COMMAND_CAP].transfer = &p->transfer;
+            }
             ++p->command_count;
             if (c->type == PLAYER_SHUTDOWN) { p->control_closed = true; }
             if (c->type == PLAYER_LOAD) { p->queue_admitted = 1; }
+            if (c->type == PLAYER_TRANSFER) { p->queue_admitted = c->transfer->count; }
             if (c->type == PLAYER_QUEUE_CLEAR && p->queue_admitted) { p->queue_admitted = 1; }
             if (c->type == PLAYER_QUEUE_APPEND) { ++p->queue_admitted; }
             SetEvent(p->wake);
@@ -83,7 +94,33 @@ PlayerResult player_take_request(Player *p, PlayerRequest *r)
 HANDLE player_request_event(Player *p) { return p ? p->requests_ready : NULL; }
 void player_publish(Player *p)
 {
-    AcquireSRWLockExclusive(&p->lock); p->published = p->view; ReleaseSRWLockExclusive(&p->lock);
+    unsigned index = p->marker_count ? p->markers[p->marker_head].index : p->desired_index;
+    p->view.duration_frames = index < p->queue_count ? p->durations[index] : 0;
+    AcquireSRWLockExclusive(&p->lock);
+    bool changed = p->view.generation != p->published.generation || p->view.state != p->published.state ||
+        p->view.position_frames != p->published.position_frames || p->view.duration_frames != p->published.duration_frames ||
+        p->view.volume != p->published.volume || p->view.rate != p->published.rate || p->view.error != p->published.error ||
+        p->view.timeline_valid != p->published.timeline_valid || p->queue_count != p->published_queue.count;
+    p->published = p->view;
+    p->published_queue.player = p->view; p->published_queue.count = p->queue_count; p->published_queue.index = 0;
+    for (unsigned i = 0; i < p->queue_count; ++i) {
+        changed |= memcmp(p->published_queue.ids[i], p->ids[p->order[i]], 16) != 0;
+        memcpy(p->published_queue.ids[i], p->ids[p->order[i]], 16);
+        if (p->order[i] == index) { p->published_queue.index = i; }
+    }
+    if (changed) { SetEvent(p->state_changed); }
+    ReleaseSRWLockExclusive(&p->lock);
+}
+void player_queue_snapshot(Player *p, PlayerQueueSnapshot *out)
+{
+    if (!out) { return; } *out = (PlayerQueueSnapshot){0}; if (!p) { return; }
+    AcquireSRWLockShared(&p->lock); *out = p->published_queue; ReleaseSRWLockShared(&p->lock);
+}
+HANDLE player_state_event(Player *p) { return p ? p->state_changed : NULL; }
+void player_take_state(Player *p, PlayerQueueSnapshot *out)
+{
+    if (!out) { return; } *out = (PlayerQueueSnapshot){0}; if (!p) { return; }
+    AcquireSRWLockExclusive(&p->lock); *out = p->published_queue; ResetEvent(p->state_changed); ReleaseSRWLockExclusive(&p->lock);
 }
 PlayerSnapshot player_snapshot(Player *p)
 {

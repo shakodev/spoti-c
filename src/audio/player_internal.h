@@ -20,11 +20,15 @@ typedef struct PlayerMarker {
 } PlayerMarker;
 struct Player {
     SRWLOCK lock;
-    HANDLE wake, requests_ready;
+    HANDLE wake, requests_ready, state_changed;
     PlayerCommand commands[PLAYER_COMMAND_CAP];
+    PlayerTransfer transfer;
+    bool transfer_pending;
     PlayerRequest requests[PLAYER_REQUEST_CAP];
     size_t command_head, command_count, request_head, request_count;
     PlayerSnapshot published, view;
+    PlayerQueueSnapshot published_queue;
+    uint64_t durations[PLAYER_QUEUE_CAP];
     PlayerConfig config;
     DWORD owner;
     bool control_closed, destroyed, busy, closing, want_play, desired, final_eof, more;

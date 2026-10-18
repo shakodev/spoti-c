@@ -21,6 +21,7 @@ option(ENABLE_LIVE_MEDIA_TEST "Enable browser/account-dependent playable media r
 option(ENABLE_LIVE_AUDIO_TEST "Enable physical WASAPI/default-device-change test" OFF)
 option(ENABLE_LIVE_HEADLESS_TEST "Enable account/WASAPI headless playback acceptance" OFF)
 option(ENABLE_LIVE_CDN_TEST "Enable public-network native CDN HTTPS compatibility test" OFF)
+option(ENABLE_LIVE_CONNECT_TEST "Enable account/WASAPI/two-device Connect acceptance" OFF)
 
 add_library(spotic_build_options INTERFACE)
 target_compile_features(spotic_build_options INTERFACE c_std_17)
@@ -159,6 +160,17 @@ add_library(spotic_headless STATIC src/headless/runtime.c src/headless/network.c
     src/headless/sources.c src/headless/decode.c src/headless/commands.c
     src/headless/diagnostics.c src/headless/fixture_media.c src/headless/live.c)
 target_include_directories(spotic_headless PUBLIC src)
+
+add_library(spotic_tinfl STATIC vendor/miniz/miniz_tinfl.c)
+target_include_directories(spotic_tinfl PUBLIC vendor/miniz)
+target_compile_definitions(spotic_tinfl PUBLIC MINIZ_NO_MALLOC MINIZ_NO_STDIO MINIZ_NO_TIME
+    MINIZ_NO_ARCHIVE_APIS MINIZ_NO_DEFLATE_APIS MINIZ_NO_ZLIB_APIS)
+target_link_libraries(spotic_tinfl PUBLIC spotic_build_options)
+add_library(spotic_connect STATIC src/protocol/dealer_payload.c src/protocol/connect_state.c
+    src/protocol/connect_commands.c src/protocol/connect_transfer.c src/protocol/connect_wire.c
+    src/protocol/connect_http.c src/protocol/dealer.c src/protocol/dealer_pump.c src/protocol/dealer_winhttp.c)
+target_include_directories(spotic_connect PUBLIC src)
+target_link_libraries(spotic_connect PUBLIC spotic_player spotic_tokens spotic_proto spotic_yyjson spotic_tinfl)
 target_link_libraries(spotic_headless PUBLIC spotic_player spotic_decrypt spotic_ap spotic_json_base spotic_cdn psapi)
 if(MSVC)
     # Fixture/fake output does not need the COM device or credential DLLs.
@@ -221,6 +233,27 @@ if(BUILD_TESTING)
         add_test(NAME audio_${player_test} COMMAND test_${player_test})
         set_tests_properties(audio_${player_test} PROPERTIES TIMEOUT 90)
     endforeach()
+    foreach(connect_test IN ITEMS dealer connect)
+        add_executable(test_${connect_test} tests/test_${connect_test}.c tests/player_test_support.c)
+        target_include_directories(test_${connect_test} PRIVATE tests)
+        target_compile_definitions(test_${connect_test} PRIVATE
+            VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis"
+            CONNECT_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/connect")
+        target_link_libraries(test_${connect_test} PRIVATE spotic_connect)
+        add_test(NAME protocol_${connect_test} COMMAND test_${connect_test})
+        set_tests_properties(protocol_${connect_test} PROPERTIES TIMEOUT 90)
+    endforeach()
+    target_sources(test_connect PRIVATE tests/test_connect_http.c tests/support/http_server.c)
+    target_link_libraries(test_connect PRIVATE ws2_32)
+    target_sources(test_dealer PRIVATE tests/test_dealer_winhttp.c)
+    target_link_libraries(test_dealer PRIVATE ws2_32)
+    if(ENABLE_LIVE_CONNECT_TEST)
+        add_executable(test_connect_live tests/test_connect_live.c)
+        target_include_directories(test_connect_live PRIVATE tests)
+        target_link_libraries(test_connect_live PRIVATE spotic_connect spotic_headless)
+        add_test(NAME protocol_connect_live COMMAND test_connect_live)
+        set_tests_properties(protocol_connect_live PROPERTIES TIMEOUT 360 LABELS "live;account;hardware" SKIP_RETURN_CODE 77)
+    endif()
     add_executable(test_audio_sink tests/test_audio_sink.c tests/test_sink_races.c)
     target_include_directories(test_audio_sink PRIVATE tests)
     target_link_libraries(test_audio_sink PRIVATE spotic_audio_sink)

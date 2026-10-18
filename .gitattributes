@@ -27,3 +27,7 @@ tests/fixtures/audio/*.enc binary
 tests/fixtures/audio/*.crt text eol=lf
 tests/fixtures/audio/*.fixture text eol=lf
 tests/fixtures/audio/*.json text eol=lf
+vendor/miniz/** -text -whitespace
+tests/fixtures/connect/*.pb binary
+tests/fixtures/connect/*.gz binary
+tests/fixtures/connect/*.json text eol=lf
