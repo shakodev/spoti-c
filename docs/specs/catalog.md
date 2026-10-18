@@ -1,7 +1,9 @@
 # Catalog contracts and document identity
 
 Shared URL/method/headers, provenance and error/fallback rules: `pathfinder.md`.
-The source and local captures are pinned to desktop 1.3.4.258.
+Documents are pinned to desktop1.3.4.258. Follow-up captures use desktop1.3.5.3058
+to replay those same documents; they do not claim the newer default routes use
+unchanged hashes. Each capture and source keeps its own identity.
 
 ## Album
 
@@ -19,9 +21,11 @@ content rating, relinking information and playability; keep its wrapper and
 `uid`. Unknown/non-Album discriminants must not be parsed as Album.
 
 The same hash in two document constructors does not prove two identical reply
-schemas. An independent `queryAlbumTracks` continuation was observed, but its
-error fixture remains missing. The primary `getAlbum` contract has observed
-positive, NotFound and exhausted-page fixtures and passes the evidence gate.
+schemas. Independent `queryAlbumTracks` requests now establish offset0 success,
+offset2 continuation and NotFound; `getAlbum` separately has observed positive,
+NotFound and exhausted-page fixtures. Both pass their individual evidence gates.
+Module 76146 identifies `GenericError`, `NotFound` and `RestrictedContent` as
+Album errors; only NotFound is an observed service error in this fixture set.
 Neither `queryAlbumMerch` nor mini-player `getAlbumNameAndTracks` is the primary
 Album contract. Body caps are local policies; reject rather than truncate.
 
@@ -36,8 +40,13 @@ It supplies the same local app-version override as Album.
 
 The primary response is rooted at `data.artistUnion.__typename: Artist`.
 Treat nested wrappers/discography collections and availability independently.
-The capture proves a successful primary response; it does not prove every
-availability, prerelease or continuation variant.
+The captures prove a successful primary response and a NotFound union for a
+missing artist. This overview request is not paginated: module 41231 uses one
+query with only `uri`, `locale`, `preReleaseV2`. Prefetch repeats the same query;
+discography pagination belongs to separate operations. Its manifest records this
+source-backed nonpagination instead of inventing offset variables. Availability
+and prerelease variants remain explicit response unions rather than assumed
+successful artist data.
 
 `ref/xpui/3308.js` contains another `queryArtistOverview` constructor with hash
 `1ac33ddab5d39a3a9c27802774e6d78b9405cc188c6f75aed007df2a32737c72`
@@ -64,7 +73,20 @@ operation (`searchSuggestions`) and are not evidence for either primary query.
 Store operation identity and its actual variables together. Never pair a hash
 from one branch with another branch's variables.
 
-Search/category, pagination and error fixture coverage is still incomplete.
-Only the primary Album entry currently passes the proof gate. Other entries
-remain unavailable. The stored
-sanitized positives are genuine observed response structures, not invented SDL.
+Independent SearchTracks offset0/offset2 replies and a numeric limit101 GraphQL
+error are retained. The main List branch has its own positive, offset2 and
+limit101 error fixtures. Boolean-limit HTTP400 responses are explicitly labeled
+rejected inputs, not accepted variable shapes. Main List counts are checked at
+`data.searchV2.topResultsV2.itemsV2`; the chip-order array is not a result page.
+Legacy SearchDesktop now has independent offset0, offset2 and numeric limit101
+GraphQL-error observations. Its own descriptor uses `searchTerm` plus
+`offset`, `limit`, `numberOfTopResults`, `includeAudiobooks`,
+`includeArtistHasConcertsField`, `includePreReleases`,
+`includeAlbumPreReleases`, `includeAuthors`, `includeEpisodeContentRatingsV2`,
+nullable boolean `isPrefix`, `sectionFilters[]`, and optional `clientFeatures[]`.
+The source forwards this variable object directly; the list adapter's `query`
+rename does not apply. `clientFeatures` is omitted when the source's suggestion
+state helper returns undefined. All three operations pass their separate gates.
+The stored sanitized positives are genuine observed response structures, not
+invented SDL. Replay provenance and the desktop-version distinction are recorded
+in `pathfinder.md`.

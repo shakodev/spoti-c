@@ -18,7 +18,7 @@ typedef enum ApiContractResult {
     API_CONTRACT_TOO_LARGE
 } ApiContractResult;
 typedef enum ApiTransport { API_PATHFINDER, API_HTTP_JSON, API_NATIVE_RPC } ApiTransport;
-typedef enum ApiMethod { API_METHOD_UNKNOWN, API_METHOD_GET, API_METHOD_POST } ApiMethod;
+typedef enum ApiMethod { API_METHOD_UNKNOWN, API_METHOD_GET, API_METHOD_POST, API_METHOD_RPC } ApiMethod;
 typedef enum ApiFieldType {
     API_FIELD_STRING, API_FIELD_UINT, API_FIELD_BOOL, API_FIELD_STRING_ARRAY,
     API_FIELD_OBJECT, API_FIELD_ARRAY
@@ -47,7 +47,7 @@ typedef struct ApiContract {
     const char *name;
     ApiTransport transport;
     ApiMethod method;
-    const char *url; /* NULL if unresolved; template parameters are explicit. */
+    const char *url; /* NULL for native RPC or unresolved HTTP; explicit templates. */
     const char *wire_operation;
     const char *persisted_sha256; /* NULL for non-GraphQL operations. */
     const char *source_file;
@@ -63,12 +63,16 @@ typedef struct ApiContract {
     size_t response_cap;
     uint32_t proofs;
     const char *blocker; /* Nonempty for every incomplete catalog entry. */
+    const char *rpc_service; /* Exact local service identity; NULL for HTTP. */
 } ApiContract;
 
 /* No allocation, I/O, token acquisition or endpoint execution. All pointers
  * borrow immutable process-lifetime storage; caller must never free them.
- * Lookup clears output on every failure. Inspect exposes incomplete evidence
- * for diagnostics only and must not be used to bypass lookup's network gate. */
+ * Lookup clears output on every failure. Lookup returns proven descriptive
+ * metadata, never an executable endpoint or an installed transport capability.
+ * Callers must branch on transport: native RPC requires the official client's
+ * local bridge or a separately implemented service; it cannot be sent by HTTP.
+ * Inspect exposes incomplete evidence for diagnostics only. */
 const ApiContract *contract_inspect(ApiOperation operation);
 ApiContractResult contract_lookup(ApiOperation operation, const ApiContract **output);
 ApiContractResult contract_validate(const ApiContract *contract);

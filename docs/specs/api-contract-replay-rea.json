@@ -1,0 +1,94 @@
+{
+  "evidence_id": "ev_50eb3aef0b6774186c1aba4e7f99573e5b981eb4d4a4161e17d2c483da952d53",
+  "subject": {
+    "name": "api21-http-pinned-replay.har",
+    "digest": {
+      "sha256": "b1d51bc6dddd31bfdd64e89bbee462a03dc650c73d5caad5435741bccd82561c"
+    },
+    "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-http-pinned-replay.har",
+    "format": "file",
+    "architecture": null
+  },
+  "provider": {
+    "id": "rea-analysis-view",
+    "name": "REA analysis view projection",
+    "version": "1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis-view",
+  "operation": "inspect_analysis_view",
+  "parameters": {
+    "parent_evidence_id": "ev_715bacdcb515b002bdc22a20a2583877dba8793b2af80aae233ef658811e2382",
+    "view": {
+      "kind": "summary"
+    }
+  },
+  "raw_result": null,
+  "normalized_result": {
+    "kind": "summary",
+    "view": {
+      "kind": "summary"
+    },
+    "parent_evidence_id": "ev_715bacdcb515b002bdc22a20a2583877dba8793b2af80aae233ef658811e2382",
+    "parent_operation": "inspect_web_network_capture",
+    "parent_digest": "715bacdcb515b002bdc22a20a2583877dba8793b2af80aae233ef658811e2382",
+    "view_digest": "04ad6d2759d525983a18882320fb62b84177533c29b74f1d95eaab4949821b1e",
+    "artifact": {
+      "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-http-pinned-replay.har",
+      "sha256": "b1d51bc6dddd31bfdd64e89bbee462a03dc650c73d5caad5435741bccd82561c"
+    },
+    "coverage": {
+      "status": "complete-within-view",
+      "examined": 19,
+      "total": 19,
+      "next_offset": null,
+      "exhausted": true
+    },
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+      "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+    ],
+    "unknowns": [
+      "Historical records do not establish live runtime attribution or deployment authenticity."
+    ],
+    "summary": {
+      "artifact": {
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-http-pinned-replay.har",
+        "sha256": "b1d51bc6dddd31bfdd64e89bbee462a03dc650c73d5caad5435741bccd82561c",
+        "bytes": 242331
+      },
+      "decoder": {
+        "id": "har-schema/lossless-json",
+        "name": "REA HAR capture adapter",
+        "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+      },
+      "format": "har",
+      "total_records": 19,
+      "retained_records": 19,
+      "runtime_attribution": "unknown"
+    }
+  },
+  "confidence": "derived",
+  "authority": "historical-reference",
+  "environment": null,
+  "limitations": [
+    "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+    "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+    "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+    "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+    "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+  ],
+  "relationship_coverage": null,
+  "locations": [
+    {
+      "kind": "artifact-path",
+      "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-http-pinned-replay.har"
+    }
+  ],
+  "evidence_links": [
+    "ev_715bacdcb515b002bdc22a20a2583877dba8793b2af80aae233ef658811e2382"
+  ]
+}

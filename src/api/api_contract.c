@@ -4,7 +4,9 @@
 #define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 #define SNAPSHOT "c20d9408009a281ee4152b63077a8309eb17ec172bbf80b80dc7879d586bb099"
 #define SNAPSHOT_EV "ev_1598043638d84cda7402b5b188cf254b6ab9c1a85e83d6a54351050338a8f2e3"
-#define NATIVE_EV "ev_d9373a110e6d8f723a4c2ccf46fc3431ba041c63e3bad0c1e3b91818566661ca"
+#define NATIVE_EV "ev_588525847e8c10120ab396ab3a47029259f9e9a4487c761eb56ea3f5040a677e"
+#define NATIVE_SNAPSHOT "aefd55fa7f292f438ee7cec4ed4803a2b7ff6b7dc6a8453ec0e32b151d2b07df"
+#define NATIVE_PROOFS (API_PROOF_ALL & ~(API_PROOF_URL | API_PROOF_HEADERS))
 #define SEARCH_EV "ev_40a8864feaeed9523967983d24c87a0f7b49671e3921eb187ddef6af5b19344d"
 #define QUERY_URL "https://api-partner.spotify.com/pathfinder/v2/query"
 #define F(n,t,r,z) {n,t,r,z}
@@ -44,6 +46,15 @@ static const ApiField search_tracks_vars[] = {
     F("includeAlbumPreReleases",API_FIELD_BOOL,true,false), F("includeAuthors",API_FIELD_BOOL,true,false),
     F("includeEpisodeContentRatingsV2",API_FIELD_BOOL,true,false)
 };
+static const ApiField search_desktop_vars[] = {
+    F("searchTerm",API_FIELD_STRING,true,false), F("offset",API_FIELD_UINT,true,false),
+    F("limit",API_FIELD_UINT,true,false), F("numberOfTopResults",API_FIELD_UINT,true,false),
+    F("includeAudiobooks",API_FIELD_BOOL,true,false), F("includeArtistHasConcertsField",API_FIELD_BOOL,true,false),
+    F("includePreReleases",API_FIELD_BOOL,true,false), F("includeAlbumPreReleases",API_FIELD_BOOL,true,false),
+    F("includeAuthors",API_FIELD_BOOL,true,false), F("includeEpisodeContentRatingsV2",API_FIELD_BOOL,true,false),
+    F("isPrefix",API_FIELD_BOOL,true,true), F("sectionFilters",API_FIELD_STRING_ARRAY,true,false),
+    F("clientFeatures",API_FIELD_ARRAY,false,false)
+};
 static const ApiField search_list_vars[] = {
     F("query",API_FIELD_STRING,true,false), F("limit",API_FIELD_UINT,true,false),
     F("offset",API_FIELD_UINT,true,false), F("numberOfTopResults",API_FIELD_UINT,true,false),
@@ -58,6 +69,21 @@ static const ApiField lyrics_vars[] = {
     F("format",API_FIELD_STRING,true,false), F("vocalRemoval",API_FIELD_BOOL,true,false),
     F("clientLanguage",API_FIELD_STRING,false,false)
 };
+static const ApiField library_vars[] = {
+    F("header",API_FIELD_OBJECT,true,false), F("updateThrottling",API_FIELD_UINT,false,false)
+};
+static const ApiField playlist_vars[] = {
+    F("uri",API_FIELD_STRING,true,false), F("query",API_FIELD_OBJECT,true,false),
+    F("policy",API_FIELD_OBJECT,false,false)
+};
+static const ApiField library_response[] = {
+    F("/header",API_FIELD_OBJECT,true,false), F("/entity",API_FIELD_ARRAY,true,false),
+    F("/pinnedEntity",API_FIELD_ARRAY,true,false), F("/statusCode",API_FIELD_UINT,true,false),
+    F("/error",API_FIELD_STRING,true,false)
+};
+static const ApiField playlist_response[] = {
+    F("/status/statusCode",API_FIELD_UINT,true,false), F("/data/item",API_FIELD_ARRAY,true,false)
+};
 static const ApiField home_response[] = {
     F("/data/home/__typename",API_FIELD_STRING,true,false),
     F("/data/home/sectionContainer/sections/items",API_FIELD_ARRAY,true,false),
@@ -69,64 +95,65 @@ static const ApiField search_response[] = {F("/data/searchV2",API_FIELD_OBJECT,t
 static const ApiField artist_response[] = {F("/data/artistUnion/__typename",API_FIELD_STRING,true,false)};
 static const ApiField lyrics_response[] = {
     F("/lyrics/syncType",API_FIELD_STRING,true,false), F("/lyrics/lines",API_FIELD_ARRAY,true,false),
-    F("/lyrics/previewLines",API_FIELD_ARRAY,true,false), F("/colors",API_FIELD_OBJECT,true,false)
+    F("/lyrics/previewLines",API_FIELD_ARRAY,true,false), F("/colors",API_FIELD_OBJECT,true,false),
+    F("/lyrics/alternatives",API_FIELD_ARRAY,true,false), F("/lyrics/capStatus",API_FIELD_STRING,true,false),
+    F("/lyrics/provider",API_FIELD_STRING,true,false), F("/lyrics/providerDisplayName",API_FIELD_STRING,true,false),
+    F("/lyrics/providerLyricsId",API_FIELD_STRING,true,false), F("/hasVocalRemoval",API_FIELD_BOOL,false,false)
 };
 #define STATIC_HTTP (API_PROOF_SOURCE | API_PROOF_URL | API_PROOF_METHOD | API_PROOF_HEADERS | API_PROOF_TOKENS | API_PROOF_RETRY)
 #define OBSERVED_HTTP (STATIC_HTTP | API_PROOF_VARIABLES | API_PROOF_RESPONSE | API_PROOF_POSITIVE)
 #define ROW(op,label,kind,verb,url,wire,hash,source,ev,vars,resp,proof,why) \
     {op,label,kind,verb,url,wire,hash,source,SNAPSHOT,ev,query_headers,COUNT(query_headers), \
-     vars,COUNT(vars),resp,COUNT(resp),API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,proof,why}
+     vars,COUNT(vars),resp,COUNT(resp),API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,proof,why,NULL}
 static const ApiContract contracts[] = {
     ROW(API_HOME,"home",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"home",
         "76243c78b0e20ecdbe41b794dec8cbe73f75e585b0a7201b8d2e84578412847a",
-        "v8_context_snapshot.bin:26662,83314",SNAPSHOT_EV,home_vars,home_response,OBSERVED_HTTP,
-        "Error and pagination fixture coverage is incomplete"),
+        "v8_context_snapshot.bin:26662,83314",SNAPSHOT_EV,home_vars,home_response,API_PROOF_ALL,NULL),
     ROW(API_HOME_SECTION,"home_section",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"homeSection",
         "76243c78b0e20ecdbe41b794dec8cbe73f75e585b0a7201b8d2e84578412847a",
-        "v8_context_snapshot.bin:26662",SNAPSHOT_EV,section_vars,section_response,STATIC_HTTP,
-        "Section response, variables and pagination require independent validation"),
-    {API_LIBRARY,"library",API_NATIVE_RPC,API_METHOD_UNKNOWN,NULL,"YourLibraryService.All",NULL,
-        "v8_context_snapshot.bin:90879,82379",SNAPSHOT,NATIVE_EV,NULL,0,NULL,0,NULL,0,
-        API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,API_PROOF_SOURCE,
-        "Observed native Esperanto RPC does not establish its backing HTTPS contract"},
-    {API_PLAYLIST,"playlist",API_NATIVE_RPC,API_METHOD_UNKNOWN,NULL,"PlaylistDataService.Get",NULL,
-        "v8_context_snapshot.bin:33872,82379",SNAPSHOT,NATIVE_EV,NULL,0,NULL,0,NULL,0,
-        API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,API_PROOF_SOURCE,
-        "Primary view uses native Esperanto RPC; playlistSection is not a replacement"},
+        "v8_context_snapshot.bin:26662",SNAPSHOT_EV,section_vars,section_response,API_PROOF_ALL,NULL),
+    {API_LIBRARY,"library",API_NATIVE_RPC,API_METHOD_RPC,NULL,"All",NULL,
+        "v8_context_snapshot.bin:20609,5358,76148",NATIVE_SNAPSHOT,NATIVE_EV,NULL,0,
+        library_vars,COUNT(library_vars),library_response,COUNT(library_response),
+        API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,NATIVE_PROOFS,NULL,
+        "spotify.your_library_esperanto.proto.YourLibraryService"},
+    {API_PLAYLIST,"playlist",API_NATIVE_RPC,API_METHOD_RPC,NULL,"Get",NULL,
+        "v8_context_snapshot.bin:20240,5358,76148",NATIVE_SNAPSHOT,NATIVE_EV,NULL,0,
+        playlist_vars,COUNT(playlist_vars),playlist_response,COUNT(playlist_response),
+        API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,NATIVE_PROOFS,NULL,
+        "spotify.playlist_esperanto.proto.PlaylistDataService"},
     {API_SEARCH,"search",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"searchDesktop",
         "1148393611bbc58e84e47aed35ecc731275df9f9eb660956962e352dd3631d89",
         "ref/xpui/xpui-routes-search.js","06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0",
-        SEARCH_EV,query_headers,COUNT(query_headers),NULL,0,NULL,0,API_CONTRACT_REQUEST_CAP,
-        API_CONTRACT_RESPONSE_CAP,STATIC_HTTP,"Legacy searchDesktop and list/suggestion variables must not be conflated"},
+        SEARCH_EV,query_headers,COUNT(query_headers),search_desktop_vars,COUNT(search_desktop_vars),
+        search_response,COUNT(search_response),API_CONTRACT_REQUEST_CAP,
+        API_CONTRACT_RESPONSE_CAP,API_PROOF_ALL,NULL,NULL},
     {API_SEARCH_TRACKS,"search_tracks",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"searchTracks",
         "b02683192a98dde7966b5e6655a79eeb62713eab703eda9902c932818dd52751",
         "ref/xpui/xpui-routes-search.js","06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0",
         SEARCH_EV,query_headers,COUNT(query_headers),search_tracks_vars,COUNT(search_tracks_vars),
         search_response,COUNT(search_response),API_CONTRACT_REQUEST_CAP,
-        API_CONTRACT_RESPONSE_CAP,OBSERVED_HTTP | API_PROOF_PAGINATION,"Category error fixture coverage remains incomplete"},
+        API_CONTRACT_RESPONSE_CAP,API_PROOF_ALL,NULL,NULL},
     ROW(API_ALBUM,"album",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"getAlbum",
         "6a74b456cd1735c9193d9e8ec8cc5184cad7ce13572210315229db3975964361",
         "v8_context_snapshot.bin:2410,36920",SNAPSHOT_EV,album_vars,album_response,API_PROOF_ALL,NULL),
     ROW(API_ALBUM_TRACKS,"album_tracks",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"queryAlbumTracks",
         "6a74b456cd1735c9193d9e8ec8cc5184cad7ce13572210315229db3975964361",
-        "v8_context_snapshot.bin:2410",SNAPSHOT_EV,album_vars,album_response,OBSERVED_HTTP | API_PROOF_PAGINATION,
-        "Independent queryAlbumTracks error fixture coverage remains incomplete"),
+        "v8_context_snapshot.bin:2410",SNAPSHOT_EV,album_vars,album_response,API_PROOF_ALL,NULL),
     ROW(API_ARTIST,"artist",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"queryArtistOverview",
         "9f8134ef565e78621f1e1793555bd6633c5ac144ae0f89604ed3ae3f80b3c8e6",
-        "v8_context_snapshot.bin:41231",SNAPSHOT_EV,artist_vars,artist_response,OBSERVED_HTTP,
-        "Error/continuation coverage is incomplete; 3308.js contains a different document hash"),
+        "v8_context_snapshot.bin:41231",SNAPSHOT_EV,artist_vars,artist_response,API_PROOF_ALL,NULL),
     {API_LYRICS,"lyrics",API_HTTP_JSON,API_METHOD_GET,
         "https://spclient.wg.spotify.com/color-lyrics/v2/track/{trackId}/image/{image}",NULL,NULL,
         "v8_context_snapshot.bin:2200,24063",SNAPSHOT,SNAPSHOT_EV,lyrics_headers,COUNT(lyrics_headers),
         lyrics_vars,COUNT(lyrics_vars),lyrics_response,COUNT(lyrics_response),
-        API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,OBSERVED_HTTP | API_PROOF_ERROR,
-        "Timing/rights unions and explicit non-pagination proof remain incomplete"},
+        API_CONTRACT_REQUEST_CAP,API_CONTRACT_RESPONSE_CAP,API_PROOF_ALL,NULL,NULL},
     {API_SEARCH_LIST,"search_list",API_PATHFINDER,API_METHOD_POST,QUERY_URL,"searchTopResultsList",
         "12d940b3f7381506a82ff5382eb59b0ed65118656e6bcdfbe4cebc528f75d29d",
         "ref/xpui/xpui-routes-search.js","06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0",
         SEARCH_EV,query_headers,COUNT(query_headers),search_list_vars,COUNT(search_list_vars),
         search_response,COUNT(search_response),API_CONTRACT_REQUEST_CAP,
-        API_CONTRACT_RESPONSE_CAP,OBSERVED_HTTP,"List-branch error and continuation fixtures remain incomplete"}
+        API_CONTRACT_RESPONSE_CAP,API_PROOF_ALL,NULL,NULL}
 };
 _Static_assert(COUNT(contracts) == API_OPERATION_COUNT, "Every operation needs a catalog entry");
 
@@ -153,12 +180,14 @@ static bool fields(const ApiField *list, size_t count)
 }
 uint32_t contract_missing_proofs(const ApiContract *contract)
 {
-    return contract == NULL ? API_PROOF_ALL : API_PROOF_ALL & ~contract->proofs;
+    if (contract == NULL) { return API_PROOF_ALL; }
+    uint32_t required = contract->transport == API_NATIVE_RPC ? NATIVE_PROOFS : API_PROOF_ALL;
+    return required & ~contract->proofs;
 }
 ApiContractResult contract_validate(const ApiContract *c)
 {
     if (c == NULL || (unsigned)c->operation >= API_OPERATION_COUNT || !text(c->name) ||
-        (unsigned)c->transport > API_NATIVE_RPC || (unsigned)c->method > API_METHOD_POST ||
+        (unsigned)c->transport > API_NATIVE_RPC || (unsigned)c->method > API_METHOD_RPC ||
         (c->proofs & ~(uint32_t)API_PROOF_ALL) != 0 ||
         c->request_cap == 0 || c->request_cap > API_CONTRACT_REQUEST_CAP ||
         c->response_cap == 0 || c->response_cap > API_CONTRACT_RESPONSE_CAP ||
@@ -173,11 +202,24 @@ ApiContractResult contract_validate(const ApiContract *c)
         return API_CONTRACT_INVALID;
     }
     if ((c->proofs & API_PROOF_METHOD) != 0 && c->method == API_METHOD_UNKNOWN) { return API_CONTRACT_INVALID; }
+    if (c->transport == API_NATIVE_RPC) {
+        if (!text(c->rpc_service) || !text(c->wire_operation) || c->method != API_METHOD_RPC ||
+            c->url != NULL || c->headers != NULL || c->header_count != 0 || c->persisted_sha256 != NULL ||
+            (c->proofs & ~(uint32_t)NATIVE_PROOFS) != 0 ||
+            (c->operation != API_LIBRARY && c->operation != API_PLAYLIST)) {
+            return API_CONTRACT_INVALID;
+        }
+        const ApiContract *binding = &contracts[c->operation];
+        if (strcmp(c->rpc_service,binding->rpc_service) != 0 ||
+            strcmp(c->wire_operation,binding->wire_operation) != 0) { return API_CONTRACT_INVALID; }
+    } else if (c->rpc_service != NULL || c->method == API_METHOD_RPC) { return API_CONTRACT_INVALID; }
     if (contract_missing_proofs(c) != 0) {
         return text(c->blocker) ? API_CONTRACT_UNAVAILABLE : API_CONTRACT_INVALID;
     }
-    if (!text(c->url) || c->method == API_METHOD_UNKNOWN ||
-        c->transport == API_NATIVE_RPC || c->header_count == 0 || c->response_count == 0 ||
+    if (c->transport == API_NATIVE_RPC) {
+        return c->variable_count != 0 && c->response_count != 0 ? API_CONTRACT_OK : API_CONTRACT_INVALID;
+    }
+    if (!text(c->url) || c->method == API_METHOD_UNKNOWN || c->header_count == 0 || c->response_count == 0 ||
         (c->transport == API_PATHFINDER && (!text(c->wire_operation) || !hex64(c->persisted_sha256)))) {
         return API_CONTRACT_INVALID;
     }

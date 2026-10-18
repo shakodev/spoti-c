@@ -39,6 +39,13 @@ preserved; lyric words are redacted.
 
 Availability is another request: module 2200 converts the track ID to a GID and
 GETs `/metadata/4/track/{gid}`, then checks `has_lyrics`. That does not establish
-a successful lyrics response. The broader timing/rights variants and explicit
-non-pagination fixture obligation still require validation, so `API_LYRICS`
-remains blocked.
+a successful lyrics response.
+
+This service is not paginated. Module 2200 constructs one track request without
+an offset/cursor; module 24063 consumes the returned lines and preview lines in
+one ordinary query, with no next-page request. The manifest records this source
+evidence explicitly. The independent success and status-only404 now satisfy the
+Lyrics contract's fixture gate. The fixture represents observed LINE_SYNCED and
+capStatus NONE; other timing/rights values are not claimed to have been observed.
+Their source consumers remain documented above, and unknown values must not be
+silently coerced to the observed variant.

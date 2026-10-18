@@ -9,16 +9,8 @@ static void catalog(void)
     for (unsigned i = 0; i < API_OPERATION_COUNT; ++i) {
         const ApiContract *c = contract_inspect((ApiOperation)i), *out = c;
         CHECK(c != NULL && (unsigned)c->operation == i && c->name != NULL);
-        if (i == API_ALBUM) {
-            CHECK(contract_missing_proofs(c) == 0 && c->blocker == NULL);
-            CHECK(contract_lookup((ApiOperation)i,&out) == API_CONTRACT_OK && out == c);
-        } else {
-            CHECK(contract_missing_proofs(c) != 0 && c->blocker != NULL);
-            CHECK(contract_validate(c) == API_CONTRACT_UNAVAILABLE);
-            CHECK(contract_lookup((ApiOperation)i,&out) == API_CONTRACT_UNAVAILABLE && out == NULL);
-            CHECK(contract_check_body(c,false,0) == API_CONTRACT_UNAVAILABLE);
-            CHECK(contract_check_body(c,true,SIZE_MAX) == API_CONTRACT_UNAVAILABLE);
-        }
+        CHECK(contract_missing_proofs(c) == 0 && c->blocker == NULL);
+        CHECK(contract_lookup((ApiOperation)i,&out) == API_CONTRACT_OK && out == c);
         for (unsigned j = 0; j < i; ++j) { CHECK(strcmp(c->name,contract_inspect((ApiOperation)j)->name) != 0); }
     }
     const ApiContract *out = contract_inspect(API_HOME);
@@ -69,6 +61,7 @@ static void proof_gate(void)
     BAD(request_cap,0); BAD(request_cap,API_CONTRACT_REQUEST_CAP + 1);
     BAD(response_cap,0); BAD(response_cap,API_CONTRACT_RESPONSE_CAP + 1);
     BAD(proofs,UINT32_MAX); BAD(transport,API_NATIVE_RPC);
+    BAD(rpc_service,"spotify.your_library_esperanto.proto.YourLibraryService");
 #undef BAD
     ApiField duplicate[] = {{"uri",API_FIELD_STRING,true,false},{"uri",API_FIELD_UINT,true,false}};
     ApiContract c = complete; c.variables = duplicate; c.variable_count = 2;
@@ -81,9 +74,38 @@ static void proof_gate(void)
     c = *contract_inspect(API_HOME); c.source_sha256 = "bad";
     CHECK(contract_validate(&c) == API_CONTRACT_INVALID);
 }
+static void native_contracts(void)
+{
+    for (unsigned operation = API_LIBRARY; operation <= API_PLAYLIST; ++operation) {
+        const ApiContract *native = contract_inspect((ApiOperation)operation);
+        CHECK(native->transport == API_NATIVE_RPC && native->method == API_METHOD_RPC);
+        CHECK(native->url == NULL && native->persisted_sha256 == NULL && native->headers == NULL);
+        CHECK(native->header_count == 0 && native->rpc_service != NULL);
+        CHECK((native->proofs & (API_PROOF_URL | API_PROOF_HEADERS)) == 0);
+        CHECK(contract_missing_proofs(native) == 0 && contract_validate(native) == API_CONTRACT_OK);
+        for (uint32_t bit = 1; bit <= API_PROOF_PAGINATION; bit <<= 1) {
+            if ((native->proofs & bit) != 0) {
+                ApiContract c = *native; c.proofs &= ~bit; c.blocker = "test missing native proof";
+                CHECK(contract_missing_proofs(&c) == bit && contract_validate(&c) == API_CONTRACT_UNAVAILABLE);
+                c.blocker = NULL; CHECK(contract_validate(&c) == API_CONTRACT_INVALID);
+            }
+        }
+#define BAD_NATIVE(field,value) do { ApiContract c = *native; c.field = value; \
+    CHECK(contract_validate(&c) == API_CONTRACT_INVALID); } while (0)
+        BAD_NATIVE(rpc_service,NULL); BAD_NATIVE(rpc_service,""); BAD_NATIVE(rpc_service,"different.service");
+        BAD_NATIVE(wire_operation,NULL); BAD_NATIVE(wire_operation,""); BAD_NATIVE(wire_operation,"Subscribe");
+        BAD_NATIVE(method,API_METHOD_POST); BAD_NATIVE(method,API_METHOD_UNKNOWN);
+        BAD_NATIVE(url,"https://example.test/not-a-native-route"); BAD_NATIVE(header_count,1);
+        BAD_NATIVE(headers,contract_inspect(API_ALBUM)->headers);
+        BAD_NATIVE(persisted_sha256,contract_inspect(API_ALBUM)->persisted_sha256);
+        BAD_NATIVE(proofs,API_PROOF_ALL); BAD_NATIVE(transport,API_PATHFINDER);
+        BAD_NATIVE(variables,NULL); BAD_NATIVE(variable_count,0); BAD_NATIVE(response_count,0);
+#undef BAD_NATIVE
+    }
+}
 int main(void)
 {
-    catalog(); proof_gate(); api_contract_manifest_tests();
+    catalog(); proof_gate(); native_contracts(); api_contract_manifest_tests();
     puts("API contract catalog, fail-closed proof gate and sanitized fixture manifest passed");
     return 0;
 }

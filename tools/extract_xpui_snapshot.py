@@ -17,11 +17,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('snapshot', type=Path)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--expected-sha256', default='c20d9408009a281ee4152b63077a8309eb17ec172bbf80b80dc7879d586bb099',
+                        help='Explicitly pinned artifact digest; defaults to Spotify 1.3.4.258')
     args = parser.parse_args()
     data = args.snapshot.read_bytes()
-    expected = 'c20d9408009a281ee4152b63077a8309eb17ec172bbf80b80dc7879d586bb099'
+    expected = args.expected_sha256
+    if len(expected) != 64 or any(c not in '0123456789abcdef' for c in expected):
+        raise ValueError('Expected digest must be 64 lowercase hexadecimal characters')
     if digest(data) != expected:
-        raise ValueError('Snapshot identity differs from inspected Spotify 1.3.4.258')
+        raise ValueError('Snapshot identity differs from explicitly pinned digest')
     start_marker = 'var __webpack_modules__='.encode('utf-16-le')
     end_marker = '//# sourceMappingURL=xpui-modules.js.map'.encode('utf-16-le')
     if data.count(start_marker) != 1 or data.count(end_marker) != 1:

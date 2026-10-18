@@ -57,9 +57,10 @@ static bool count_matches(yyjson_val *root, const char *pointer, uint64_t expect
 static unsigned fixture_bit(const char *kind)
 {
     if (strcmp(kind,"observed-positive") == 0) { return 1; }
-    if (strcmp(kind,"observed-error") == 0) { return 2; }
+    if (strcmp(kind,"observed-error") == 0 || strcmp(kind,"observed-rejected-input") == 0) { return 2; }
     if (strcmp(kind,"observed-pagination") == 0) { return 4; }
     CHECK(strcmp(kind,"fault-injection") == 0 || strcmp(kind,"observed-native-rpc") == 0 ||
+        strcmp(kind,"observed-backend-http") == 0 ||
         strcmp(kind,"observed-alternative") == 0);
     return 0;
 }
@@ -90,6 +91,18 @@ static bool variables_match(const ApiContract *c, yyjson_val *variables)
     }
     return true;
 }
+static bool rejected_variables_match(const ApiContract *c, yyjson_val *variables, const char *rejected)
+{
+    if (!yyjson_is_obj(variables)) { return false; }
+    bool found = false;
+    for (size_t i = 0; i < c->variable_count; ++i) {
+        const ApiField *field = &c->variables[i];
+        bool valid = field_type(field,yyjson_obj_get(variables,field->name));
+        if (strcmp(field->name,rejected) == 0) { found = true; if (valid) { return false; } }
+        else if (!valid) { return false; }
+    }
+    return found;
+}
 static bool header_present(yyjson_val *names, const char *name)
 {
     size_t i, count; yyjson_val *item;
@@ -99,37 +112,163 @@ static bool header_present(yyjson_val *names, const char *name)
     }
     return false;
 }
+static bool template_matches(const char *pattern, const char *url)
+{
+    while (*pattern != '\0') {
+        if (*pattern == '{') {
+            const char *end = strchr(pattern,'}');
+            if (end == NULL || *url == '\0' || *url == '/') { return false; }
+            while (*url != '\0' && *url != '/') { ++url; }
+            pattern = end + 1;
+        } else if (*pattern++ != *url++) { return false; }
+    }
+    return *url == '\0';
+}
+static yyjson_val *query_value(yyjson_val *query, const char *name)
+{
+    size_t i, count; yyjson_val *item;
+    if (!yyjson_is_arr(query)) { return NULL; }
+    yyjson_arr_foreach(query,i,count,item) {
+        yyjson_val *key = yyjson_obj_get(item,"name");
+        if (yyjson_is_str(key) && strcmp(yyjson_get_str(key),name) == 0) {
+            return yyjson_obj_get(item,"value");
+        }
+    }
+    return NULL;
+}
+static bool lyrics_query_matches(const ApiContract *c, yyjson_val *query)
+{
+    for (size_t i = 0; i < c->variable_count; ++i) {
+        const ApiField *field = &c->variables[i];
+        /* Both mandatory path arguments were checked by template_matches. */
+        if (strcmp(field->name,"trackId") == 0 || strcmp(field->name,"image") == 0) { continue; }
+        yyjson_val *value = query_value(query,field->name);
+        if (field->type == API_FIELD_BOOL) {
+            if (!yyjson_is_str(value) || (strcmp(yyjson_get_str(value),"true") != 0 &&
+                strcmp(yyjson_get_str(value),"false") != 0)) { return false; }
+        } else if (!field_type(field,value)) { return false; }
+    }
+    return true;
+}
+static bool discriminant(yyjson_val *body, const char *path, const char *expected)
+{
+    yyjson_val *value = yyjson_ptr_get(body,path);
+    return yyjson_is_str(value) && strcmp(yyjson_get_str(value),expected) == 0;
+}
+static bool error_response(const ApiContract *c, yyjson_val *response)
+{
+    if (number(response,"status") >= 400) { return true; }
+    yyjson_val *body = yyjson_obj_get(response,"body"), *errors = yyjson_obj_get(body,"errors");
+    if (yyjson_is_arr(errors) && yyjson_arr_size(errors) != 0) { return true; }
+    switch (c->operation) {
+    case API_ALBUM: case API_ALBUM_TRACKS:
+        return discriminant(body,"/data/albumUnion/__typename","NotFound") ||
+            discriminant(body,"/data/albumUnion/__typename","GenericError") ||
+            discriminant(body,"/data/albumUnion/__typename","RestrictedContent");
+    case API_ARTIST: return discriminant(body,"/data/artistUnion/__typename","NotFound");
+    case API_HOME_SECTION:
+        return discriminant(body,"/data/homeSections/sections/0/__typename","NotFound") ||
+            discriminant(body,"/data/homeSections/sections/0/__typename","GenericError");
+    default: return false;
+    }
+}
+static bool no_pagination(const ApiContract *c, yyjson_val *entry)
+{
+    yyjson_val *pagination = yyjson_obj_get(entry,"pagination");
+    if (pagination == NULL) { return false; }
+    /* Audited source call sites have no continuation parameter. Nested Home
+     * sections and Artist discography use different operations. */
+    CHECK(c->operation == API_HOME || c->operation == API_ARTIST || c->operation == API_LYRICS);
+    CHECK(strcmp(string(pagination,"mode"),"none") == 0);
+    CHECK(strcmp(string(pagination,"source_sha256"),c->source_sha256) == 0);
+    CHECK(strcmp(string(pagination,"evidence_id"),c->evidence_id) == 0);
+    CHECK(strlen(string(pagination,"source_file")) != 0 && strlen(string(pagination,"reason")) != 0);
+    return true;
+}
+static void native_fixture(const ApiContract *c, yyjson_val *root, yyjson_val *entry)
+{
+    CHECK(strcmp(string(root,"kind"),"native-rpc") == 0);
+    CHECK(strcmp(string(root,"service"),c->rpc_service) == 0);
+    CHECK(strcmp(string(root,"method"),c->wire_operation) == 0);
+    CHECK(strcmp(string(entry,"wire_operation"),c->wire_operation) == 0);
+    yyjson_val *stream = yyjson_obj_get(root,"stream");
+    CHECK(yyjson_is_bool(stream) && !yyjson_get_bool(stream));
+    yyjson_val *request = yyjson_obj_get(root,"request"), *response = yyjson_obj_get(root,"response");
+    CHECK(variables_match(c,request));
+    uint64_t status = c->operation == API_LIBRARY ? number(response,"statusCode") :
+        number(yyjson_obj_get(response,"status"),"statusCode");
+    const char *kind = string(entry,"kind");
+    if (strcmp(kind,"observed-error") == 0) { CHECK(status >= 400); return; }
+    CHECK(status == 200);
+    for (size_t i = 0; i < c->response_count; ++i) {
+        CHECK(field_type(&c->response[i],yyjson_ptr_get(response,c->response[i].name)));
+    }
+    const char *offset_path = c->operation == API_LIBRARY ? "/header/skip" : "/query/range/start";
+    yyjson_val *offset = yyjson_ptr_get(request,offset_path);
+    CHECK(yyjson_is_uint(offset));
+    if (strcmp(kind,"observed-pagination") == 0) { CHECK(yyjson_get_uint(offset) > 0); }
+    else if (strcmp(kind,"observed-positive") == 0) { CHECK(yyjson_get_uint(offset) == 0); }
+    else { CHECK(strcmp(kind,"observed-alternative") == 0); }
+    if (c->operation == API_LIBRARY) {
+        CHECK(yyjson_is_uint(yyjson_ptr_get(request,"/header/length")));
+    } else { CHECK(yyjson_is_uint(yyjson_ptr_get(request,"/query/range/length"))); }
+}
 static void enabled_fixture(const ApiContract *c, yyjson_val *root, yyjson_val *entry)
 {
-    CHECK(strcmp(string(entry,"wire_operation"),c->wire_operation) == 0);
+    if (c->transport == API_NATIVE_RPC) { native_fixture(c,root,entry); return; }
     yyjson_val *request = yyjson_obj_get(root,"request"), *body = yyjson_obj_get(request,"body");
-    CHECK(strcmp(string(request,"method"),"POST") == 0);
-    CHECK(strcmp(string(request,"url"),c->url) == 0);
-    CHECK(strcmp(string(body,"operationName"),c->wire_operation) == 0);
-    yyjson_val *hash = yyjson_ptr_get(body,"/extensions/persistedQuery/sha256Hash");
-    CHECK(yyjson_is_str(hash) && strcmp(yyjson_get_str(hash),c->persisted_sha256) == 0);
-    CHECK(number(yyjson_obj_get(yyjson_obj_get(body,"extensions"),"persistedQuery"),"version") == 1);
-    CHECK(variables_match(c,yyjson_obj_get(body,"variables")));
-    CHECK(!variables_match(c,NULL));
+    const char *kind = string(entry,"kind");
+    CHECK(strcmp(string(request,"method"),c->method == API_METHOD_POST ? "POST" : "GET") == 0);
+    CHECK(template_matches(c->url,string(request,"url")));
+    if (c->transport == API_PATHFINDER) {
+        CHECK(strcmp(string(entry,"wire_operation"),c->wire_operation) == 0);
+        CHECK(strcmp(string(body,"operationName"),c->wire_operation) == 0);
+        yyjson_val *hash = yyjson_ptr_get(body,"/extensions/persistedQuery/sha256Hash");
+        CHECK(yyjson_is_str(hash) && strcmp(yyjson_get_str(hash),c->persisted_sha256) == 0);
+        CHECK(number(yyjson_obj_get(yyjson_obj_get(body,"extensions"),"persistedQuery"),"version") == 1);
+        if (strcmp(kind,"observed-rejected-input") == 0) {
+            CHECK(rejected_variables_match(c,yyjson_obj_get(body,"variables"),string(entry,"rejected_field")));
+        } else { CHECK(variables_match(c,yyjson_obj_get(body,"variables"))); }
+    } else {
+        CHECK(c->operation == API_LYRICS && yyjson_is_null(body));
+        CHECK(yyjson_is_null(yyjson_obj_get(entry,"wire_operation")));
+        CHECK(lyrics_query_matches(c,yyjson_obj_get(request,"query")));
+    }
     yyjson_val *names = yyjson_obj_get(request,"header_names");
     for (size_t i = 0; i < c->header_count; ++i) {
         if (c->headers[i].required) { CHECK(header_present(names,c->headers[i].name)); }
     }
     CHECK(!header_present(names,"unobserved-header"));
     CHECK(number(entry,"original_response_bytes") <= c->response_cap);
-    yyjson_val *response = yyjson_ptr_get(root,"/response/body");
+    yyjson_val *envelope = yyjson_obj_get(root,"response"), *response = yyjson_obj_get(envelope,"body");
+    if (strcmp(kind,"observed-error") == 0 || strcmp(kind,"observed-rejected-input") == 0 ||
+        strcmp(kind,"fault-injection") == 0) {
+        CHECK(error_response(c,envelope)); return;
+    }
+    CHECK(number(envelope,"status") >= 200 && number(envelope,"status") < 300);
+    CHECK(!error_response(c,envelope));
     for (size_t i = 0; i < c->response_count; ++i) {
         CHECK(field_type(&c->response[i],yyjson_ptr_get(response,c->response[i].name)));
     }
-    yyjson_val *typename = yyjson_ptr_get(response,"/data/albumUnion/__typename");
-    const char *kind = string(entry,"kind");
-    if (strcmp(kind,"observed-error") == 0) {
-        CHECK(strcmp(yyjson_get_str(typename),"NotFound") == 0);
-    } else {
-        CHECK(strcmp(yyjson_get_str(typename),"Album") == 0);
-        if (strcmp(kind,"observed-pagination") == 0) {
-            CHECK(number(entry,"expected_count") == 0);
-            CHECK(number(yyjson_obj_get(body,"variables"),"offset") >=
+    if (c->operation == API_ALBUM || c->operation == API_ALBUM_TRACKS) {
+        CHECK(discriminant(response,"/data/albumUnion/__typename","Album"));
+        CHECK(yyjson_is_arr(yyjson_ptr_get(response,"/data/albumUnion/tracksV2/items")));
+        CHECK(yyjson_is_uint(yyjson_ptr_get(response,"/data/albumUnion/tracksV2/totalCount")));
+    } else if (c->operation == API_ARTIST) {
+        CHECK(discriminant(response,"/data/artistUnion/__typename","Artist"));
+    } else if (c->operation == API_HOME) {
+        CHECK(discriminant(response,"/data/home/__typename","HomeResponsePayload"));
+    } else if (c->operation == API_HOME_SECTION) {
+        CHECK(discriminant(response,"/data/homeSections/__typename","HomeSectionCollection"));
+        CHECK(discriminant(response,"/data/homeSections/sections/0/__typename","HomeSection"));
+        CHECK(yyjson_is_arr(yyjson_ptr_get(response,"/data/homeSections/sections/0/sectionItems/items")));
+    }
+    if (strcmp(kind,"observed-pagination") == 0) {
+        yyjson_val *variables = yyjson_obj_get(body,"variables");
+        const char *offset = c->operation == API_HOME_SECTION ? "sectionItemsOffset" : "offset";
+        CHECK(number(variables,offset) > 0);
+        if ((c->operation == API_ALBUM || c->operation == API_ALBUM_TRACKS) && number(entry,"expected_count") == 0) {
+            CHECK(number(variables,offset) >=
                 yyjson_get_uint(yyjson_ptr_get(response,"/data/albumUnion/tracksV2/totalCount")));
         }
     }
@@ -143,7 +282,7 @@ void api_contract_manifest_tests(void)
     CHECK(number(root,"schema_version") == 1);
     CHECK(yyjson_is_arr(operations) && yyjson_arr_size(operations) == API_OPERATION_COUNT);
     unsigned fixture_coverage[API_OPERATION_COUNT] = {0};
-    bool seen[API_OPERATION_COUNT] = {false};
+    bool seen[API_OPERATION_COUNT] = {false}, unpaged[API_OPERATION_COUNT] = {false};
     size_t i, maximum; yyjson_val *entry;
     yyjson_arr_foreach(operations,i,maximum,entry) {
         uint64_t id = number(entry,"id"); CHECK(id < API_OPERATION_COUNT && !seen[id]); seen[id] = true;
@@ -154,8 +293,10 @@ void api_contract_manifest_tests(void)
         CHECK(number(entry,"missing_proofs") == contract_missing_proofs(c));
         yyjson_val *enabled = yyjson_obj_get(entry,"enabled"); CHECK(yyjson_is_bool(enabled));
         CHECK(yyjson_get_bool(enabled) == (contract_validate(c) == API_CONTRACT_OK));
+        unpaged[id] = no_pagination(c,entry);
         if (c->wire_operation == NULL) { CHECK(yyjson_is_null(yyjson_obj_get(entry,"wire_operation"))); }
         else { CHECK(strcmp(string(entry,"wire_operation"),c->wire_operation) == 0); }
+        if (c->transport == API_NATIVE_RPC) { CHECK(strcmp(string(entry,"rpc_service"),c->rpc_service) == 0); }
     }
     yyjson_val *fixtures = yyjson_obj_get(root,"fixtures");
     CHECK(yyjson_is_arr(fixtures) && yyjson_arr_size(fixtures) >= 4);
@@ -184,26 +325,36 @@ void api_contract_manifest_tests(void)
         const ApiContract *c = contract_inspect((ApiOperation)id);
         const char *kind = string(entry,"kind");
         if (c->transport == API_PATHFINDER && strcmp(kind,"observed-native-rpc") != 0 &&
+            strcmp(kind,"observed-rejected-input") != 0 &&
             strcmp(string(entry,"wire_operation"),c->wire_operation) == 0 &&
             (c->proofs & API_PROOF_VARIABLES) != 0) {
             CHECK(variables_match(c,yyjson_ptr_get(yyjson_doc_get_root(doc),"/request/body/variables")));
         }
-        if (contract_validate(c) == API_CONTRACT_OK) { enabled_fixture(c,yyjson_doc_get_root(doc),entry); }
+        if (contract_validate(c) == API_CONTRACT_OK && strcmp(kind,"observed-native-rpc") != 0 &&
+            strcmp(kind,"observed-backend-http") != 0) { enabled_fixture(c,yyjson_doc_get_root(doc),entry); }
         yyjson_doc_free(doc);
     }
     for (unsigned op = 0; op < API_OPERATION_COUNT; ++op) {
         CHECK(seen[op]);
         if (contract_validate(contract_inspect((ApiOperation)op)) == API_CONTRACT_OK) {
             /* Fault injection/native IPC observations cannot enable HTTPS. */
-            CHECK(fixture_coverage[op] == 7);
+            CHECK((fixture_coverage[op] & 3) == 3);
+            CHECK((fixture_coverage[op] & 4) != 0 || unpaged[op]);
         }
     }
     CHECK(!basename_only("../outside.json") && !basename_only("C:\\secret.json"));
     CHECK(!basename_only("/outside.json") && !basename_only(""));
+    CHECK(template_matches("https://host/track/{id}/image/{image}","https://host/track/redacted/image/redacted"));
+    CHECK(!template_matches("https://host/track/{id}/image/{image}","https://other/track/redacted/image/redacted"));
+    CHECK(!template_matches("https://host/track/{id}/image/{image}","https://host/track//image/redacted"));
+    CHECK(!template_matches("https://host/track/{id}/image/{image}","https://host/track/redacted/image/"));
     static const char wrong_type[] = "{\"uri\":\"redacted\",\"locale\":\"\",\"offset\":true,\"limit\":2}";
     memcpy(fixture_bytes,wrong_type,sizeof(wrong_type));
     yyjson_doc *invalid = parse(fixture_bytes,sizeof(wrong_type)-1,fixture_pool,sizeof(fixture_pool));
     CHECK(!variables_match(contract_inspect(API_ALBUM),yyjson_doc_get_root(invalid)));
+    CHECK(rejected_variables_match(contract_inspect(API_ALBUM),yyjson_doc_get_root(invalid),"offset"));
+    CHECK(!rejected_variables_match(contract_inspect(API_ALBUM),yyjson_doc_get_root(invalid),"limit"));
+    CHECK(!rejected_variables_match(contract_inspect(API_ALBUM),yyjson_doc_get_root(invalid),"unknown"));
     yyjson_doc_free(invalid);
     yyjson_doc_free(manifest); CHECK(crypto_balanced(&crypto));
 }
