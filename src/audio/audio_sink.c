@@ -33,6 +33,7 @@ AudioResult sink_open(AudioSink *s, void *pcm, const SinkBackend *backend, void 
     atomic_init(&s->underrun_frames, 0); atomic_init(&s->producer_wakes, 0);
     atomic_init(&s->device_bytes, 0); atomic_init(&s->device_peak, 0);
     atomic_init(&s->callback_violations, 0);
+    atomic_init(&s->span_read, 0); atomic_init(&s->span_write, 0); atomic_init(&s->span_overflow, 0);
     if (!atomic_is_lock_free(&s->media_frames) || !atomic_is_lock_free(&s->state) ||
         !atomic_is_lock_free(&s->device_bytes)) { return AUDIO_UNSUPPORTED; }
     s->producer_event = CreateEventW(NULL, TRUE, FALSE, NULL);
@@ -69,6 +70,8 @@ AudioResult sink_start(AudioSink *s)
     }
     atomic_store(&s->media_frames, 0); atomic_store(&s->submitted_frames, 0);
     atomic_store(&s->underrun_frames, 0); s->paused_clock = (SinkClock){0};
+    atomic_store(&s->span_read, 0); atomic_store(&s->span_write, 0); atomic_store(&s->span_overflow, 0);
+    s->played_media = s->output_base = 0; s->played_valid = false;
     atomic_fetch_or(&s->producer_gate, 1);
     unsigned expected = SINK_STOPPED;
     if (!atomic_compare_exchange_strong(&s->state, &expected, SINK_RUNNING)) {
@@ -79,10 +82,21 @@ AudioResult sink_start(AudioSink *s)
     if (r != AUDIO_OK) { sink_device_lost(s); }
     return r;
 }
+AudioResult sink_prepare(AudioSink *s)
+{
+    if (!owner(s) || atomic_load(&s->state) != SINK_STOPPED || atomic_load(&s->invalidated)) {
+        return AUDIO_BAD_STATE;
+    }
+    atomic_store(&s->media_frames, 0); atomic_store(&s->submitted_frames, 0); atomic_store(&s->underrun_frames, 0);
+    atomic_store(&s->span_read, 0); atomic_store(&s->span_write, 0); atomic_store(&s->span_overflow, 0);
+    s->played_media = s->output_base = 0; s->played_valid = false; s->paused_clock = (SinkClock){0};
+    ResetEvent(s->producer_event); atomic_fetch_or(&s->producer_gate, 1); return AUDIO_OK;
+}
 AudioResult sink_pause(AudioSink *s)
 {
     if (!owner(s) || atomic_load(&s->state) != SINK_RUNNING) { return AUDIO_BAD_STATE; }
-    s->paused_clock = s->backend->clock(s->backend_context);
+    SinkInfo frozen = sink_info(s);
+    s->paused_clock = frozen.clock;
     unsigned expected = SINK_RUNNING;
     if (!atomic_compare_exchange_strong(&s->state, &expected, SINK_PAUSED)) { return AUDIO_BAD_STATE; }
     AudioResult r = s->backend->stop(s->backend_context);
@@ -95,6 +109,7 @@ AudioResult sink_resume(AudioSink *s)
     unsigned expected = SINK_PAUSED;
     if (!atomic_compare_exchange_strong(&s->state, &expected, SINK_RUNNING)) { return AUDIO_BAD_STATE; }
     ++s->clock_epoch;
+    s->output_base = atomic_load(&s->submitted_frames);
     AudioResult r = s->backend->start(s->backend_context);
     if (r != AUDIO_OK) { sink_device_lost(s); }
     return r;
@@ -155,6 +170,7 @@ SinkInfo sink_info(AudioSink *s)
     i.device_bytes = atomic_load(&s->device_bytes); i.device_peak = atomic_load(&s->device_peak);
     i.clock_epoch = s->clock_epoch;
     i.os_buffer_bytes = s->os_buffer_bytes; i.callback_violations = atomic_load(&s->callback_violations);
+    sink_timeline_query(s, &i);
     return i;
 }
 AudioResult sink_write(AudioSink *s, const float *pcm, size_t frames, size_t *written)

@@ -58,8 +58,9 @@ void sink_render(AudioSink *s, float *output, uint32_t frames)
         output[i] = !isfinite(v) ? 0 : v > 1 ? 1 : v < -1 ? -1 : v;
     }
     memset((uint8_t *)output + got * stride, 0, ((size_t)frames - got) * stride);
-    atomic_fetch_add_explicit(&s->media_frames, got, memory_order_relaxed);
-    atomic_fetch_add_explicit(&s->submitted_frames, frames, memory_order_relaxed);
+    uint64_t media = atomic_fetch_add_explicit(&s->media_frames, got, memory_order_relaxed);
+    uint64_t submitted = atomic_fetch_add_explicit(&s->submitted_frames, frames, memory_order_relaxed);
+    sink_timeline_record(s, submitted, media, frames, (uint32_t)got);
     atomic_fetch_add_explicit(&s->underrun_frames, frames - got, memory_order_relaxed);
     if (spsc_readable(&s->ring) <= s->low_water && atomic_exchange(&s->wake_armed, 0)) {
         atomic_fetch_add_explicit(&s->producer_wakes, 1, memory_order_relaxed);

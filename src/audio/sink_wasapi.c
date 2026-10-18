@@ -157,10 +157,10 @@ static SinkClock clock_device(void *ctx)
     WasapiSink *w = ctx; SinkClock c = {0}; REFERENCE_TIME latency = 0;
     IAudioClient *client = w->device.wasapi.pAudioClientPlayback;
     c.valid = IAudioClock_GetPosition(w->clock, &c.position, &c.qpc_100ns) == S_OK &&
-        SUCCEEDED(IAudioClock_GetFrequency(w->clock, &c.frequency)) &&
-        SUCCEEDED(IAudioClient_GetCurrentPadding(client, &c.padding_frames)) &&
+        SUCCEEDED(IAudioClock_GetFrequency(w->clock, &c.frequency)) && c.frequency != 0;
+    c.latency_valid = SUCCEEDED(IAudioClient_GetCurrentPadding(client, &c.padding_frames)) &&
         SUCCEEDED(IAudioClient_GetStreamLatency(client, &latency));
-    if (c.valid) { c.latency_100ns = (uint64_t)latency; }
+    if (c.latency_valid) { c.latency_100ns = (uint64_t)latency; }
     return c;
 }
 const SinkBackend sink_wasapi_backend = {open_device, start_device, stop_device, close_device, clock_device};

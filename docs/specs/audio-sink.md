@@ -46,8 +46,10 @@ Allocator/lock audit counters flag attempts from inside our callback.
 Clock queries run on the owner, outside the callback. Report raw position,
 frequency, correlated QPC in 100 ns units, endpoint padding, stream latency,
 submitted frames (including silence), consumed media frames and underruns.
-Consumed media frames are ahead of audible playback; there is deliberately
-no estimate obtained by subtracting latency across underruns. Clock queries
+Consumed media frames are ahead of audible playback. Issue #18 adds a bounded
+media-span ledger for `played_media_frames`: device position is mapped through
+implicit silent gaps, with a padding/latency fallback and explicit validity.
+No media position is guessed by subtracting latency across underruns. Clock queries
 can fail or be inaccurate; validity is explicit. A clock epoch changes on
 start/resume because WASAPI reset may restart raw position. Paused snapshots preserve
 the last clock because miniaudio stop can reset its underlying stream.

@@ -9,14 +9,18 @@ typedef enum SinkState { SINK_STOPPED, SINK_RUNNING, SINK_PAUSED, SINK_LOST } Si
 typedef struct SinkClock {
     uint64_t position, frequency, qpc_100ns, latency_100ns;
     uint32_t padding_frames;
-    bool valid;
+    bool valid, latency_valid;
 } SinkClock;
+enum { SINK_TIMELINE_SPANS = 256 };
+typedef struct SinkSpan { uint64_t output_start, media_start; uint32_t frames, media; } SinkSpan;
 typedef struct SinkInfo {
     AudioFormat format;
     SinkState state;
     SinkClock clock;
     uint64_t media_frames, submitted_frames, underrun_frames, producer_wakes;
     uint64_t clock_epoch; /* Changes on start/resume; backend stop may reset its clock. */
+    uint64_t played_media_frames;
+    bool timeline_valid, timeline_overflow;
     size_t device_bytes, device_peak, os_buffer_bytes;
     uint32_t callback_violations;
 } SinkInfo;
@@ -45,6 +49,11 @@ struct AudioSink {
     _Atomic unsigned callback_violations;
     SinkClock paused_clock;
     uint64_t clock_epoch;
+    SinkSpan spans[SINK_TIMELINE_SPANS];
+    _Atomic uint64_t span_read, span_write;
+    _Atomic unsigned span_overflow;
+    uint64_t played_media, output_base;
+    bool played_valid;
     bool opened;
 };
 /* Zero-initialize and do not copy a live sink. Owner must be a non-GUI worker.
@@ -52,6 +61,7 @@ struct AudioSink {
  * NULL backend selects production WASAPI; otherwise all operations required. */
 AudioResult sink_open(AudioSink *, void *pcm, const SinkBackend *, void *context);
 AudioResult sink_start(AudioSink *);
+AudioResult sink_prepare(AudioSink *); /* Owner: reopen PCM admission while stopped, for prebuffering. */
 AudioResult sink_pause(AudioSink *);
 AudioResult sink_resume(AudioSink *);
 AudioResult sink_stop(AudioSink *);
@@ -73,5 +83,8 @@ void sink_device_lost(AudioSink *);
 void *sink_device_alloc(AudioSink *, size_t);
 void sink_device_free(AudioSink *, void *);
 bool sink_audit_lock(AudioSink *);
+/* Internal callback/owner ledger; no allocation, lock, or signaling. */
+void sink_timeline_record(AudioSink *, uint64_t output, uint64_t media, uint32_t frames, uint32_t got);
+void sink_timeline_query(AudioSink *, SinkInfo *);
 extern const SinkBackend sink_wasapi_backend;
 #endif

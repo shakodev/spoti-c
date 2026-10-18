@@ -139,12 +139,25 @@ target_link_libraries(spotic_vorbis PUBLIC spotic_core)
 add_library(spotic_miniaudio STATIC src/audio/miniaudio_impl.c)
 target_include_directories(spotic_miniaudio PRIVATE src/audio vendor)
 target_link_libraries(spotic_miniaudio PUBLIC spotic_build_options)
-add_library(spotic_audio_sink STATIC src/audio/audio_sink.c src/audio/sink_callback.c
+add_library(spotic_audio_sink STATIC src/audio/audio_sink.c src/audio/sink_callback.c src/audio/sink_timeline.c
     src/audio/sink_wasapi.c)
 target_include_directories(spotic_audio_sink PUBLIC src PRIVATE vendor)
 target_link_libraries(spotic_audio_sink PUBLIC spotic_core PRIVATE spotic_miniaudio ole32 user32 synchronization)
 
+add_library(spotic_player STATIC src/audio/player.c src/audio/player_commands.c src/audio/player_queue.c
+    src/audio/player_prefetch.c src/audio/player_timeline.c)
+target_include_directories(spotic_player PUBLIC src)
+target_link_libraries(spotic_player PUBLIC spotic_vorbis spotic_audio_sink)
+
 if(BUILD_TESTING)
+    foreach(player_test IN ITEMS player gapless)
+        add_executable(test_${player_test} tests/test_${player_test}.c tests/player_test_support.c)
+        target_include_directories(test_${player_test} PRIVATE tests)
+        target_compile_definitions(test_${player_test} PRIVATE VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
+        target_link_libraries(test_${player_test} PRIVATE spotic_player)
+        add_test(NAME audio_${player_test} COMMAND test_${player_test})
+        set_tests_properties(audio_${player_test} PROPERTIES TIMEOUT 90)
+    endforeach()
     add_executable(test_audio_sink tests/test_audio_sink.c tests/test_sink_races.c)
     target_include_directories(test_audio_sink PRIVATE tests)
     target_link_libraries(test_audio_sink PRIVATE spotic_audio_sink)
