@@ -1,0 +1,67 @@
+{
+  "classification": "REA static byte observations of the original shipped DLL; no live traffic",
+  "source_sha256": "ae772df4dca26c53c73ea720836db77584dc431d14d3ab3b5c4b49b0bd2b8fde",
+  "limitations": [
+    "Code/reference analyzers disabled in the original-DLL byte profile",
+    "Request semantics interpreted with bounded Microsoft DUMPBIN disassembly and derived-container REA decompilation",
+    "Login5 wire tags additionally attributed to pinned librespot schemas; no XPUI JSON contract recovered"
+  ],
+  "observations": [
+    {
+      "id": "ev_5f4703f11807649a94f612b5cdf0f19fc8e18cca68a79327f559d274a0e727c3",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x181305dcc",
+      "bytes": 671,
+      "bytes_sha256": "af273fa9a681754d42bb53243090de8f585b086b32613a065a26e96f4ed9ff79"
+    },
+    {
+      "id": "ev_17e06e59f6f74e2a8984ea2d32d47150c0d97f6af9cf766f92a491316fbbb2dd",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x181c10710",
+      "bytes": 3213,
+      "bytes_sha256": "5f8892ceeb08d8700b50a1dc90c91b9f5029a61c2a3c4e450929e9748fefe3eb"
+    },
+    {
+      "id": "ev_7d3ebb9bd04b4e3da34f7dd33020ad4d9d016ebe3c95dfbb5b20dda6beb38190",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x18145dbbc",
+      "bytes": 309,
+      "bytes_sha256": "217cdd89c4f6949728381f4775eb0122f96264d59280bd6b2835af9558a54742"
+    },
+    {
+      "id": "ev_6e90b4cd5b5e8e2d7e55e082a17a8e87f7169b0208b8512862057e9e3245b850",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x181c0ebd0",
+      "bytes": 80,
+      "bytes_sha256": "bb554cce285028afec4f9e34b57cdc04b35ff4137f95d721d781f73506f6280e"
+    },
+    {
+      "id": "ev_8f838016caf2d2194a17dd16e3557ecd174fc8ebaa79a05b50e99b6cf8866043",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x181c5bd80",
+      "bytes": 180,
+      "bytes_sha256": "49f1d662dc0970b6d204bd175ba2ea350549672721d2d70cbab7f173fdc6ba24"
+    },
+    {
+      "id": "ev_822405093b7f245b18b14c19d701b3b26387511bb818d24dad6a029d5e68075c",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x181340da8",
+      "bytes": 810,
+      "bytes_sha256": "0d96d1084af6cefd9a0fa4ce4dca1b600b2d2a206fa2443474fbe951a0e33144"
+    },
+    {
+      "id": "ev_8f8d7caeb59084ff4309c9e468534fe57121fbb5e9493ebffdce99ce51aa230e",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x181c14678",
+      "bytes": 80,
+      "bytes_sha256": "499189dbaf1fb108b2751ca927c48410ecfd24ade292e1e79b2a2f30914a194b"
+    },
+    {
+      "id": "ev_81aeabaa8d72990282d83162637b00a264d6b8a82a53032fbc2fc627c199086f",
+      "profile": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+      "address": "0x18265fa88",
+      "bytes": 32,
+      "bytes_sha256": "bd2cb9476bb06ae70bcb72b9b5494575b1f028bec62b310ebfa776f63b5efa05"
+    }
+  ]
+}

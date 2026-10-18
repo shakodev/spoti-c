@@ -2,6 +2,8 @@
 #include "pb_common.h"
 #include "pb_decode.h"
 #include "pb_encode.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <string.h>
 
 enum { MAX_FIELDS = 128 };
@@ -68,9 +70,15 @@ static ProtoResult validate_field(pb_istream_t *stream, pb_wire_type_t wire,
         if (type == PB_LTYPE_STRING) {
             char value[PROTO_MAX_BLOB];
             size_t length = sub.bytes_left;
-            if (!pb_read(&sub, (pb_byte_t *)value, length)) return PROTO_MALFORMED;
+            if (!pb_read(&sub, (pb_byte_t *)value, length)) {
+                SecureZeroMemory(value, sizeof(value)); return PROTO_MALFORMED;
+            }
             value[length] = '\0';
-            if (memchr(value, 0, length) || !pb_validate_utf8(value)) return PROTO_MALFORMED;
+            bool valid = memchr(value, 0, length) == NULL && pb_validate_utf8(value);
+            /* Authentication strings pass through this preflight too. Do not
+             * leave a second plaintext token copy in validator stack storage. */
+            SecureZeroMemory(value, sizeof(value));
+            if (!valid) return PROTO_MALFORMED;
         } else if (!pb_read(&sub, NULL, sub.bytes_left)) return PROTO_MALFORMED;
     }
     return pb_close_string_substream(stream, &sub) ? PROTO_OK : PROTO_MALFORMED;

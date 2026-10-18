@@ -89,6 +89,11 @@ add_library(spotic_oauth STATIC src/api/oauth.c src/api/oauth_loopback.c src/api
 target_include_directories(spotic_oauth PUBLIC src)
 target_link_libraries(spotic_oauth PUBLIC spotic_http spotic_json_base spotic_credentials shell32 ws2_32)
 
+add_library(spotic_tokens STATIC src/api/token_manager.c src/api/token_scope.c
+    src/api/token_hashcash.c src/api/clienttoken.c src/api/login5.c)
+target_include_directories(spotic_tokens PUBLIC src)
+target_link_libraries(spotic_tokens PUBLIC spotic_http spotic_proto spotic_crypto spotic_credentials)
+
 add_library(spotic_ap STATIC src/protocol/ap_packet.c src/protocol/ap_handshake.c
     src/protocol/ap_resolve.c src/protocol/ap_session.c src/protocol/ap_socket.c
     src/protocol/ap_io.c src/protocol/ap_route.c)
@@ -97,6 +102,17 @@ target_include_directories(spotic_ap PUBLIC src)
 target_link_libraries(spotic_ap PUBLIC spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
 
 if(BUILD_TESTING)
+    set(AUTH_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/auth_vectors.h")
+    add_custom_command(OUTPUT "${AUTH_VECTORS}"
+        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/auth_fixtures.py" --header "${AUTH_VECTORS}"
+        DEPENDS "${PROJECT_SOURCE_DIR}/tools/auth_fixtures.py" "${PROJECT_SOURCE_DIR}/tests/fixtures/auth/vectors.json"
+        COMMENT "Preparing independent sanitized authentication fixtures" VERBATIM)
+    add_executable(test_token_manager tests/test_token_manager.c tests/test_token_challenges.c
+        tests/test_token_errors.c tests/support/http_server.c "${AUTH_VECTORS}")
+    target_include_directories(test_token_manager PRIVATE tests "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    target_link_libraries(test_token_manager PRIVATE spotic_tokens ws2_32)
+    add_test(NAME api_tokens COMMAND test_token_manager)
+    set_tests_properties(api_tokens PROPERTIES TIMEOUT 60)
     add_executable(test_json_base tests/test_json_base.c)
     target_include_directories(test_json_base PRIVATE tests)
     target_link_libraries(test_json_base PRIVATE spotic_json_base)
