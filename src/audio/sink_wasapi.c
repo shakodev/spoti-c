@@ -78,7 +78,11 @@ static void *device_realloc(void *p, size_t n, void *ctx)
 static void render(ma_device *d, void *out, const void *in, ma_uint32 frames)
 {
     (void)in; WasapiSink *w = d->pUserData;
+    LARGE_INTEGER before, after; QueryPerformanceCounter(&before);
     sink_render(w->sink, out, frames);
+    QueryPerformanceCounter(&after);
+    atomic_fetch_add_explicit(&w->sink->callback_ticks, (uint64_t)(after.QuadPart - before.QuadPart), memory_order_relaxed);
+    atomic_fetch_add_explicit(&w->sink->callback_count, 1, memory_order_relaxed);
 }
 static void notification(const ma_device_notification *n)
 {

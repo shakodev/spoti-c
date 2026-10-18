@@ -1,10 +1,11 @@
 #include "player_internal.h"
+#include "core/thread.h"
 
 PlayerResult player_create(Arena *core, const PlayerConfig *config, Player **out)
 {
     if (!out) { return PLAYER_INVALID; } *out = NULL;
     if (!core || core->capacity > MEMORY_BUDGET_CORE || !config || !config->sink ||
-        !config->sink->opened || config->sink->owner != GetCurrentThreadId() || IsGUIThread(FALSE) ||
+        !config->sink->opened || config->sink->owner != GetCurrentThreadId() || core_thread_is_gui() ||
         atomic_load(&config->sink->state) != SINK_STOPPED) { return PLAYER_INVALID; }
     Arena *arenas[4] = {config->codec[0], config->codec[1], config->work[0], config->work[1]};
     for (unsigned i = 0; i < 4; ++i) {

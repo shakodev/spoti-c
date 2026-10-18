@@ -18,6 +18,7 @@ typedef struct SinkInfo {
     SinkState state;
     SinkClock clock;
     uint64_t media_frames, submitted_frames, underrun_frames, producer_wakes;
+    uint64_t callback_ticks, callback_count; /* WASAPI adapter QPC duration, lifetime totals. */
     uint64_t clock_epoch; /* Changes on start/resume; backend stop may reset its clock. */
     uint64_t played_media_frames;
     bool timeline_valid, timeline_overflow;
@@ -45,6 +46,7 @@ struct AudioSink {
     size_t low_water, os_buffer_bytes;
     _Atomic unsigned state, producer_gate, gain, wake_armed, invalidated;
     _Atomic uint64_t media_frames, submitted_frames, underrun_frames, producer_wakes;
+    _Atomic uint64_t callback_ticks, callback_count;
     _Atomic size_t device_bytes, device_peak;
     _Atomic unsigned callback_violations;
     SinkClock paused_clock;

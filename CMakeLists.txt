@@ -19,6 +19,7 @@ option(ENABLE_ASAN "Enable AddressSanitizer in Debug builds" ON)
 option(ENABLE_LIVE_OAUTH_TEST "Enable browser/account-dependent OAuth and AP compatibility test" OFF)
 option(ENABLE_LIVE_MEDIA_TEST "Enable browser/account-dependent playable media resolution smoke" OFF)
 option(ENABLE_LIVE_AUDIO_TEST "Enable physical WASAPI/default-device-change test" OFF)
+option(ENABLE_LIVE_HEADLESS_TEST "Enable account/WASAPI headless playback acceptance" OFF)
 
 add_library(spotic_build_options INTERFACE)
 target_compile_features(spotic_build_options INTERFACE c_std_17)
@@ -149,7 +150,48 @@ add_library(spotic_player STATIC src/audio/player.c src/audio/player_commands.c 
 target_include_directories(spotic_player PUBLIC src)
 target_link_libraries(spotic_player PUBLIC spotic_vorbis spotic_audio_sink)
 
+add_library(spotic_headless STATIC src/headless/runtime.c src/headless/network.c
+    src/headless/sources.c src/headless/decode.c src/headless/commands.c
+    src/headless/diagnostics.c src/headless/fixture_media.c src/headless/live.c)
+target_include_directories(spotic_headless PUBLIC src)
+target_link_libraries(spotic_headless PUBLIC spotic_player spotic_decrypt spotic_ap spotic_json_base psapi)
+if(MSVC)
+    # Fixture/fake output does not need the COM device or credential DLLs.
+    # Keep the same binary's opt-in WASAPI/account paths available on demand.
+    target_link_options(spotic_headless INTERFACE
+        /DELAYLOAD:ole32.dll /DELAYLOAD:USER32.dll /DELAYLOAD:CRYPT32.dll)
+    target_link_libraries(spotic_headless INTERFACE delayimp)
+endif()
+add_library(spotic_headless_fixture STATIC src/headless/fixture_server.c)
+target_link_libraries(spotic_headless_fixture PUBLIC spotic_build_options ws2_32)
+target_include_directories(spotic_headless_fixture PUBLIC src)
+add_executable(spotic-headless src/headless/main.c)
+target_link_libraries(spotic-headless PRIVATE spotic_headless_fixture spotic_headless)
+
 if(BUILD_TESTING)
+    add_executable(test_headless tests/test_headless.c tests/headless_support.c)
+    target_include_directories(test_headless PRIVATE tests)
+    target_compile_definitions(test_headless PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio"
+        HEADLESS_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+    target_link_libraries(test_headless PRIVATE spotic_headless_fixture spotic_headless)
+    add_test(NAME audio_headless_smoke COMMAND test_headless)
+    set_tests_properties(audio_headless_smoke PROPERTIES TIMEOUT 120)
+    if(ENABLE_LIVE_HEADLESS_TEST)
+        add_executable(test_headless_live tests/test_headless_live.c)
+        target_include_directories(test_headless_live PRIVATE tests)
+        target_link_libraries(test_headless_live PRIVATE spotic_headless)
+        add_test(NAME audio_headless_live COMMAND test_headless_live)
+        set_tests_properties(audio_headless_live PROPERTIES TIMEOUT 180 LABELS "live;account;hardware" SKIP_RETURN_CODE 77)
+    endif()
+    if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_executable(bench_headless tests/bench_headless.c tests/headless_support.c)
+        target_include_directories(bench_headless PRIVATE tests)
+        target_compile_definitions(bench_headless PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio"
+            HEADLESS_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+        target_link_libraries(bench_headless PRIVATE spotic_headless_fixture spotic_headless)
+        add_test(NAME bench_headless COMMAND bench_headless)
+        set_tests_properties(bench_headless PROPERTIES TIMEOUT 660 LABELS "performance")
+    endif()
     foreach(player_test IN ITEMS player gapless)
         add_executable(test_${player_test} tests/test_${player_test}.c tests/player_test_support.c)
         target_include_directories(test_${player_test} PRIVATE tests)

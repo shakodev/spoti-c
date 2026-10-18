@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "frames": 576137,
+  "sample_rate": 48000,
+  "channels": 2,
+  "nominal_bitrate": 320000,
+  "measured_bitrate": 362806.3741783638,
+  "oracle": "libsndfile/libvorbis",
+  "soundfile": "0.13.1",
+  "libsndfile": "1.2.2",
+  "numpy": "2.2.6",
+  "files": {
+    "synthetic.ogg": {
+      "bytes": 544339,
+      "sha256": "3231178ad8f68af014466ae891b3c0827c200ffc826417226a7643bddd792e48"
+    },
+    "synthetic.enc": {
+      "bytes": 544506,
+      "sha256": "17bed6b44a8a13f16e78128481028a36e4096279d0559bc261049d2feac74c18"
+    },
+    "synthetic.f32": {
+      "bytes": 4609096,
+      "sha256": "c3373f5f3723ef00a20fb0be3e36c36cc20e1aca62aa8eec7edec51e26d7106d"
+    }
+  }
+}

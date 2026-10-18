@@ -1,4 +1,5 @@
 #include "audio_sink.h"
+#include "core/thread.h"
 #include <math.h>
 #include <string.h>
 
@@ -18,7 +19,7 @@ static void producer_leave(AudioSink *s)
 }
 AudioResult sink_open(AudioSink *s, void *pcm, const SinkBackend *backend, void *context)
 {
-    if (s == NULL || pcm == NULL || s->opened || IsGUIThread(FALSE)) { return AUDIO_INVALID; }
+    if (s == NULL || pcm == NULL || s->opened || core_thread_is_gui()) { return AUDIO_INVALID; }
     if (backend == NULL) { backend = &sink_wasapi_backend; }
     if (!backend->open || !backend->start || !backend->stop || !backend->close || !backend->clock) {
         return AUDIO_INVALID;
@@ -31,6 +32,7 @@ AudioResult sink_open(AudioSink *s, void *pcm, const SinkBackend *backend, void 
     atomic_init(&s->producer_gate, 0); atomic_init(&s->wake_armed, 0);
     atomic_init(&s->media_frames, 0); atomic_init(&s->submitted_frames, 0);
     atomic_init(&s->underrun_frames, 0); atomic_init(&s->producer_wakes, 0);
+    atomic_init(&s->callback_ticks, 0); atomic_init(&s->callback_count, 0);
     atomic_init(&s->device_bytes, 0); atomic_init(&s->device_peak, 0);
     atomic_init(&s->callback_violations, 0);
     atomic_init(&s->span_read, 0); atomic_init(&s->span_write, 0); atomic_init(&s->span_overflow, 0);
@@ -167,6 +169,7 @@ SinkInfo sink_info(AudioSink *s)
     i.clock = i.state == SINK_PAUSED ? s->paused_clock : s->backend->clock(s->backend_context);
     i.media_frames = atomic_load(&s->media_frames); i.submitted_frames = atomic_load(&s->submitted_frames);
     i.underrun_frames = atomic_load(&s->underrun_frames); i.producer_wakes = atomic_load(&s->producer_wakes);
+    i.callback_ticks = atomic_load(&s->callback_ticks); i.callback_count = atomic_load(&s->callback_count);
     i.device_bytes = atomic_load(&s->device_bytes); i.device_peak = atomic_load(&s->device_peak);
     i.clock_epoch = s->clock_epoch;
     i.os_buffer_bytes = s->os_buffer_bytes; i.callback_violations = atomic_load(&s->callback_violations);

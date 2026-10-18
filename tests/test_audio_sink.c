@@ -171,9 +171,19 @@ static DWORD WINAPI run_tests(void *ctx)
     consumption(); wrap_and_wake(); lifecycle(); allocation_limits(); handle_lifetime(); sink_race_tests();
     puts("audio sink: passed"); return 0;
 }
+static DWORD WINAPI gui_owner(void *ctx)
+{
+    (void)ctx; CHECK(IsGUIThread(TRUE));
+    FakeSink f; fake_init(&f);
+    CHECK(sink_open(&sink, pcm, &fake_sink_backend, &f) == AUDIO_INVALID);
+    CHECK(f.opens == 0 && !sink.opened);
+    return 0;
+}
 int main(void)
 {
     /* ASan initializes a message queue on the process main thread. */
     HANDLE thread = CreateThread(NULL, 0, run_tests, NULL, 0, NULL); CHECK(thread);
-    CHECK(WaitForSingleObject(thread, 80000) == WAIT_OBJECT_0); CloseHandle(thread); return 0;
+    CHECK(WaitForSingleObject(thread, 80000) == WAIT_OBJECT_0); CloseHandle(thread);
+    thread = CreateThread(NULL, 0, gui_owner, NULL, 0, NULL); CHECK(thread);
+    CHECK(WaitForSingleObject(thread, 5000) == WAIT_OBJECT_0); CloseHandle(thread); return 0;
 }
