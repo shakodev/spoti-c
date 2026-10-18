@@ -31,3 +31,4 @@ vendor/miniz/** -text -whitespace
 tests/fixtures/connect/*.pb binary
 tests/fixtures/connect/*.gz binary
 tests/fixtures/connect/*.json text eol=lf
+tests/fixtures/api/*.json text eol=lf

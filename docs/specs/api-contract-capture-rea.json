@@ -1,0 +1,284 @@
+[
+  {
+    "evidence_id": "ev_93b04576fcd50ff215271187d51a16b0912258003630ce13c78f32e3e7be0ad5",
+    "subject": {
+      "name": "api21-catalog.har",
+      "digest": {
+        "sha256": "5b4e4cc3a1778a563ced20df90283a08454e0b0c9992bc9c29516e7d45297362"
+      },
+      "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-catalog.har",
+      "format": "file",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_ff9755febc8df58837964874cc73b798bb7eb13f77f88a6c1f08cc3c8ccc6936",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_ff9755febc8df58837964874cc73b798bb7eb13f77f88a6c1f08cc3c8ccc6936",
+      "parent_operation": "inspect_web_network_capture",
+      "parent_digest": "ff9755febc8df58837964874cc73b798bb7eb13f77f88a6c1f08cc3c8ccc6936",
+      "view_digest": "4227c0d6d03022a3de714bed5caa5ab1053d5bfcb1a1f56f84317e2b088f0e57",
+      "artifact": {
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-catalog.har",
+        "sha256": "5b4e4cc3a1778a563ced20df90283a08454e0b0c9992bc9c29516e7d45297362"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 18,
+        "total": 18,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+        "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+        "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+        "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+        "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+      ],
+      "unknowns": [
+        "Historical records do not establish live runtime attribution or deployment authenticity."
+      ],
+      "summary": {
+        "artifact": {
+          "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-catalog.har",
+          "sha256": "5b4e4cc3a1778a563ced20df90283a08454e0b0c9992bc9c29516e7d45297362",
+          "bytes": 582386
+        },
+        "decoder": {
+          "id": "har-schema/lossless-json",
+          "name": "REA HAR capture adapter",
+          "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+        },
+        "format": "har",
+        "total_records": 18,
+        "retained_records": 18,
+        "runtime_attribution": "unknown"
+      }
+    },
+    "confidence": "derived",
+    "authority": "historical-reference",
+    "environment": null,
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+      "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-catalog.har"
+      }
+    ],
+    "evidence_links": [
+      "ev_ff9755febc8df58837964874cc73b798bb7eb13f77f88a6c1f08cc3c8ccc6936"
+    ]
+  },
+  {
+    "evidence_id": "ev_4a4f3382dbc9e46870318418be1c0db1976c04d1d5c0b435e7d1088402070c74",
+    "subject": {
+      "name": "api21-timing.har",
+      "digest": {
+        "sha256": "2d45ff2d44e2dd1ad753e43c425306a30f99654333e762d22908324a7ac9af53"
+      },
+      "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-timing.har",
+      "format": "file",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_1c410a64c8e0fb46249c4bc5c98f05051a7f89c3b42e22693128ecbe95e6399c",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_1c410a64c8e0fb46249c4bc5c98f05051a7f89c3b42e22693128ecbe95e6399c",
+      "parent_operation": "inspect_web_network_capture",
+      "parent_digest": "1c410a64c8e0fb46249c4bc5c98f05051a7f89c3b42e22693128ecbe95e6399c",
+      "view_digest": "ae702827416f0a1409734c7ddae7e32ca2c366a8a932acd82bbd5542a746c804",
+      "artifact": {
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-timing.har",
+        "sha256": "2d45ff2d44e2dd1ad753e43c425306a30f99654333e762d22908324a7ac9af53"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 8,
+        "total": 8,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+        "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+        "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+        "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+        "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+      ],
+      "unknowns": [
+        "Historical records do not establish live runtime attribution or deployment authenticity."
+      ],
+      "summary": {
+        "artifact": {
+          "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-timing.har",
+          "sha256": "2d45ff2d44e2dd1ad753e43c425306a30f99654333e762d22908324a7ac9af53",
+          "bytes": 62201
+        },
+        "decoder": {
+          "id": "har-schema/lossless-json",
+          "name": "REA HAR capture adapter",
+          "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+        },
+        "format": "har",
+        "total_records": 8,
+        "retained_records": 8,
+        "runtime_attribution": "unknown"
+      }
+    },
+    "confidence": "derived",
+    "authority": "historical-reference",
+    "environment": null,
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+      "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-timing.har"
+      }
+    ],
+    "evidence_links": [
+      "ev_1c410a64c8e0fb46249c4bc5c98f05051a7f89c3b42e22693128ecbe95e6399c"
+    ]
+  },
+  {
+    "evidence_id": "ev_14968d8ce6a82aca20a8034c1bf1fa130cef90996e2d7c943960f6c8ed0b2c01",
+    "subject": {
+      "name": "api21-search-final.har",
+      "digest": {
+        "sha256": "14c3bd60ae3fc99da6a040246251ea30e2b8e78444aa0f98cddd3ec6f76fc729"
+      },
+      "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-search-final.har",
+      "format": "file",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_13c2123030f2e913fc4350e083c510395a71cef43ea686678e4693a40e8fb07a",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_13c2123030f2e913fc4350e083c510395a71cef43ea686678e4693a40e8fb07a",
+      "parent_operation": "inspect_web_network_capture",
+      "parent_digest": "13c2123030f2e913fc4350e083c510395a71cef43ea686678e4693a40e8fb07a",
+      "view_digest": "6f7f5e216a1711320f87e893c6df477a8da4a3b4240b653307263fc03f77e5e2",
+      "artifact": {
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-search-final.har",
+        "sha256": "14c3bd60ae3fc99da6a040246251ea30e2b8e78444aa0f98cddd3ec6f76fc729"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 10,
+        "total": 10,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+        "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+        "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+        "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+        "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+      ],
+      "unknowns": [
+        "Historical records do not establish live runtime attribution or deployment authenticity."
+      ],
+      "summary": {
+        "artifact": {
+          "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-search-final.har",
+          "sha256": "14c3bd60ae3fc99da6a040246251ea30e2b8e78444aa0f98cddd3ec6f76fc729",
+          "bytes": 561490
+        },
+        "decoder": {
+          "id": "har-schema/lossless-json",
+          "name": "REA HAR capture adapter",
+          "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+        },
+        "format": "har",
+        "total_records": 10,
+        "retained_records": 10,
+        "runtime_attribution": "unknown"
+      }
+    },
+    "confidence": "derived",
+    "authority": "historical-reference",
+    "environment": null,
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+      "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-search-final.har"
+      }
+    ],
+    "evidence_links": [
+      "ev_13c2123030f2e913fc4350e083c510395a71cef43ea686678e4693a40e8fb07a"
+    ]
+  }
+]
