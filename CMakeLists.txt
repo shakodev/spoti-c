@@ -17,6 +17,7 @@ endif()
 
 option(ENABLE_ASAN "Enable AddressSanitizer in Debug builds" ON)
 option(ENABLE_LIVE_OAUTH_TEST "Enable browser/account-dependent OAuth and AP compatibility test" OFF)
+option(ENABLE_LIVE_MEDIA_TEST "Enable browser/account-dependent playable media resolution smoke" OFF)
 
 add_library(spotic_build_options INTERFACE)
 target_compile_features(spotic_build_options INTERFACE c_std_17)
@@ -103,14 +104,41 @@ add_library(spotic_mercury STATIC src/protocol/mercury.c src/protocol/mercury_pa
 target_include_directories(spotic_mercury PUBLIC src)
 target_link_libraries(spotic_mercury PUBLIC spotic_proto spotic_ap_packet)
 
+add_library(spotic_audio_key STATIC src/protocol/audio_key.c)
+target_include_directories(spotic_audio_key PUBLIC src)
+target_link_libraries(spotic_audio_key PUBLIC spotic_core spotic_ap_packet)
+
 add_library(spotic_ap STATIC src/protocol/ap_handshake.c
     src/protocol/ap_resolve.c src/protocol/ap_session.c src/protocol/ap_socket.c
     src/protocol/ap_io.c src/protocol/ap_route.c)
 target_sources(spotic_ap PRIVATE src/protocol/ap_auth.c)
 target_include_directories(spotic_ap PUBLIC src)
-target_link_libraries(spotic_ap PUBLIC spotic_mercury spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
+target_link_libraries(spotic_ap PUBLIC spotic_audio_key spotic_mercury spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
+
+add_library(spotic_media STATIC src/protocol/media_source.c src/protocol/media_http.c src/protocol/media_ids.c
+    src/api/metadata.c src/api/metadata_wire.c src/api/metadata_policy.c src/api/metadata_track.c src/api/storage_resolve.c)
+target_include_directories(spotic_media PUBLIC src)
+target_link_libraries(spotic_media PUBLIC spotic_audio_key spotic_tokens spotic_proto winhttp)
 
 if(BUILD_TESTING)
+    add_executable(test_media_source tests/test_media_source.c tests/test_metadata.c
+        tests/test_storage_resolve.c tests/support/http_server.c)
+    target_include_directories(test_media_source PRIVATE tests)
+    target_link_libraries(test_media_source PRIVATE spotic_media ws2_32)
+    add_test(NAME protocol_media_source COMMAND test_media_source)
+    set_tests_properties(protocol_media_source PROPERTIES TIMEOUT 60)
+    if(ENABLE_LIVE_MEDIA_TEST)
+        add_executable(test_media_live tests/test_media_live.c)
+        target_include_directories(test_media_live PRIVATE tests)
+        target_link_libraries(test_media_live PRIVATE spotic_media spotic_ap spotic_oauth)
+        add_test(NAME protocol_media_live COMMAND test_media_live)
+        set_tests_properties(protocol_media_live PROPERTIES TIMEOUT 360 LABELS "live;account" SKIP_RETURN_CODE 77)
+    endif()
+    add_executable(test_audio_key tests/test_audio_key.c)
+    target_include_directories(test_audio_key PRIVATE tests)
+    target_link_libraries(test_audio_key PRIVATE spotic_audio_key)
+    add_test(NAME protocol_audio_key COMMAND test_audio_key)
+    set_tests_properties(protocol_audio_key PROPERTIES TIMEOUT 30)
     add_executable(test_mercury tests/test_mercury.c tests/test_mercury_limits.c
         tests/test_mercury_subscriptions.c)
     target_include_directories(test_mercury PRIVATE tests)

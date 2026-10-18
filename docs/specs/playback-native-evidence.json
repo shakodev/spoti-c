@@ -1,0 +1,2924 @@
+{
+  "classification": "bounded static shipped-artifact observations, not captured traffic",
+  "source": {
+    "name": "Spotify.dll",
+    "version": "1.3.4.258",
+    "sha256": "ae772df4dca26c53c73ea720836db77584dc431d14d3ab3b5c4b49b0bd2b8fde",
+    "image_base": "0x180000000"
+  },
+  "ranges": [
+    {
+      "name": "metadata-builder",
+      "address": "0x1805592f0",
+      "file_offset": 5605104,
+      "bytes": 908,
+      "sha256": "0438dfd5830650a9edb7082f98112b3eac9b69b8632509122a8d05498cd98b61",
+      "rea": {
+        "evidence_id": "ev_1aea3c05ff747da0eb278845739c4fbc4e764c3e483e15d4926245aa4d9e97a4",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-path-builder",
+      "address": "0x1806b9d3c",
+      "file_offset": 7049532,
+      "bytes": 956,
+      "sha256": "e8783d3f14ab1e0acb144875b5608c55a33be44f0e9ebd2de8c934d856ba399d",
+      "rea": {
+        "evidence_id": "ev_4ee12df50d8335dc2ef36d3778953edaeb478bbda52b0843687936645b1fdf84",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-request-builder",
+      "address": "0x1806ba3f0",
+      "file_offset": 7051248,
+      "bytes": 620,
+      "sha256": "94e3f7ff87e6d19534f8495323e70408c1a38efee89a50894400d8f6ff381b79",
+      "rea": {
+        "evidence_id": "ev_dd7fb93b1c0777b24c25a468913d6fffa10fa665d570c13e54e3f299dbdd35f6",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-mode-helper",
+      "address": "0x1806ba714",
+      "file_offset": 7052052,
+      "bytes": 47,
+      "sha256": "790f11515dc147ff89205fd8cd43045218ccfed230408bd711ed4b8f43ff2a90",
+      "rea": {
+        "evidence_id": "ev_b94cf6570b997d698bf203dc60b0f6bf1976a3411d744872733a9ae7a2ced52d",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "request-default-get",
+      "address": "0x18157b61c",
+      "file_offset": 22522396,
+      "bytes": 874,
+      "sha256": "56bcd0426e46805a60e6b811d4fa97e202ac313ec8e895bb28c8c95ee44cd4f4",
+      "rea": {
+        "evidence_id": "ev_51046ee189b346c9613af004c649008360f2cb5cfecbed545984922f94cd7c72",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "method-constants",
+      "address": "0x18265fa48",
+      "file_offset": 40230472,
+      "bytes": 96,
+      "sha256": "350de22897a890290b068be6ac2edf3015e9579b29f94bd05231c2cb3649fded",
+      "rea": {
+        "evidence_id": "ev_23269d184c010cb9081c89db9e1ec6bc9e3378e14777566f8156f74edd5cbf1f",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "metadata-literals",
+      "address": "0x181a222a0",
+      "file_offset": 27396256,
+      "bytes": 160,
+      "sha256": "d8af5152cdc918b395db3da821265f962f2396df9090816b5604bacd8cda3ae4",
+      "rea": {
+        "evidence_id": "ev_8a72b46f78ca180ad41418d7d60576ad8b6054407b497e529eee42d0654d3383",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-literals",
+      "address": "0x181a3b400",
+      "file_offset": 27499008,
+      "bytes": 656,
+      "sha256": "7ef8bf890e0b57b32b7fcc3fd4b7cc4c8c3c51ab35e4c269697a2fffa9efaaa0",
+      "rea": {
+        "evidence_id": "ev_741de46c01c78095ca4ea51d56e9fac557e0d4efe440f1460eab28092f5aff4d",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-descriptor",
+      "address": "0x181a3c260",
+      "file_offset": 27502688,
+      "bytes": 261,
+      "sha256": "2c8dc874fc607a791b0350c4359461f941208fa8a783065f0c64882d16140edd",
+      "rea": {
+        "evidence_id": "ev_215bbb74777ea22319166463013f0231563f8e203469d4a88342e688f3ca18f5",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "metadata-descriptor-exact",
+      "address": "0x181c9ffe0",
+      "file_offset": 30008800,
+      "bytes": 1521,
+      "sha256": "735e2ff43f31f8bd90b52e8e7c28dd24c275cd262f0a2d9266a20ddee7ad410a",
+      "rea": {
+        "evidence_id": "ev_59a7b2c7b195d5c8fecfca143dcb6ccd8254e6a374f94d23c8ce43bcd4886422",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "entity-extension-descriptor",
+      "address": "0x181ca09d0",
+      "file_offset": 30011344,
+      "bytes": 747,
+      "sha256": "bd3d0bf051e0d86aad68e289b4e04575bad2302574be5bc6c74375fa58666725",
+      "rea": {
+        "evidence_id": "ev_55fb0b7e838b4178f12de003d9da6ef65661161eb7dfc814884a3e9d02fd4e5a",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "audio-format-descriptor",
+      "address": "0x181a81720",
+      "file_offset": 27786528,
+      "bytes": 777,
+      "sha256": "282e55a2fb871ffe4aa36fae5bbaea29a5798d3b8c5f815d64afa131f359f420",
+      "rea": {
+        "evidence_id": "ev_d64919c10d8788a821347015d0a997e48fa8b7c80b4fadd4fb13e197ffbbc03e",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "extension-kind-descriptor",
+      "address": "0x181cf0280",
+      "file_offset": 30337152,
+      "bytes": 6853,
+      "sha256": "ac549246b720bb6f5be9493002685a4fbc04509038b631884f9bc7bff36cd0f2",
+      "rea": {
+        "evidence_id": "ev_61efa10d5b9993570464c9f074249c996ca8a0a4432abe60c44ab04b8632f043",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "file-format-getter",
+      "address": "0x18155cbec",
+      "file_offset": 22396908,
+      "bytes": 56,
+      "sha256": "87b5d5f66d8b6fd0184657a5386f4abfaf406f984772710d20d31a709164e95e",
+      "rea": {
+        "evidence_id": "ev_621d9e3ec77b9d6950cc4d0faf7dee600fac05763fd6845887a2e64f1facb5c0",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "file-picker-format-transfer",
+      "address": "0x18155cc24",
+      "file_offset": 22396964,
+      "bytes": 392,
+      "sha256": "99d2e6da7debb323d012d05962994131f21db4a4ea87db4524c8581b2e0382de",
+      "rea": {
+        "evidence_id": "ev_7c5bde3822353a5f0ffa4b3d8438f2cce752abc004a6cfdbbb126e27abd5b039",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "file-object-constructor",
+      "address": "0x18155f6d8",
+      "file_offset": 22407896,
+      "bytes": 63,
+      "sha256": "e9bb289c909489e3d292c1a38d830df14ae00833ddb7d8e7372e33366422b274",
+      "rea": {
+        "evidence_id": "ev_446f41d034b0c3b69ef6b69cb82ab8fcc29c75a63f187d3931786951ce4166e3",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-variant-transfer",
+      "address": "0x1806a6c14",
+      "file_offset": 6971412,
+      "bytes": 877,
+      "sha256": "d9fafaae6e1bcbce6ca522a418f5e4289386b2be6bb56f8d2c3d85f5d037f273",
+      "rea": {
+        "evidence_id": "ev_d50d58ede6b683f271ac59616867a21aeba2132cc71c2995d0af115208db5b3e",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-factory-transfer",
+      "address": "0x1806a52f0",
+      "file_offset": 6964976,
+      "bytes": 229,
+      "sha256": "81c16ee55959a700117190d43b0929dd230f9b79ab913fd4ccc82898b37b5a68",
+      "rea": {
+        "evidence_id": "ev_a64663a7dbfe454de03e284fb928c377a3570d320109d42b8700c6791c899acc",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "storage-object-constructor",
+      "address": "0x1806b9b30",
+      "file_offset": 7049008,
+      "bytes": 445,
+      "sha256": "d11a5b4a58ebb64eb55ba27ff1f4cda473f66e0688247ecd35e9d2333cfd91b9",
+      "rea": {
+        "evidence_id": "ev_3e7bbb01c41dd39cbdf4e4a350f451cd1855fcac19b69a5b807c464858285835",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "manifest-format-transfer",
+      "address": "0x18069e33b",
+      "file_offset": 6936379,
+      "bytes": 146,
+      "sha256": "c22b8197ff1ef95b5c0bcf8bef703b37d573342e5e0a0d15fe03f216598c72f4",
+      "rea": {
+        "evidence_id": "ev_f027738af94a3eb9a14152b2206266191577e969f088a0cd232c9acd20dcb455",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "manifest-file-constructor",
+      "address": "0x18155cab4",
+      "file_offset": 22396596,
+      "bytes": 60,
+      "sha256": "5ebc7dccd0285b4ea8b6d977f88fef0e109e5d7bdfb65b74948f0938e7294cc6",
+      "rea": {
+        "evidence_id": "ev_a9c5769680acee52f29ac415bd902d370b9fffac86514513fec21638300eb830",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "track-audio-descriptor",
+      "address": "0x181cf2ef0",
+      "file_offset": 30348528,
+      "bytes": 9268,
+      "sha256": "9cf8b85b4a637e95051bd1ecf074f5cd489b6a80a17d00d6f6421b8413f0e6d0",
+      "rea": {
+        "evidence_id": "ev_3a5a2603977a6ded737a4fcfdac1d270e11321fb15899bdce7490693abb62379",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    },
+    {
+      "name": "media-manifest-descriptor",
+      "address": "0x181b58e90",
+      "file_offset": 28669072,
+      "bytes": 1250,
+      "sha256": "98405a9963bee08f0d2ac0c787430effe1f64ea540ff629294e4c0da18f3ea68",
+      "rea": {
+        "evidence_id": "ev_65d24d20f4c4dbe6f043df580ef4b44cd5cb18ad72ad7d7ed037b0871a086ae6",
+        "operation": "read_bytes",
+        "analysis_profile_digest": "bbf5b701809af02de0028254d3f1b9bef8cf061e1cc5a84069704d35eb0315df",
+        "provider": {
+          "id": "ghidra",
+          "name": "Ghidra",
+          "version": "12.1.4"
+        },
+        "limitations": [
+          "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+          "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+          "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+          "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+          "Bytes reflect Ghidra's initialized memory, including loader fixups. Reads stop at an unmapped or uninitialized byte and report completeness explicitly.",
+          "Windows Ghidra P0 accepts native x86 and x86-64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+          "The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+          "Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically.",
+          "The target references PDB Spotify.pdb (GUID 6cdc3b43-bc73-1177-2241-78231614a195, age (hex) 1, signature unknown, version RSDS); Ghidra reports load state unknown. Original names and types may be missing; an empty name search does not prove a procedure is absent. Use list_procedures and address-based analysis to inspect recovered functions. REA does not admit a caller-selected PDB companion."
+        ]
+      }
+    }
+  ],
+  "descriptors": [
+    {
+      "name": "extended_metadata.proto",
+      "package": "spotify.extendedmetadata",
+      "file_offset": 30008800,
+      "bytes": 1521,
+      "sha256": "735e2ff43f31f8bd90b52e8e7c28dd24c275cd262f0a2d9266a20ddee7ad410a",
+      "messages": [
+        {
+          "name": "ExtensionQuery",
+          "fields": [
+            {
+              "name": "extension_kind",
+              "number": 1,
+              "type": 14,
+              "type_name": ".spotify.extendedmetadata.ExtensionKind",
+              "label": 1
+            },
+            {
+              "name": "etag",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "EntityRequest",
+          "fields": [
+            {
+              "name": "entity_uri",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "query",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.ExtensionQuery",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "BatchedEntityRequestHeader",
+          "fields": [
+            {
+              "name": "country",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "catalogue",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "task_id",
+              "number": 3,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "BatchedEntityRequest",
+          "fields": [
+            {
+              "name": "header",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.BatchedEntityRequestHeader",
+              "label": 1
+            },
+            {
+              "name": "entity_request",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.EntityRequest",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "EntityExtensionDataArrayHeader",
+          "fields": [
+            {
+              "name": "provider_error_status",
+              "number": 1,
+              "type": 5,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "cache_ttl_in_seconds",
+              "number": 2,
+              "type": 3,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "offline_ttl_in_seconds",
+              "number": 3,
+              "type": 3,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "extension_type",
+              "number": 4,
+              "type": 14,
+              "type_name": ".spotify.extendedmetadata.ExtensionType",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "EntityExtensionDataArray",
+          "fields": [
+            {
+              "name": "header",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.EntityExtensionDataArrayHeader",
+              "label": 1
+            },
+            {
+              "name": "extension_kind",
+              "number": 2,
+              "type": 14,
+              "type_name": ".spotify.extendedmetadata.ExtensionKind",
+              "label": 1
+            },
+            {
+              "name": "extension_data",
+              "number": 3,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.EntityExtensionData",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "BatchedExtensionResponseHeader",
+          "fields": [],
+          "enums": []
+        },
+        {
+          "name": "BatchedExtensionResponse",
+          "fields": [
+            {
+              "name": "header",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.BatchedExtensionResponseHeader",
+              "label": 1
+            },
+            {
+              "name": "extended_metadata",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.EntityExtensionDataArray",
+              "label": 3
+            }
+          ],
+          "enums": []
+        }
+      ],
+      "enums": [
+        {
+          "name": "ExtensionType",
+          "values": {
+            "UNKNOWN": 0,
+            "GENERIC": 1,
+            "ASSOC": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "entity_extension_data.proto",
+      "package": "spotify.extendedmetadata",
+      "file_offset": 30011344,
+      "bytes": 747,
+      "sha256": "bd3d0bf051e0d86aad68e289b4e04575bad2302574be5bc6c74375fa58666725",
+      "messages": [
+        {
+          "name": "EntityExtensionDataHeader",
+          "fields": [
+            {
+              "name": "status_code",
+              "number": 1,
+              "type": 5,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "etag",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "locale",
+              "number": 3,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "cache_ttl_in_seconds",
+              "number": 4,
+              "type": 3,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "offline_ttl_in_seconds",
+              "number": 5,
+              "type": 3,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "EntityExtensionData",
+          "fields": [
+            {
+              "name": "header",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.EntityExtensionDataHeader",
+              "label": 1
+            },
+            {
+              "name": "entity_uri",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "extension_data",
+              "number": 3,
+              "type": 11,
+              "type_name": ".google.protobuf.Any",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "PlainListAssoc",
+          "fields": [
+            {
+              "name": "entity_uri",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "AssocHeader",
+          "fields": [],
+          "enums": []
+        },
+        {
+          "name": "Assoc",
+          "fields": [
+            {
+              "name": "header",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.AssocHeader",
+              "label": 1
+            },
+            {
+              "name": "plain_list",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.extendedmetadata.PlainListAssoc",
+              "label": 1
+            }
+          ],
+          "enums": []
+        }
+      ],
+      "enums": []
+    },
+    {
+      "name": "extension_kind.proto",
+      "package": "spotify.extendedmetadata",
+      "file_offset": 30337152,
+      "bytes": 6853,
+      "sha256": "ac549246b720bb6f5be9493002685a4fbc04509038b631884f9bc7bff36cd0f2",
+      "messages": [],
+      "enums": [
+        {
+          "name": "ExtensionKind",
+          "values": {
+            "UNKNOWN_EXTENSION": 0,
+            "CANVAZ": 1,
+            "STORYLINES": 2,
+            "PODCAST_TOPICS": 3,
+            "PODCAST_SEGMENTS": 4,
+            "AUDIO_FILES": 5,
+            "TRACK_DESCRIPTOR": 6,
+            "PODCAST_COUNTER": 7,
+            "ARTIST_V4": 8,
+            "ALBUM_V4": 9,
+            "TRACK_V4": 10,
+            "SHOW_V4": 11,
+            "EPISODE_V4": 12,
+            "PODCAST_HTML_DESCRIPTION": 13,
+            "PODCAST_QUOTES": 14,
+            "USER_PROFILE": 15,
+            "CANVAS_V1": 16,
+            "SHOW_V4_BASE": 17,
+            "SHOW_V4_EPISODES_ASSOC": 18,
+            "TRACK_DESCRIPTOR_SIGNATURES": 19,
+            "PODCAST_AD_SEGMENTS": 20,
+            "EPISODE_TRANSCRIPTS": 21,
+            "PODCAST_SUBSCRIPTIONS": 22,
+            "EXTRACTED_COLOR": 23,
+            "PODCAST_VIRALITY": 24,
+            "IMAGE_SPARKLES_HACK": 25,
+            "PODCAST_POPULARITY_HACK": 26,
+            "AUTOMIX_MODE": 27,
+            "CUEPOINTS": 28,
+            "PODCAST_POLL": 29,
+            "EPISODE_ACCESS": 30,
+            "SHOW_ACCESS": 31,
+            "PODCAST_QNA": 32,
+            "CLIPS": 33,
+            "SHOW_V5": 34,
+            "EPISODE_V5": 35,
+            "PODCAST_CTA_CARDS": 36,
+            "PODCAST_RATING": 37,
+            "DISPLAY_SEGMENTS": 38,
+            "GREENROOM": 39,
+            "USER_CREATED": 40,
+            "SHOW_DESCRIPTION": 41,
+            "SHOW_HTML_DESCRIPTION": 42,
+            "SHOW_PLAYABILITY": 43,
+            "EPISODE_DESCRIPTION": 44,
+            "EPISODE_HTML_DESCRIPTION": 45,
+            "EPISODE_PLAYABILITY": 46,
+            "SHOW_EPISODES_ASSOC": 47,
+            "CLIENT_CONFIG": 48,
+            "PLAYLISTABILITY": 49,
+            "AUDIOBOOK_V5": 50,
+            "CHAPTER_V5": 51,
+            "AUDIOBOOK_SPECIFICS": 52,
+            "EPISODE_RANKING": 53,
+            "HTML_DESCRIPTION": 54,
+            "CREATOR_CHANNEL": 55,
+            "AUDIOBOOK_PROVIDERS": 56,
+            "PLAY_TRAIT": 57,
+            "CONTENT_WARNING": 58,
+            "IMAGE_CUE": 59,
+            "STREAM_COUNT": 60,
+            "AUDIO_ATTRIBUTES": 61,
+            "NAVIGABLE_TRAIT": 62,
+            "NEXT_BEST_EPISODE": 63,
+            "AUDIOBOOK_PRICE": 64,
+            "EXPRESSIVE_PLAYLISTS": 65,
+            "DYNAMIC_SHOW_EPISODE": 66,
+            "LIVE": 67,
+            "SKIP_PLAYED": 68,
+            "AD_BREAK_FREE_PODCASTS": 69,
+            "ASSOCIATIONS": 70,
+            "PLAYLIST_EVALUATION": 71,
+            "CACHE_INVALIDATIONS": 72,
+            "LIVESTREAM_ENTITY": 73,
+            "SINGLE_TAP_REACTIONS": 74,
+            "USER_COMMENTS": 75,
+            "CLIENT_RESTRICTIONS": 76,
+            "PODCAST_GUEST": 77,
+            "PLAYABILITY": 78,
+            "COVER_IMAGE": 79,
+            "SHARE_TRAIT": 80,
+            "INSTANCE_SHARING": 81,
+            "ARTIST_TOUR": 82,
+            "AUDIOBOOK_GENRE": 83,
+            "CONCEPT": 84,
+            "ORIGINAL_VIDEO": 85,
+            "SMART_SHUFFLE": 86,
+            "LIVE_EVENTS": 87,
+            "AUDIOBOOK_RELATIONS": 88,
+            "HOME_POC_BASECARD": 89,
+            "AUDIOBOOK_SUPPLEMENTS": 90,
+            "PAID_PODCAST_BANNER": 91,
+            "FEWER_ADS": 92,
+            "WATCH_FEED_SHOW_EXPLORER": 93,
+            "TRACK_EXTRA_DESCRIPTORS": 94,
+            "TRACK_EXTRA_AUDIO_ATTRIBUTES": 95,
+            "TRACK_EXTENDED_CREDITS": 96,
+            "SIMPLE_TRAIT": 97,
+            "AUDIO_ASSOCIATIONS": 98,
+            "VIDEO_ASSOCIATIONS": 99,
+            "PLAYLIST_TUNER": 100,
+            "ARTIST_VIDEOS_ENTRYPOINT": 101,
+            "ALBUM_PRERELEASE": 102,
+            "CONTENT_ALTERNATIVES": 103,
+            "SNAPSHOT_SHARING": 105,
+            "DISPLAY_SEGMENTS_COUNT": 106,
+            "PODCAST_FEATURED_EPISODE": 107,
+            "PODCAST_SPONSORED_CONTENT": 108,
+            "PODCAST_EPISODE_TOPICS_LLM": 109,
+            "PODCAST_EPISODE_TOPICS_KG": 110,
+            "EPISODE_RANKING_POPULARITY": 111,
+            "MERCH": 112,
+            "COMPANION_CONTENT": 113,
+            "WATCH_FEED_ENTITY_EXPLORER": 114,
+            "ANCHOR_CARD_TRAIT": 115,
+            "AUDIO_PREVIEW_PLAYBACK_TRAIT": 116,
+            "VIDEO_PREVIEW_STILL_TRAIT": 117,
+            "PREVIEW_CARD_TRAIT": 118,
+            "SHORTCUTS_CARD_TRAIT": 119,
+            "VIDEO_PREVIEW_PLAYBACK_TRAIT": 120,
+            "COURSE_SPECIFICS": 121,
+            "CONCERT": 122,
+            "CONCERT_LOCATION": 123,
+            "CONCERT_MARKETING": 124,
+            "CONCERT_PERFORMERS": 125,
+            "TRACK_PAIR_TRANSITION": 126,
+            "CONTENT_TYPE_TRAIT": 127,
+            "NAME_TRAIT": 128,
+            "ARTWORK_TRAIT": 129,
+            "RELEASE_DATE_TRAIT": 130,
+            "CREDITS_TRAIT": 131,
+            "RELEASE_URI_TRAIT": 132,
+            "ENTITY_CAPPING": 133,
+            "LESSON_SPECIFICS": 134,
+            "CONCERT_OFFERS": 135,
+            "TRANSITION_MAPS": 136,
+            "ARTIST_HAS_CONCERTS": 137,
+            "PRERELEASE": 138,
+            "PLAYLIST_ATTRIBUTES_V2": 139,
+            "LIST_ATTRIBUTES_V2": 140,
+            "LIST_METADATA": 141,
+            "LIST_TUNER_AUDIO_ANALYSIS": 142,
+            "LIST_TUNER_CUEPOINTS": 143,
+            "CONTENT_RATING_TRAIT": 144,
+            "COPYRIGHT_TRAIT": 145,
+            "SUPPORTED_BADGES": 146,
+            "BADGES": 147,
+            "PREVIEW_TRAIT": 148,
+            "ROOTLISTABILITY_TRAIT": 149,
+            "LOCAL_CONCERTS": 150,
+            "RECOMMENDED_PLAYLISTS": 151,
+            "POPULAR_RELEASES": 152,
+            "RELATED_RELEASES": 153,
+            "SHARE_RESTRICTIONS": 154,
+            "CONCERT_OFFER": 155,
+            "CONCERT_OFFER_PROVIDER": 156,
+            "ENTITY_BOOKMARKS": 157,
+            "PRIVACY_TRAIT": 158,
+            "DUPLICATE_ITEMS_TRAIT": 159,
+            "REORDERING_TRAIT": 160,
+            "PODCAST_RESUMPTION_SEGMENTS": 161,
+            "ARTIST_EXPRESSION_VIDEO": 162,
+            "PRERELEASE_VIDEO": 163,
+            "GATED_ENTITY_RELATIONS": 164,
+            "RELATED_CREATORS_SECTION": 165,
+            "CREATORS_APPEARS_ON_SECTION": 166,
+            "PROMO_V1_TRAIT": 167,
+            "SPEECHLESS_SHARE_CARD": 168,
+            "TOP_PLAYABLES_SECTION": 169,
+            "AUTO_LENS": 170,
+            "PROMO_V3_TRAIT": 171,
+            "TRACK_CONTENT_FILTER": 172,
+            "HIGHLIGHTABILITY": 173,
+            "LINK_CARD_WITH_IMAGE_TRAIT": 174,
+            "TRACK_CLOUD_SECTION": 175,
+            "EPISODE_TOPICS": 176,
+            "VIDEO_THUMBNAIL": 177,
+            "IDENTITY_TRAIT": 178,
+            "VISUAL_IDENTITY_TRAIT": 179,
+            "CONTENT_TYPE_V2_TRAIT": 180,
+            "PREVIEW_PLAYBACK_TRAIT": 181,
+            "CONSUMPTION_EXPERIENCE_TRAIT": 182,
+            "PUBLISHING_METADATA_TRAIT": 183,
+            "DETAILED_EVALUATION_TRAIT": 184,
+            "ON_PLATFORM_REPUTATION_TRAIT": 185,
+            "CREDITS_V2_TRAIT": 186,
+            "HIGHLIGHT_PLAYABILITY_TRAIT": 187,
+            "SHOW_EPISODE_LIST": 188,
+            "AVAILABLE_RELEASES": 189,
+            "PLAYLIST_DESCRIPTORS": 190,
+            "LINK_CARD_WITH_ANIMATIONS_TRAIT": 191,
+            "RECAP": 192,
+            "AUDIOBOOK_COMPANION_CONTENT": 193,
+            "THREE_OH_THREE_PLAY_TRAIT": 194,
+            "ARTIST_WRAPPED_2024_VIDEO": 195,
+            "CONTAINED_CONTENT_TYPES": 196,
+            "CONTENT_CLASSIFICATION": 197,
+            "CHAPTER_SPECIFICS": 198,
+            "CREATOR_FAN_FUNDING": 199,
+            "CREATOR_PLAYLISTS_SECTION": 200,
+            "CREATOR_PINNED_ITEM": 201,
+            "PODCAST_POLL_V2": 202,
+            "CREATOR_APPEARS_ON_SECTION": 203,
+            "ARTIST_CONCERTS": 204,
+            "LIST_METADATA_V2": 205,
+            "ARTIST_HEADLINE": 206,
+            "EPISODE_AD_PLACEMENTS": 207,
+            "VIDEO_SOCIAL_PROOF_POC_TRAIT": 208,
+            "ARTIST_MUSIC_VIDEOS": 209,
+            "ARTIST_LISTENING_PARTY": 210,
+            "CONTENT_BY_OR_ABOUT": 211,
+            "PLAYBACK_TRAIT": 212,
+            "ARTIST_MUSIC_VIDEOS_UNMAPPED": 213,
+            "ENTITY_CONNECTIONS": 214,
+            "USER_PROFILE_V2": 215,
+            "VIDEO_RELATIONS": 216,
+            "BEATS": 217,
+            "VOCAL_ACTIVITY": 218,
+            "MIXABILITY": 219,
+            "ENTITY_TYPE_TRAIT": 220,
+            "CHAT_SHARE_PREVIEW": 221,
+            "AUDIO_ATTRIBUTES_V2": 222,
+            "WATCH_FEED_CATEGORIES_TRAIT": 223,
+            "VENUE_ARTISTS_PREVIEW": 224,
+            "MIX_STATE": 225,
+            "WATCH_FEED_SEED_ITEM_TRAIT": 226,
+            "SONG_DNA_ELIGIBILITY": 227,
+            "LEARNING_MATERIAL": 228,
+            "BANNER_WITH_ANIMATIONS": 229,
+            "VENUE_LOCATION": 230,
+            "TRANSCRIPT_SEARCH": 231,
+            "SONGDNA_CREDITS": 232,
+            "AUDIOBOOK_TO_PHYSICAL_BOOK_MAPPING": 233,
+            "ARTIST_WRAPPED_2025_VIDEO": 234,
+            "MIXABILITY_TRAIT": 235,
+            "SONGDNA_ARTIST_FACTS": 236,
+            "THREEBAND_WAVEFORMS": 237,
+            "AUDIOBOOK_PARTNER_SALES": 238,
+            "CONTENT_CAPABILITY_TRAIT": 239,
+            "CONCERT_CAMPAIGN": 240,
+            "CONCERT_CAMPAIGN_USER_STATE": 241,
+            "CONCERT_CAMPAIGN_STRINGS": 242,
+            "CONCERT_CAMPAIGN_ROUTINGS": 243,
+            "TRANSITION_DATA": 244,
+            "CHAT_RICH_MEDIA": 245,
+            "CURATION_EXPERIENCE_TRAIT": 246,
+            "COMMON_TRANSITION_POINT": 247,
+            "PLAY_LINK_CARD_TRAIT": 248,
+            "CONTENT_EXPERIENCE_TRAIT": 249,
+            "TRACK_ALTERNATIVE_VERSIONS": 250,
+            "LICENSING_IDENTIFIERS_TRAIT": 251,
+            "SPONSORSHIP": 252,
+            "AUDIOBOOK_DIRECT_SALES": 253,
+            "ALBUM_MUSIC_VIDEOS": 254,
+            "CREATOR_ARTIST_FACTS": 255,
+            "PLAYBACK_EXPERIENCE_TRAIT": 256,
+            "SPEEDABILITY": 257,
+            "CONTENT_MARKERS": 258,
+            "TRACK_AUDIO_FOUNDATIONS": 259,
+            "AD_PLACEMENTS_BETA": 260,
+            "TRACK_SECTIONS": 261,
+            "SHARE_CARD_CONFIG": 262,
+            "PLAYBACK_TRAIT_V2": 263,
+            "TARGETED_OFFER_BANNER": 264,
+            "RESUMPTION_BOUNDARIES": 265,
+            "AD_LOCATIONS": 266,
+            "CONTENT_ACCESS_EXPERIMENTAL": 267,
+            "AUDIO_LAYERABILITY_TRAIT": 268,
+            "READER_ENCODING_EXTENSION": 269,
+            "FRESH_FINDS_FORWARD": 270,
+            "YOUR_ARTIST_MESSAGES": 271,
+            "RELATED_READERS": 272,
+            "NPV_CONTROLS_EXPERIMENT": 273,
+            "SEEKPANEL_TRAIT": 274,
+            "BYOM_ELIGIBILITY": 275,
+            "SPEECHLESS_TASTE_MATCH_CARD": 276,
+            "EXPRESSION_PREVIEW_MANIFEST": 277
+          }
+        }
+      ]
+    },
+    {
+      "name": "storage-resolve.proto",
+      "package": "spotify.download.proto",
+      "file_offset": 27502688,
+      "bytes": 261,
+      "sha256": "2c8dc874fc607a791b0350c4359461f941208fa8a783065f0c64882d16140edd",
+      "messages": [
+        {
+          "name": "StorageResolveResponse",
+          "fields": [
+            {
+              "name": "result",
+              "number": 1,
+              "type": 14,
+              "type_name": ".spotify.download.proto.StorageResolveResponse.Result",
+              "label": 1
+            },
+            {
+              "name": "cdnurl",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "fileid",
+              "number": 4,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "Result",
+              "values": {
+                "CDN": 0,
+                "STORAGE": 1,
+                "RESTRICTED": 3
+              }
+            }
+          ]
+        }
+      ],
+      "enums": []
+    },
+    {
+      "name": "audio_format.proto",
+      "package": "spotify.stream_reporting_esperanto.proto",
+      "file_offset": 27786528,
+      "bytes": 777,
+      "sha256": "282e55a2fb871ffe4aa36fae5bbaea29a5798d3b8c5f815d64afa131f359f420",
+      "messages": [],
+      "enums": [
+        {
+          "name": "AudioFormat",
+          "values": {
+            "FORMAT_UNKNOWN": 0,
+            "FORMAT_OGG_VORBIS_96": 1,
+            "FORMAT_OGG_VORBIS_160": 2,
+            "FORMAT_OGG_VORBIS_320": 3,
+            "FORMAT_MP3_256": 4,
+            "FORMAT_MP3_320": 5,
+            "FORMAT_MP3_160": 6,
+            "FORMAT_MP3_96": 7,
+            "FORMAT_MP3_160_ENCRYPTED": 8,
+            "FORMAT_AAC_24": 9,
+            "FORMAT_AAC_48": 10,
+            "FORMAT_MP4_128": 11,
+            "FORMAT_MP4_128_DUAL": 12,
+            "FORMAT_MP4_128_CBCS": 13,
+            "FORMAT_MP4_256": 14,
+            "FORMAT_MP4_256_DUAL": 15,
+            "FORMAT_MP4_256_CBCS": 16,
+            "FORMAT_FLAC_FLAC": 17,
+            "FORMAT_MP4_FLAC": 18,
+            "FORMAT_MP4_Unknown": 19,
+            "FORMAT_MP3_Unknown": 20,
+            "FORMAT_XHE_AAC_12": 21,
+            "FORMAT_XHE_AAC_16": 22,
+            "FORMAT_XHE_AAC_24": 23,
+            "FORMAT_FLAC_FLAC_24": 24,
+            "FORMAT_OGG_VORBIS_320_PARROT": 25,
+            "FORMAT_FLAC_FLAC_PARROT": 26
+          }
+        }
+      ]
+    },
+    {
+      "name": "metadata.proto",
+      "package": "spotify.metadata",
+      "file_offset": 30348528,
+      "bytes": 9268,
+      "sha256": "9cf8b85b4a637e95051bd1ecf074f5cd489b6a80a17d00d6f6421b8413f0e6d0",
+      "messages": [
+        {
+          "name": "Artist",
+          "fields": [
+            {
+              "name": "gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "popularity",
+              "number": 3,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "top_track",
+              "number": 4,
+              "type": 11,
+              "type_name": ".spotify.metadata.TopTracks",
+              "label": 3
+            },
+            {
+              "name": "album_group",
+              "number": 5,
+              "type": 11,
+              "type_name": ".spotify.metadata.AlbumGroup",
+              "label": 3
+            },
+            {
+              "name": "single_group",
+              "number": 6,
+              "type": 11,
+              "type_name": ".spotify.metadata.AlbumGroup",
+              "label": 3
+            },
+            {
+              "name": "compilation_group",
+              "number": 7,
+              "type": 11,
+              "type_name": ".spotify.metadata.AlbumGroup",
+              "label": 3
+            },
+            {
+              "name": "appears_on_group",
+              "number": 8,
+              "type": 11,
+              "type_name": ".spotify.metadata.AlbumGroup",
+              "label": 3
+            },
+            {
+              "name": "external_id",
+              "number": 10,
+              "type": 11,
+              "type_name": ".spotify.metadata.ExternalId",
+              "label": 3
+            },
+            {
+              "name": "portrait",
+              "number": 11,
+              "type": 11,
+              "type_name": ".spotify.metadata.Image",
+              "label": 3
+            },
+            {
+              "name": "biography",
+              "number": 12,
+              "type": 11,
+              "type_name": ".spotify.metadata.Biography",
+              "label": 3
+            },
+            {
+              "name": "activity_period",
+              "number": 13,
+              "type": 11,
+              "type_name": ".spotify.metadata.ActivityPeriod",
+              "label": 3
+            },
+            {
+              "name": "restriction",
+              "number": 14,
+              "type": 11,
+              "type_name": ".spotify.metadata.Restriction",
+              "label": 3
+            },
+            {
+              "name": "related",
+              "number": 15,
+              "type": 11,
+              "type_name": ".spotify.metadata.Artist",
+              "label": 3
+            },
+            {
+              "name": "is_portrait_album_cover",
+              "number": 16,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "portrait_group",
+              "number": 17,
+              "type": 11,
+              "type_name": ".spotify.metadata.ImageGroup",
+              "label": 1
+            },
+            {
+              "name": "sale_period",
+              "number": 18,
+              "type": 11,
+              "type_name": ".spotify.metadata.SalePeriod",
+              "label": 3
+            },
+            {
+              "name": "availability",
+              "number": 20,
+              "type": 11,
+              "type_name": ".spotify.metadata.Availability",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Album",
+          "fields": [
+            {
+              "name": "gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "artist",
+              "number": 3,
+              "type": 11,
+              "type_name": ".spotify.metadata.Artist",
+              "label": 3
+            },
+            {
+              "name": "type",
+              "number": 4,
+              "type": 14,
+              "type_name": ".spotify.metadata.Album.Type",
+              "label": 1
+            },
+            {
+              "name": "label",
+              "number": 5,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "date",
+              "number": 6,
+              "type": 11,
+              "type_name": ".spotify.metadata.Date",
+              "label": 1
+            },
+            {
+              "name": "popularity",
+              "number": 7,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "cover",
+              "number": 9,
+              "type": 11,
+              "type_name": ".spotify.metadata.Image",
+              "label": 3
+            },
+            {
+              "name": "external_id",
+              "number": 10,
+              "type": 11,
+              "type_name": ".spotify.metadata.ExternalId",
+              "label": 3
+            },
+            {
+              "name": "disc",
+              "number": 11,
+              "type": 11,
+              "type_name": ".spotify.metadata.Disc",
+              "label": 3
+            },
+            {
+              "name": "review",
+              "number": 12,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "copyright",
+              "number": 13,
+              "type": 11,
+              "type_name": ".spotify.metadata.Copyright",
+              "label": 3
+            },
+            {
+              "name": "restriction",
+              "number": 14,
+              "type": 11,
+              "type_name": ".spotify.metadata.Restriction",
+              "label": 3
+            },
+            {
+              "name": "related",
+              "number": 15,
+              "type": 11,
+              "type_name": ".spotify.metadata.Album",
+              "label": 3
+            },
+            {
+              "name": "sale_period",
+              "number": 16,
+              "type": 11,
+              "type_name": ".spotify.metadata.SalePeriod",
+              "label": 3
+            },
+            {
+              "name": "cover_group",
+              "number": 17,
+              "type": 11,
+              "type_name": ".spotify.metadata.ImageGroup",
+              "label": 1
+            },
+            {
+              "name": "original_title",
+              "number": 18,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "version_title",
+              "number": 19,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "type_str",
+              "number": 20,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "availability",
+              "number": 23,
+              "type": 11,
+              "type_name": ".spotify.metadata.Availability",
+              "label": 3
+            },
+            {
+              "name": "prerelease_end_date",
+              "number": 42,
+              "type": 3,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "content_access_status",
+              "number": 44,
+              "type": 11,
+              "type_name": ".spotify.metadata.ContentAccessStatus",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "Type",
+              "values": {
+                "ALBUM": 1,
+                "SINGLE": 2,
+                "COMPILATION": 3,
+                "EP": 4,
+                "AUDIOBOOK": 5,
+                "PODCAST": 6
+              }
+            }
+          ]
+        },
+        {
+          "name": "Track",
+          "fields": [
+            {
+              "name": "gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "album",
+              "number": 3,
+              "type": 11,
+              "type_name": ".spotify.metadata.Album",
+              "label": 1
+            },
+            {
+              "name": "artist",
+              "number": 4,
+              "type": 11,
+              "type_name": ".spotify.metadata.Artist",
+              "label": 3
+            },
+            {
+              "name": "number",
+              "number": 5,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "disc_number",
+              "number": 6,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "duration",
+              "number": 7,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "popularity",
+              "number": 8,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "explicit",
+              "number": 9,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "external_id",
+              "number": 10,
+              "type": 11,
+              "type_name": ".spotify.metadata.ExternalId",
+              "label": 3
+            },
+            {
+              "name": "restriction",
+              "number": 11,
+              "type": 11,
+              "type_name": ".spotify.metadata.Restriction",
+              "label": 3
+            },
+            {
+              "name": "file",
+              "number": 12,
+              "type": 11,
+              "type_name": ".spotify.metadata.AudioFile",
+              "label": 3
+            },
+            {
+              "name": "alternative",
+              "number": 13,
+              "type": 11,
+              "type_name": ".spotify.metadata.Track",
+              "label": 3
+            },
+            {
+              "name": "sale_period",
+              "number": 14,
+              "type": 11,
+              "type_name": ".spotify.metadata.SalePeriod",
+              "label": 3
+            },
+            {
+              "name": "preview",
+              "number": 15,
+              "type": 11,
+              "type_name": ".spotify.metadata.AudioFile",
+              "label": 3
+            },
+            {
+              "name": "tags",
+              "number": 16,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "earliest_live_timestamp",
+              "number": 17,
+              "type": 3,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "has_lyrics",
+              "number": 18,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "availability",
+              "number": 19,
+              "type": 11,
+              "type_name": ".spotify.metadata.Availability",
+              "label": 3
+            },
+            {
+              "name": "licensor",
+              "number": 21,
+              "type": 11,
+              "type_name": ".spotify.metadata.Licensor",
+              "label": 1
+            },
+            {
+              "name": "language_of_performance",
+              "number": 22,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "original_audio",
+              "number": 24,
+              "type": 11,
+              "type_name": ".spotify.metadata.Audio",
+              "label": 1
+            },
+            {
+              "name": "content_rating",
+              "number": 25,
+              "type": 11,
+              "type_name": ".spotify.metadata.ContentRating",
+              "label": 3
+            },
+            {
+              "name": "original_title",
+              "number": 27,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "version_title",
+              "number": 28,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "artist_with_role",
+              "number": 32,
+              "type": 11,
+              "type_name": ".spotify.metadata.ArtistWithRole",
+              "label": 3
+            },
+            {
+              "name": "canonical_uri",
+              "number": 36,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "original_video",
+              "number": 38,
+              "type": 11,
+              "type_name": ".spotify.metadata.Video",
+              "label": 3
+            },
+            {
+              "name": "audio_formats",
+              "number": 41,
+              "type": 11,
+              "type_name": ".spotify.metadata.TrackAudioFormat",
+              "label": 3
+            },
+            {
+              "name": "content_access_status",
+              "number": 51,
+              "type": 11,
+              "type_name": ".spotify.metadata.ContentAccessStatus",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "TrackAudioFormat",
+          "fields": [
+            {
+              "name": "original_audio",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.metadata.Audio",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "ArtistWithRole",
+          "fields": [
+            {
+              "name": "artist_gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "artist_name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "role",
+              "number": 3,
+              "type": 14,
+              "type_name": ".spotify.metadata.ArtistWithRole.ArtistRole",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "ArtistRole",
+              "values": {
+                "ARTIST_ROLE_UNKNOWN": 0,
+                "ARTIST_ROLE_MAIN_ARTIST": 1,
+                "ARTIST_ROLE_FEATURED_ARTIST": 2,
+                "ARTIST_ROLE_REMIXER": 3,
+                "ARTIST_ROLE_ACTOR": 4,
+                "ARTIST_ROLE_COMPOSER": 5,
+                "ARTIST_ROLE_CONDUCTOR": 6,
+                "ARTIST_ROLE_ORCHESTRA": 7
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show",
+          "fields": [
+            {
+              "name": "gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "description",
+              "number": 64,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "deprecated_popularity",
+              "number": 65,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "publisher",
+              "number": 66,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "language",
+              "number": 67,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "explicit",
+              "number": 68,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "cover_image",
+              "number": 69,
+              "type": 11,
+              "type_name": ".spotify.metadata.ImageGroup",
+              "label": 1
+            },
+            {
+              "name": "episode",
+              "number": 70,
+              "type": 11,
+              "type_name": ".spotify.metadata.Episode",
+              "label": 3
+            },
+            {
+              "name": "copyright",
+              "number": 71,
+              "type": 11,
+              "type_name": ".spotify.metadata.Copyright",
+              "label": 3
+            },
+            {
+              "name": "restriction",
+              "number": 72,
+              "type": 11,
+              "type_name": ".spotify.metadata.Restriction",
+              "label": 3
+            },
+            {
+              "name": "keyword",
+              "number": 73,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "media_type",
+              "number": 74,
+              "type": 14,
+              "type_name": ".spotify.metadata.Show.MediaType",
+              "label": 1
+            },
+            {
+              "name": "consumption_order",
+              "number": 75,
+              "type": 14,
+              "type_name": ".spotify.metadata.Show.ConsumptionOrder",
+              "label": 1
+            },
+            {
+              "name": "availability",
+              "number": 78,
+              "type": 11,
+              "type_name": ".spotify.metadata.Availability",
+              "label": 3
+            },
+            {
+              "name": "trailer_uri",
+              "number": 83,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "music_and_talk",
+              "number": 85,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "is_audiobook",
+              "number": 89,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "is_creator_channel",
+              "number": 90,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "MediaType",
+              "values": {
+                "MIXED": 0,
+                "AUDIO": 1,
+                "VIDEO": 2
+              }
+            },
+            {
+              "name": "ConsumptionOrder",
+              "values": {
+                "SEQUENTIAL": 1,
+                "EPISODIC": 2,
+                "RECENT": 3
+              }
+            }
+          ]
+        },
+        {
+          "name": "Episode",
+          "fields": [
+            {
+              "name": "gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "duration",
+              "number": 7,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "audio",
+              "number": 12,
+              "type": 11,
+              "type_name": ".spotify.metadata.AudioFile",
+              "label": 3
+            },
+            {
+              "name": "description",
+              "number": 64,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "number",
+              "number": 65,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "publish_time",
+              "number": 66,
+              "type": 11,
+              "type_name": ".spotify.metadata.Date",
+              "label": 1
+            },
+            {
+              "name": "deprecated_popularity",
+              "number": 67,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "cover_image",
+              "number": 68,
+              "type": 11,
+              "type_name": ".spotify.metadata.ImageGroup",
+              "label": 1
+            },
+            {
+              "name": "language",
+              "number": 69,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "explicit",
+              "number": 70,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "show",
+              "number": 71,
+              "type": 11,
+              "type_name": ".spotify.metadata.Show",
+              "label": 1
+            },
+            {
+              "name": "video",
+              "number": 72,
+              "type": 11,
+              "type_name": ".spotify.metadata.VideoFile",
+              "label": 3
+            },
+            {
+              "name": "video_preview",
+              "number": 73,
+              "type": 11,
+              "type_name": ".spotify.metadata.VideoFile",
+              "label": 3
+            },
+            {
+              "name": "audio_preview",
+              "number": 74,
+              "type": 11,
+              "type_name": ".spotify.metadata.AudioFile",
+              "label": 3
+            },
+            {
+              "name": "restriction",
+              "number": 75,
+              "type": 11,
+              "type_name": ".spotify.metadata.Restriction",
+              "label": 3
+            },
+            {
+              "name": "freeze_frame",
+              "number": 76,
+              "type": 11,
+              "type_name": ".spotify.metadata.ImageGroup",
+              "label": 1
+            },
+            {
+              "name": "keyword",
+              "number": 77,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "allow_background_playback",
+              "number": 81,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "availability",
+              "number": 82,
+              "type": 11,
+              "type_name": ".spotify.metadata.Availability",
+              "label": 3
+            },
+            {
+              "name": "external_url",
+              "number": 83,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "original_audio",
+              "number": 84,
+              "type": 11,
+              "type_name": ".spotify.metadata.Audio",
+              "label": 1
+            },
+            {
+              "name": "type",
+              "number": 87,
+              "type": 14,
+              "type_name": ".spotify.metadata.Episode.EpisodeType",
+              "label": 1
+            },
+            {
+              "name": "music_and_talk",
+              "number": 91,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "content_rating",
+              "number": 95,
+              "type": 11,
+              "type_name": ".spotify.metadata.ContentRating",
+              "label": 3
+            },
+            {
+              "name": "is_audiobook_chapter",
+              "number": 96,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "is_podcast_short",
+              "number": 97,
+              "type": 8,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "episode_content_rating",
+              "number": 102,
+              "type": 11,
+              "type_name": ".spotify.metadata.contentratings.v1.ContentRatingTagWithMarkets",
+              "label": 3
+            }
+          ],
+          "enums": [
+            {
+              "name": "EpisodeType",
+              "values": {
+                "FULL": 0,
+                "TRAILER": 1,
+                "BONUS": 2
+              }
+            }
+          ]
+        },
+        {
+          "name": "Licensor",
+          "fields": [
+            {
+              "name": "uuid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Audio",
+          "fields": [
+            {
+              "name": "uuid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "format",
+              "number": 2,
+              "type": 14,
+              "type_name": ".spotify.metadata.Audio.Format",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "Format",
+              "values": {
+                "UNKNOWN": 0,
+                "DEFAULT": 1,
+                "PARROT": 2
+              }
+            }
+          ]
+        },
+        {
+          "name": "TopTracks",
+          "fields": [
+            {
+              "name": "country",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "track",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.metadata.Track",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "ActivityPeriod",
+          "fields": [
+            {
+              "name": "start_year",
+              "number": 1,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "end_year",
+              "number": 2,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "decade",
+              "number": 3,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "AlbumGroup",
+          "fields": [
+            {
+              "name": "album",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.metadata.Album",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Date",
+          "fields": [
+            {
+              "name": "year",
+              "number": 1,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "month",
+              "number": 2,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "day",
+              "number": 3,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "hour",
+              "number": 4,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "minute",
+              "number": 5,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Image",
+          "fields": [
+            {
+              "name": "file_id",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "size",
+              "number": 2,
+              "type": 14,
+              "type_name": ".spotify.metadata.Image.Size",
+              "label": 1
+            },
+            {
+              "name": "width",
+              "number": 3,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "height",
+              "number": 4,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "Size",
+              "values": {
+                "DEFAULT": 0,
+                "SMALL": 1,
+                "LARGE": 2,
+                "XLARGE": 3
+              }
+            }
+          ]
+        },
+        {
+          "name": "ImageGroup",
+          "fields": [
+            {
+              "name": "image",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.metadata.Image",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Biography",
+          "fields": [
+            {
+              "name": "text",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "portrait",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.metadata.Image",
+              "label": 3
+            },
+            {
+              "name": "portrait_group",
+              "number": 3,
+              "type": 11,
+              "type_name": ".spotify.metadata.ImageGroup",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Disc",
+          "fields": [
+            {
+              "name": "number",
+              "number": 1,
+              "type": 17,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "name",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "track",
+              "number": 3,
+              "type": 11,
+              "type_name": ".spotify.metadata.Track",
+              "label": 3
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Copyright",
+          "fields": [
+            {
+              "name": "type",
+              "number": 1,
+              "type": 14,
+              "type_name": ".spotify.metadata.Copyright.Type",
+              "label": 1
+            },
+            {
+              "name": "text",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "Type",
+              "values": {
+                "P": 0,
+                "C": 1
+              }
+            }
+          ]
+        },
+        {
+          "name": "Restriction",
+          "fields": [
+            {
+              "name": "catalogue",
+              "number": 1,
+              "type": 14,
+              "type_name": ".spotify.metadata.Restriction.Catalogue",
+              "label": 3
+            },
+            {
+              "name": "countries_allowed",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "countries_forbidden",
+              "number": 3,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "type",
+              "number": 4,
+              "type": 14,
+              "type_name": ".spotify.metadata.Restriction.Type",
+              "label": 1
+            },
+            {
+              "name": "catalogue_str",
+              "number": 5,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            }
+          ],
+          "enums": [
+            {
+              "name": "Catalogue",
+              "values": {
+                "AD": 0,
+                "SUBSCRIPTION": 1,
+                "CATALOGUE_ALL": 2,
+                "SHUFFLE": 3,
+                "COMMERCIAL": 4
+              }
+            },
+            {
+              "name": "Type",
+              "values": {
+                "STREAMING": 0
+              }
+            }
+          ]
+        },
+        {
+          "name": "Availability",
+          "fields": [
+            {
+              "name": "catalogue_str",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            },
+            {
+              "name": "start",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.metadata.Date",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "ContentAccessStatus",
+          "fields": [
+            {
+              "name": "windowing",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.metadata.ContentWindowing",
+              "label": 1
+            },
+            {
+              "name": "gated",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.metadata.ContentGated",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "ContentWindowing",
+          "fields": [],
+          "enums": []
+        },
+        {
+          "name": "ContentGated",
+          "fields": [],
+          "enums": []
+        },
+        {
+          "name": "SalePeriod",
+          "fields": [
+            {
+              "name": "restriction",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.metadata.Restriction",
+              "label": 3
+            },
+            {
+              "name": "start",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.metadata.Date",
+              "label": 1
+            },
+            {
+              "name": "end",
+              "number": 3,
+              "type": 11,
+              "type_name": ".spotify.metadata.Date",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "ExternalId",
+          "fields": [
+            {
+              "name": "type",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "id",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "AudioFile",
+          "fields": [
+            {
+              "name": "file_id",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "format",
+              "number": 2,
+              "type": 14,
+              "type_name": ".spotify.metadata.AudioFile.Format",
+              "label": 1
+            }
+          ],
+          "enums": [
+            {
+              "name": "Format",
+              "values": {
+                "OGG_VORBIS_96": 0,
+                "OGG_VORBIS_160": 1,
+                "OGG_VORBIS_320": 2,
+                "MP3_256": 3,
+                "MP3_320": 4,
+                "MP3_160": 5,
+                "MP3_96": 6,
+                "MP3_160_ENC": 7,
+                "AAC_24": 8,
+                "AAC_48": 9,
+                "FLAC_FLAC": 16,
+                "XHE_AAC_24": 18,
+                "XHE_AAC_16": 19,
+                "XHE_AAC_12": 20,
+                "FLAC_FLAC_24BIT": 22,
+                "PHONO_LOW": 54,
+                "PHONO_HIGH": 55,
+                "PHONO_CLEAR": 56,
+                "FLAC_FLAC_PETREL": 57
+              }
+            }
+          ]
+        },
+        {
+          "name": "Video",
+          "fields": [
+            {
+              "name": "gid",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "VideoFile",
+          "fields": [
+            {
+              "name": "file_id",
+              "number": 1,
+              "type": 12,
+              "type_name": "",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "ContentRating",
+          "fields": [
+            {
+              "name": "country",
+              "number": 1,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "tag",
+              "number": 2,
+              "type": 9,
+              "type_name": "",
+              "label": 3
+            }
+          ],
+          "enums": []
+        }
+      ],
+      "enums": []
+    },
+    {
+      "name": "media_manifest.proto",
+      "package": "spotify.media_manifest.proto",
+      "file_offset": 28669072,
+      "bytes": 1250,
+      "sha256": "98405a9963bee08f0d2ac0c787430effe1f64ea540ff629294e4c0da18f3ea68",
+      "messages": [
+        {
+          "name": "AudioFile",
+          "fields": [],
+          "enums": [
+            {
+              "name": "Format",
+              "values": {
+                "OGG_VORBIS_96": 0,
+                "OGG_VORBIS_160": 1,
+                "OGG_VORBIS_320": 2,
+                "MP3_256": 3,
+                "MP3_320": 4,
+                "MP3_160": 5,
+                "MP3_96": 6,
+                "MP3_160_ENC": 7,
+                "AAC_24": 8,
+                "AAC_48": 9,
+                "FLAC_FLAC": 16
+              }
+            }
+          ]
+        },
+        {
+          "name": "File",
+          "fields": [
+            {
+              "name": "external_file",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.media_manifest.proto.File.ExternalFile",
+              "label": 1
+            },
+            {
+              "name": "file_id_file",
+              "number": 2,
+              "type": 11,
+              "type_name": ".spotify.media_manifest.proto.File.FileIdFile",
+              "label": 1
+            },
+            {
+              "name": "bitrate",
+              "number": 3,
+              "type": 5,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "mime_type",
+              "number": 4,
+              "type": 9,
+              "type_name": "",
+              "label": 1
+            },
+            {
+              "name": "normalization_params",
+              "number": 5,
+              "type": 11,
+              "type_name": ".spotify.media_manifest.proto.File.NormalizationParams",
+              "label": 1
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Files",
+          "fields": [
+            {
+              "name": "files",
+              "number": 1,
+              "type": 11,
+              "type_name": ".spotify.media_manifest.proto.File",
+              "label": 3
+            }
+          ],
+          "enums": []
+        }
+      ],
+      "enums": [
+        {
+          "name": "EncryptionType",
+          "values": {
+            "NONE": 0,
+            "AES": 1
+          }
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "DUMPBIN instruction interpretation is supplemental static analyst work.",
+    "REA byte reads corroborate original bytes; disabled analyzers supply no complete call graph.",
+    "Static construction does not establish live service acceptance or runtime path selection.",
+    "No account, secret, live service, request capture or target execution was used."
+  ]
+}

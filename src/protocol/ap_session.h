@@ -5,6 +5,7 @@
 typedef struct ApSession ApSession;
 struct ApAuth;
 struct MercuryClient;
+struct AudioKeyClient;
 typedef enum ApState { AP_STATE_RESOLVE, AP_STATE_CONNECT, AP_STATE_HELLO,
     AP_STATE_CHALLENGE, AP_STATE_FRAMED, AP_STATE_AUTHENTICATED,
     AP_STATE_BACKOFF, AP_STATE_CLOSED } ApState;
@@ -48,6 +49,7 @@ ApResult ap_send(ApSession *session, uint8_t command, const void *body, size_t b
 /* Call from on_packet for Mercury commands. Accesses only the current verified
  * packet of an authenticated session; Mercury must be connected to this generation. */
 ApResult ap_dispatch_mercury(ApSession *session, struct MercuryClient *client);
+ApResult ap_dispatch_audio_key(ApSession *session, struct AudioKeyClient *client);
 ApResult ap_on_event(ApSession *session, ApEvent event);
 ApState ap_state(const ApSession *session);
 ApResult ap_result(const ApSession *session);

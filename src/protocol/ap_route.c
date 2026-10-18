@@ -3,6 +3,14 @@
 #include "authentication.pb.h"
 #include "keyexchange.pb.h"
 #include "mercury.h"
+#include "audio_key.h"
+
+ApResult ap_dispatch_audio_key(ApSession *s, AudioKeyClient *client)
+{
+    if (s == NULL || client == NULL) { return AP_INVALID; }
+    if (s->state != AP_STATE_AUTHENTICATED) { return AP_BAD_STATE; }
+    return audio_key_on_packet(client, s->generation, &s->packet);
+}
 
 ApResult ap_dispatch_mercury(ApSession *s, MercuryClient *client)
 {
