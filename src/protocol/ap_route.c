@@ -2,6 +2,14 @@
 #include "proto_codec.h"
 #include "authentication.pb.h"
 #include "keyexchange.pb.h"
+#include "mercury.h"
+
+ApResult ap_dispatch_mercury(ApSession *s, MercuryClient *client)
+{
+    if (s == NULL || client == NULL) { return AP_INVALID; }
+    if (s->state != AP_STATE_AUTHENTICATED) { return AP_BAD_STATE; }
+    return mercury_on_packet(client, s->generation, &s->packet);
+}
 
 ApResult ap_send(ApSession *s, uint8_t command, const void *body, size_t bytes)
 {

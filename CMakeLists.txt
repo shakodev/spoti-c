@@ -94,14 +94,29 @@ add_library(spotic_tokens STATIC src/api/token_manager.c src/api/token_scope.c
 target_include_directories(spotic_tokens PUBLIC src)
 target_link_libraries(spotic_tokens PUBLIC spotic_http spotic_proto spotic_crypto spotic_credentials)
 
-add_library(spotic_ap STATIC src/protocol/ap_packet.c src/protocol/ap_handshake.c
+add_library(spotic_ap_packet STATIC src/protocol/ap_packet.c)
+target_include_directories(spotic_ap_packet PUBLIC src)
+target_link_libraries(spotic_ap_packet PUBLIC spotic_shannon)
+
+add_library(spotic_mercury STATIC src/protocol/mercury.c src/protocol/mercury_parts.c
+    src/protocol/mercury_subscriptions.c)
+target_include_directories(spotic_mercury PUBLIC src)
+target_link_libraries(spotic_mercury PUBLIC spotic_proto spotic_ap_packet)
+
+add_library(spotic_ap STATIC src/protocol/ap_handshake.c
     src/protocol/ap_resolve.c src/protocol/ap_session.c src/protocol/ap_socket.c
     src/protocol/ap_io.c src/protocol/ap_route.c)
 target_sources(spotic_ap PRIVATE src/protocol/ap_auth.c)
 target_include_directories(spotic_ap PUBLIC src)
-target_link_libraries(spotic_ap PUBLIC spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
+target_link_libraries(spotic_ap PUBLIC spotic_mercury spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
 
 if(BUILD_TESTING)
+    add_executable(test_mercury tests/test_mercury.c tests/test_mercury_limits.c
+        tests/test_mercury_subscriptions.c)
+    target_include_directories(test_mercury PRIVATE tests)
+    target_link_libraries(test_mercury PRIVATE spotic_ap)
+    add_test(NAME protocol_mercury COMMAND test_mercury)
+    set_tests_properties(protocol_mercury PROPERTIES TIMEOUT 30)
     set(AUTH_VECTORS "${CMAKE_CURRENT_BINARY_DIR}/generated/auth_vectors.h")
     add_custom_command(OUTPUT "${AUTH_VECTORS}"
         COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/auth_fixtures.py" --header "${AUTH_VECTORS}"
