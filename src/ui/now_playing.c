@@ -27,6 +27,7 @@ void app_now_playing(App *a)
             (void)app_button(a,CLAY_ID("PlayerPlay"),p->state == PLAYER_PLAYING ? CLAY_STRING("Pause") : CLAY_STRING("Play"),
                 76,(AppAction){.type=APP_TOGGLE_PLAY},!enabled);
             (void)app_button(a,CLAY_ID("PlayerNext"),CLAY_STRING("Next"),52,(AppAction){.type=APP_NEXT},!enabled);
+            (void)app_button(a,CLAY_ID("PlayerLyrics"),CLAY_STRING("Lyrics"),60,(AppAction){.type=APP_GO_LYRICS},!enabled);
         }
         bool seek = enabled && p->duration_frames && (p->timeline_valid || p->state == PLAYER_PAUSED);
         if (seek) {

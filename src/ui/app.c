@@ -14,6 +14,7 @@ AppResult app_init(App *a, const AppServices *services, UiScheduler *scheduler,
     if (!a || !services) { return APP_INVALID; }
     memset(a,0,sizeof(*a)); a->services = *services; a->scheduler = scheduler;
     a->model.generation = 1; a->model.status = APP_SIGNED_OUT;
+    app_catalog_clear(a);
     if (ui_widgets_init(&a->widgets,clay,clay_bytes,scratch,scratch_bytes,failed,a) != UI_WIDGET_OK) { return APP_FULL; }
     a->alive = true; return APP_OK;
 }
@@ -100,6 +101,10 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                     app_label(a->model.location.screen == APP_LIBRARY ? CLAY_STRING("Your Library") :
                         a->model.location.screen == APP_SETTINGS ? CLAY_STRING("Settings") :
                         a->model.location.screen == APP_PLAYLIST ? CLAY_STRING("Playlist") :
+                        a->model.location.screen == APP_SEARCH ? CLAY_STRING("Search") :
+                        a->model.location.screen == APP_ALBUM ? CLAY_STRING("Album") :
+                        a->model.location.screen == APP_ARTIST ? CLAY_STRING("Artist") :
+                        a->model.location.screen == APP_LYRICS ? CLAY_STRING("Lyrics") :
                         a->model.location.screen == APP_SHELF ? CLAY_STRING("More for you") : CLAY_STRING("Home"),20,
                         (Clay_Color){245,245,245,255});
                 }
@@ -107,6 +112,10 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                     app_label(CLAY_STRING("Action unavailable. Please try again."),14,(Clay_Color){240,165,130,255});
                 }
                 if (a->model.location.screen == APP_SETTINGS) { settings(a); }
+                else if (a->model.location.screen == APP_SEARCH) { app_search(a); }
+                else if (a->model.location.screen == APP_ALBUM) { app_album(a); }
+                else if (a->model.location.screen == APP_ARTIST) { app_artist(a); }
+                else if (a->model.location.screen == APP_LYRICS) { app_lyrics(a); }
                 else if (a->model.location.screen == APP_PLAYLIST && a->model.logged_in) { app_playlist(a); }
                 else if (a->model.page && a->model.logged_in) {
                     if (a->model.status == APP_ERROR || !a->model.page->count) { status(a); }

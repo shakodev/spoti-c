@@ -33,6 +33,7 @@ void app_scroll(App *a, double delta)
 {
     if (!a || !a->alive || !isfinite(delta)) { return; }
     a->widgets.lists[0].scroll = fmax(0,a->widgets.lists[0].scroll+delta);
+    app_lyrics_hold(a);
     if (a->scheduler) { ui_scheduler_dirty(a->scheduler,UI_DIRTY_INPUT); }
 }
 AppResult app_key(App *a, AppKey key, bool shift)
@@ -51,6 +52,34 @@ AppResult app_key(App *a, AppKey key, bool shift)
     }
     AppControl *control = &a->controls[focused];
     if (control->disabled) { return APP_CANCELLED; }
+    if (a->model.location.screen==APP_LYRICS && control->id.id==CLAY_ID("LyricsList").id) {
+        if (key==APP_KEY_UP || key==APP_KEY_DOWN || key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN || key==APP_KEY_HOME || key==APP_KEY_END) {
+            if (key==APP_KEY_HOME) { a->widgets.lists[0].scroll=0; }
+            else if (key==APP_KEY_END) { a->widgets.lists[0].scroll=48.0*LYRICS_LINE_CAP; }
+            else { app_scroll(a,(key==APP_KEY_UP || key==APP_KEY_PAGE_UP ? -1 : 1)*(key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN ? 240 : 48)); }
+            app_lyrics_hold(a); return APP_OK;
+        }
+    }
+    if (a->catalog.page && control->action.type==APP_CATALOG_SELECT) {
+        UiVirtualList *list=&a->widgets.lists[0];
+        if (control->action.value>=0) { list->focus=app_catalog_key(a,(uint32_t)control->action.value); }
+        UiNav nav;
+        switch (key) {
+        case APP_KEY_UP: nav=UI_NAV_UP; break; case APP_KEY_DOWN: nav=UI_NAV_DOWN; break;
+        case APP_KEY_HOME: nav=UI_NAV_HOME; break; case APP_KEY_END: nav=UI_NAV_END; break;
+        case APP_KEY_PAGE_UP: nav=UI_NAV_PAGE_UP; break; case APP_KEY_PAGE_DOWN: nav=UI_NAV_PAGE_DOWN; break;
+        default: nav=(UiNav)-1; break;
+        }
+        if ((int)nav>=0) {
+            (void)ui_virtual_navigate(list,a->catalog.page->count,APP_CATALOG_ROW,fmin(336,fmax(48,a->geometry.viewport-120)),nav,true,
+                app_catalog_key,app_catalog_index,a);
+            a->widgets.focus=CLAY_ID("CatalogList").id; return APP_OK;
+        }
+        if (key==APP_KEY_ENTER) {
+            uint32_t index; return app_catalog_index(a,list->focus,&index) ?
+                app_enqueue(a,(AppAction){.type=APP_CATALOG_SELECT,.value=index}) : APP_CANCELLED;
+        }
+    }
     if (a->model.location.screen==APP_PLAYLIST && control->action.type==APP_TRACK_PLAY) {
         Playlist *p=a->services.playlist; if (!p || !p->ready || p->pending) { return APP_PENDING; }
         UiVirtualList *list=&a->widgets.lists[0];

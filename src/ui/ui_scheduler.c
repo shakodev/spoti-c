@@ -8,6 +8,7 @@ void ui_scheduler_init(UiScheduler *ui)
     memset(ui, 0, sizeof(*ui));
     ui->progress = ui->animation = ui->animation_end = ui->lyrics = CORE_CLOCK_NEVER;
     ui->lyrics_consumed = CORE_CLOCK_NEVER;
+    ui->work = CORE_CLOCK_NEVER;
 }
 
 void ui_scheduler_dirty(UiScheduler *ui, uint32_t reasons) { ui->dirty |= reasons; }
@@ -51,6 +52,7 @@ bool ui_scheduler_animate(UiScheduler *ui, uint32_t duration_ms, uint64_t now)
     }
     return true;
 }
+void ui_scheduler_work(UiScheduler *ui, uint64_t deadline) { ui->work = deadline; }
 
 uint64_t ui_scheduler_deadline(const UiScheduler *ui)
 {
@@ -58,6 +60,7 @@ uint64_t ui_scheduler_deadline(const UiScheduler *ui)
     if (ui->dirty) { return 0; }
     uint64_t next = ui->progress;
     if (ui->animation < next) { next = ui->animation; }
+    if (ui->work < next) { next = ui->work; }
     if (ui->playing && ui->lyrics_visible && ui->lyrics < next) { next = ui->lyrics; }
     return next;
 }
@@ -70,6 +73,7 @@ uint32_t ui_scheduler_wait(const UiScheduler *ui, uint64_t now)
 uint32_t ui_scheduler_frame(UiScheduler *ui, uint64_t now)
 {
     if (!drawable(ui)) { return 0; }
+    if (core_deadline_expired(now,ui->work)) { ui->dirty |= UI_DIRTY_STATE; ui->work = CORE_CLOCK_NEVER; }
     if (core_deadline_expired(now, ui->progress)) {
         ui->dirty |= UI_DIRTY_PROGRESS; ++ui->stats.progress_ticks;
         ui->progress = core_deadline_after(now, 1000);

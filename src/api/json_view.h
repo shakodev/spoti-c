@@ -26,6 +26,9 @@ size_t json_page_pool_size(void);
 size_t json_page_pool_alignment(void);
 JsonResult json_page_pool_init(void *storage, size_t bytes, JsonPagePool **output);
 size_t json_page_pool_resident(const JsonPagePool *pool);
+/* Exclusive owner, after all transport/readers stop. Refuses live reservations;
+ * restores caller storage for reuse. No API use until freshly initialized. */
+JsonResult json_page_pool_dispose(JsonPagePool *pool);
 JsonResult json_page_acquire(JsonPagePool *pool, JsonPage *page, uint64_t generation);
 void json_page_discard(JsonPage *page); /* Exclusive UINT_MAX reservation only. */
 /* Exclusive owner: release the temporary DOM and replace it with a compact

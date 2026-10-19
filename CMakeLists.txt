@@ -237,9 +237,11 @@ target_link_libraries(spotic_artwork PUBLIC spotic_core spotic_renderer
 add_library(spotic_app STATIC src/ui/app.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
     src/ui/sidebar.c src/ui/now_playing.c src/ui/screens/home.c src/ui/screens/library.c
-    src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c)
-target_link_libraries(spotic_app PUBLIC spotic_widgets spotic_font spotic_collections spotic_artwork spotic_player spotic_ui spotic_oauth)
-add_library(spotic_app_fixture STATIC src/ui/app_fixture.c src/ui/app_fixture_playlist.c)
+    src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
+    src/ui/screens/catalog_view.c src/ui/screens/search.c src/ui/screens/album.c
+    src/ui/screens/artist.c src/ui/screens/lyrics.c)
+target_link_libraries(spotic_app PUBLIC spotic_widgets spotic_font spotic_collections spotic_catalog spotic_lyrics spotic_artwork spotic_player spotic_ui spotic_oauth)
+add_library(spotic_app_fixture STATIC src/ui/app_fixture.c src/ui/app_fixture_playlist.c src/ui/app_fixture_catalog.c)
 target_link_libraries(spotic_app_fixture PUBLIC spotic_app)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_app spotic_app_fixture)
 add_executable(spotic WIN32 src/ui/main.c)
@@ -249,6 +251,17 @@ target_compile_definitions(spotic PRIVATE
     APP_AUDIO_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio/synthetic.enc")
 
 if(BUILD_TESTING)
+    add_executable(test_catalog_screens tests/test_catalog_screens.c tests/catalog_screens_support.c
+        tests/catalog_screens_faults.c tests/catalog_screens_visual.c)
+    target_include_directories(test_catalog_screens PRIVATE tests)
+    target_compile_definitions(test_catalog_screens PRIVATE APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app")
+    target_link_libraries(test_catalog_screens PRIVATE spotic_app spotic_app_fixture)
+    add_test(NAME app_catalog_screens COMMAND test_catalog_screens)
+    set_tests_properties(app_catalog_screens PROPERTIES TIMEOUT 120)
+    if(ENABLE_RENDERER_GPU_TESTS)
+        add_test(NAME app_catalog_visual COMMAND test_catalog_screens --visual)
+        set_tests_properties(app_catalog_visual PROPERTIES TIMEOUT 120 LABELS "gpu;optional" SKIP_RETURN_CODE 77)
+    endif()
     add_executable(test_playlist_screen tests/test_playlist_screen.c tests/playlist_fixture.c tests/playlist_visual.c tests/player_test_support.c)
     target_include_directories(test_playlist_screen PRIVATE tests)
     target_compile_definitions(test_playlist_screen PRIVATE VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")

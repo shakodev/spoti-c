@@ -3,6 +3,13 @@
 #include <math.h>
 #include <string.h>
 
+void app_refresh_clock(App *a, uint32_t dirty)
+{
+    if (!a || !a->alive || !a->model.logged_in || !(dirty&(UI_DIRTY_PROGRESS|UI_DIRTY_LYRICS))) { return; }
+    if (a->services.player) { (void)player_refresh_clock(a->services.player); }
+    else if (a->services.refresh_clock) { (void)a->services.refresh_clock(a->services.context); }
+}
+
 void app_playlist_prepare(App *a)
 {
     Playlist *p=a->services.playlist;

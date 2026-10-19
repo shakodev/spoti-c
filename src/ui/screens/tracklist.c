@@ -3,6 +3,14 @@
 #include <math.h>
 #include <string.h>
 
+bool app_track_control(App *a, Clay_ElementId id, Clay_String name, float width, AppAction action, bool disabled)
+{
+    if (a->control_count==APP_CONTROLS) { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); return false; }
+    a->controls[a->control_count++]=(AppControl){id,action,disabled};
+    bool hit=ui_button(&a->widgets,id,app_text(a,name),width,28,disabled);
+    if (hit) { (void)app_enqueue(a,action); } return hit;
+}
+
 static void cell(const char *s, float width, uint16_t size, uint32_t slot)
 {
     CLAY(CLAY_IDI("PlaylistCellClip",slot),{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)}},.clip={.horizontal=true,.vertical=true}}) {
@@ -23,15 +31,11 @@ static void row(void *context, uint32_t index, uint64_t key)
     CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(40)},.childGap=2,.padding={4,4,5,5}}}) {
         bool disabled=p->pending || !r || !(r->flags&TRACK_PLAYABLE);
         Clay_ElementId id=CLAY_IDI("PlaylistTrack",ordinal); AppAction action={.type=APP_TRACK_PLAY,.value=(double)key};
-        if (a->control_count<APP_CONTROLS) { a->controls[a->control_count++]=(AppControl){id,action,disabled}; }
-        else { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); }
         /* Only noninteractive clipping boxes reuse viewport slots. Semantic
          * row/button IDs still identify original playlist occurrences. */
         CLAY(CLAY_IDI("PlaylistCellClip",slot*4),{.layout={.sizing={CLAY_SIZING_FIXED(title),CLAY_SIZING_FIXED(28)}},
             .clip={.horizontal=true,.vertical=true}}) {
-            if (ui_button(&a->widgets,id,app_text(a,(Clay_String){false,(int32_t)strlen(name),name}),title,28,disabled)) {
-                (void)app_enqueue(a,action);
-            }
+            (void)app_track_control(a,id,(Clay_String){false,(int32_t)strlen(name),name},title,action,disabled);
         }
         cell(r ? p->strings+r->artist : "",artist,14,slot*4+1);
         cell(r ? p->strings+r->album : "",width-duration-title-artist-6,14,slot*4+2);

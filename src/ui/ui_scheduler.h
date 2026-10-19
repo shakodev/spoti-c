@@ -20,7 +20,7 @@ typedef struct UiSchedulerStats {
 typedef struct UiScheduler {
     uint32_t dirty;
     bool visible, occluded, playing, lyrics_visible;
-    uint64_t progress, animation, animation_end, lyrics, lyrics_consumed;
+    uint64_t progress, animation, animation_end, lyrics, lyrics_consumed, work;
     UiSchedulerStats stats;
 } UiScheduler;
 
@@ -32,6 +32,8 @@ void ui_scheduler_playing(UiScheduler *ui, bool playing, uint64_t now);
  * CORE_CLOCK_NEVER disarms the boundary.
  * Identical consumed boundaries stay consumed; caller must advance the boundary. */
 void ui_scheduler_lyrics(UiScheduler *ui, bool visible, uint64_t next_boundary);
+/* One finite UI preparation deadline (search debounce / manual scroll hold). */
+void ui_scheduler_work(UiScheduler *ui, uint64_t deadline);
 /* Explicit finite transition. Zero stops; durations above the cap are rejected. */
 bool ui_scheduler_animate(UiScheduler *ui, uint32_t duration_ms, uint64_t now);
 uint64_t ui_scheduler_deadline(const UiScheduler *ui);

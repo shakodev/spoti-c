@@ -55,6 +55,11 @@ static void duration_and_gapless(HeadlessFixture *f)
         Headless *h; HeadlessConfig c = {.cache_directory = f->cache, .fixture_url = f->url, .observe = compare,
             .state_changed=state_changed,.state_context=&state_edges};
         CHECK(headless_open(&c, &h)); hf_load(h, false);
+        uint64_t clock=headless_snapshot(h).clock_serial;
+        CHECK(headless_refresh_clock(h)==PLAYER_OK);
+        uint64_t until=GetTickCount64()+2000;
+        while (headless_snapshot(h).clock_serial==clock && GetTickCount64()<until) { Sleep(1); }
+        CHECK(headless_snapshot(h).clock_serial==clock+1);
         PlayerCommand next = {.type = PLAYER_QUEUE_APPEND}; next.track_id[15] = 2;
         CHECK(headless_submit(h, &next) == PLAYER_OK); CHECK(headless_command(h, "play"));
         hf_wait(h, PLAYER_ENDED); HeadlessMetrics m;

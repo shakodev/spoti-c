@@ -8,6 +8,7 @@ void app_sidebar(App *a)
         .padding={4,4,8,8},.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},
         .backgroundColor={15,15,15,255},.cornerRadius=CLAY_CORNER_RADIUS(8)}) {
         (void)app_button(a,CLAY_ID("NavHome"),CLAY_STRING("Home"),width-8,(AppAction){.type=APP_GO_HOME},false);
+        (void)app_button(a,CLAY_ID("NavSearch"),CLAY_STRING("Search"),width-8,(AppAction){.type=APP_GO_SEARCH},false);
         (void)app_button(a,CLAY_ID("NavLibrary"),CLAY_STRING("Library"),width-8,(AppAction){.type=APP_GO_LIBRARY},false);
         (void)app_button(a,CLAY_ID("NavSettings"),a->geometry.compact ? CLAY_STRING("Prefs") : CLAY_STRING("Settings"),
             width-8,(AppAction){.type=APP_GO_SETTINGS},false);

@@ -75,7 +75,8 @@ PlayerResult player_pump(Player *p)
 {
     if (!player_owner(p) || p->busy) { return PLAYER_BAD_STATE; }
     p->busy = true; p->more = false;
-    AcquireSRWLockExclusive(&p->lock); ResetEvent(p->wake); ReleaseSRWLockExclusive(&p->lock);
+    AcquireSRWLockExclusive(&p->lock); ResetEvent(p->wake);
+    p->view.clock_serial=p->clock_requested; ReleaseSRWLockExclusive(&p->lock);
     player_timeline(p);
     if (atomic_load(&p->config.sink->invalidated)) { device_change(p); }
     PlayerCommand command;
@@ -83,7 +84,7 @@ PlayerResult player_pump(Player *p)
     player_sources_drive(p); player_decode_drive(p); player_sources_drive(p); player_timeline(p);
     player_publish(p);
     AcquireSRWLockShared(&p->lock);
-    bool queued = p->command_count != 0, requests = p->request_count != 0;
+    bool queued = p->command_count != 0 || p->clock_requested!=p->view.clock_serial, requests = p->request_count != 0;
     ReleaseSRWLockShared(&p->lock);
     bool closed = p->closing && !queued && !requests && p->slots[0].state == PS_FREE && p->slots[1].state == PS_FREE;
     p->more |= queued; p->busy = false;

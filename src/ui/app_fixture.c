@@ -8,12 +8,11 @@ static void run(const Event *event, const CancelToken *cancel, void *context)
     AppFixture *h = context; AppFixtureSlot *slot = &h->slots[event->id];
     slot->result = COLLECTION_CANCELLED;
     if (worker_cancelled(cancel)) { return; }
+    app_fixture_reset(h,slot->request.generation);
     if (slot->authentication) {
-        if (slot->auth == APP_LOGOUT && slot->request.generation > h->generation) {
-            h->generation = slot->request.generation; (void)collection_reset(h->service,h->generation);
-        }
         slot->result = COLLECTION_OK; return;
     }
+    if (slot->request.screen>=APP_SEARCH) { app_fixture_catalog_run(h,slot,cancel); return; }
     if (slot->request.kind==COLLECTION_PLAYLIST) {
         slot->playlist=true; slot->result=app_fixture_playlist_open(h,slot,cancel); return;
     }
@@ -42,7 +41,7 @@ static void complete(const Event *event, WorkerOutcome outcome, void *context)
      * which scans all four slots rather than relying on one event per page. */
     (void)event_post(h->events,&notification);
 }
-static AppResult submit(AppFixture *h, const AppRequest *request, bool auth, AppAuth action)
+static AppResult submit(AppFixture *h, const AppRequest *request, bool auth, AppAuth action, JsonString artwork)
 {
     if (!h || h->stopping) { return APP_UNAVAILABLE; }
     for (unsigned i = 0; i < 4; ++i) {
@@ -50,6 +49,9 @@ static AppResult submit(AppFixture *h, const AppRequest *request, bool auth, App
         if (atomic_load_explicit(&slot->phase,memory_order_acquire) != 0) { continue; }
         slot->request = *request; slot->authentication = auth; slot->auth = action;
         slot->playlist=false;
+        slot->artwork[0]=0;
+        if (artwork.bytes && json_base_string_copy(artwork,slot->artwork,sizeof(slot->artwork))!=JSON_OK) { return APP_FULL; }
+        slot->catalog_page=NULL; slot->lyrics=NULL; slot->catalog_result=CATALOG_CANCELLED; slot->lyrics_result=LYRICS_CANCELLED;
         slot->page = NULL; slot->result = COLLECTION_CANCELLED;
         atomic_store(&slot->phase,1);
         WorkerJob job = {.request={.id=i},.run=run,.complete=complete,.context=h,.deadline=CORE_CLOCK_NEVER,.priority=WORKER_DISK};
@@ -60,7 +62,13 @@ static AppResult submit(AppFixture *h, const AppRequest *request, bool auth, App
 }
 static AppResult request(void *context, const AppRequest *request)
 {
-    return submit(context,request,false,APP_LOGIN);
+    return submit(context,request,false,APP_LOGIN,(JsonString){0});
+}
+static AppResult catalog(void *context, const AppRequest *r, JsonString artwork)
+{
+    AppFixture *h=context;
+    if (artwork.bytes>=sizeof(h->slots[0].artwork)) { return APP_FULL; }
+    return submit(h,r,false,APP_LOGIN,artwork);
 }
 static void cancel(void *context, const AppRequest *request)
 {
@@ -83,11 +91,11 @@ static AppResult auth(void *context, AppAuth action)
         }
     }
     AppRequest r = {.generation=h->app->model.generation,.serial=h->app->model.auth_serial};
-    return submit(h,&r,true,action);
+    return submit(h,&r,true,action,(JsonString){0});
 }
 AppServices app_fixture_services(AppFixture *h)
 {
-    return (AppServices){.request=request,.cancel=cancel,.auth=auth,.context=h,.demo=true,.playlist=&h->playlist};
+    return (AppServices){.request=request,.catalog=catalog,.cancel=cancel,.retire=app_fixture_retire,.auth=auth,.context=h,.demo=true,.playlist=&h->playlist};
 }
 AppResult app_fixture_init(AppFixture *h, Arena *core, EventQueue *events, App *app, const wchar_t *directory)
 {
@@ -98,6 +106,7 @@ AppResult app_fixture_init(AppFixture *h, Arena *core, EventQueue *events, App *
     if (json_page_pool_init(h->pool_storage,sizeof(h->pool_storage),&h->pool) != JSON_OK ||
         collection_service_init(h->service_storage,sizeof(h->service_storage),h->pool,&h->service) != COLLECTION_OK) { return APP_FAILED; }
     for (unsigned i = 0; i < 4; ++i) { atomic_init(&h->slots[i].phase,0); }
+    atomic_init(&h->retirement_phase,0); atomic_init(&h->retire_generation,0);
     if (worker_start(core,4,(CoreClock){0},&h->worker)!=CORE_OK || track_filter_init(&h->filter,h->worker,events)!=TRACK_OK) { return APP_FAILED; }
     playlist_init(&h->playlist,&h->filter); return APP_OK;
 }
@@ -112,6 +121,10 @@ void app_fixture_pump(AppFixture *h)
                 if (slot->result==COLLECTION_OK) { (void)app_session(h->app,slot->auth == APP_LOGIN,true,GetTickCount64()); }
                 else { h->app->model.auth_pending=false; h->app->model.last_result=APP_FAILED; }
             }
+        } else if (slot->request.screen==APP_LYRICS) {
+            (void)app_lyrics_deliver(h->app,slot->request,slot->lyrics_result,slot->lyrics); slot->lyrics=NULL;
+        } else if (slot->request.screen>=APP_SEARCH) {
+            (void)app_catalog_deliver(h->app,slot->request,slot->catalog_result,slot->catalog_page); slot->catalog_page=NULL;
         } else if (slot->playlist && h->app->alive && h->app->model.generation==slot->request.generation &&
             h->app->model.request.serial==slot->request.serial) {
             if (slot->result==COLLECTION_OK) { (void)playlist_source(&h->playlist,&slot->source,slot->request.generation); }
@@ -119,6 +132,7 @@ void app_fixture_pump(AppFixture *h)
         } else { (void)app_deliver(h->app,slot->request,slot->result,slot->page); }
         slot->page = NULL; atomic_store_explicit(&slot->phase,0,memory_order_release);
     }
+    app_fixture_retirement_pump(h);
 }
 bool app_fixture_stop(AppFixture *h)
 {
@@ -131,7 +145,9 @@ bool app_fixture_stop(AppFixture *h)
     track_filter_release(&h->filter); (void)track_filter_clear(&h->filter); memset(&h->last_queue,0,sizeof(h->last_queue));
     for (unsigned i = 0; i < 4; ++i) {
         if (h->slots[i].page) { (void)page_release((JsonPage *)&h->slots[i].page->json); h->slots[i].page = NULL; }
+        if (h->slots[i].catalog_page) { (void)page_release((JsonPage *)&h->slots[i].catalog_page->json); h->slots[i].catalog_page=NULL; }
+        if (h->slots[i].lyrics) { (void)lyrics_document_release(h->slots[i].lyrics); h->slots[i].lyrics=NULL; }
     }
-    if (h->generation < UINT64_MAX) { (void)collection_reset(h->service,h->generation+1); }
-    return collection_resident_pages(h->service) == 0 && json_page_pool_resident(h->pool) == 0;
+    if (h->generation < UINT64_MAX) { app_fixture_reset(h,h->generation+1); }
+    return collection_resident_pages(h->service) == 0 && json_page_pool_dispose(h->pool)==JSON_OK;
 }

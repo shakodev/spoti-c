@@ -98,6 +98,7 @@ void player_publish(Player *p)
     p->view.duration_frames = index < p->queue_count ? p->durations[index] : 0;
     AcquireSRWLockExclusive(&p->lock);
     bool changed = p->view.generation != p->published.generation || p->view.state != p->published.state ||
+        p->view.clock_serial != p->published.clock_serial ||
         p->view.position_frames != p->published.position_frames || p->view.duration_frames != p->published.duration_frames ||
         p->view.volume != p->published.volume || p->view.rate != p->published.rate || p->view.error != p->published.error ||
         p->view.timeline_valid != p->published.timeline_valid || p->queue_count != p->published_queue.count;
@@ -126,6 +127,14 @@ PlayerSnapshot player_snapshot(Player *p)
 {
     PlayerSnapshot s = {0}; if (!p) { return s; }
     AcquireSRWLockShared(&p->lock); s = p->published; ReleaseSRWLockShared(&p->lock); return s;
+}
+PlayerResult player_refresh_clock(Player *p)
+{
+    if (!p) { return PLAYER_INVALID; }
+    AcquireSRWLockExclusive(&p->lock);
+    PlayerResult r=p->destroyed || p->control_closed ? PLAYER_CLOSED : p->clock_requested==UINT64_MAX ? PLAYER_LIMIT : PLAYER_OK;
+    if (r==PLAYER_OK) { ++p->clock_requested; SetEvent(p->wake); }
+    ReleaseSRWLockExclusive(&p->lock); return r;
 }
 bool player_next_index(Player *p, unsigned index, bool automatic, unsigned *next)
 {

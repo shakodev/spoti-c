@@ -36,6 +36,7 @@ DWORD WINAPI hl_decode(void *ctx)
         if (h->config.state_changed) {
             PlayerSnapshot view = player_snapshot(h->player);
             if (view.state != previous.state || view.generation != previous.generation ||
+                view.clock_serial != previous.clock_serial ||
                 view.volume != previous.volume || view.rate != previous.rate ||
                 view.duration_frames != previous.duration_frames || view.timeline_valid != previous.timeline_valid ||
                 view.error != previous.error || memcmp(view.track_id,previous.track_id,16)) {

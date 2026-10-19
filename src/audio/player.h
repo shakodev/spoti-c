@@ -12,6 +12,7 @@ typedef enum PlayerResult { PLAYER_OK, PLAYER_MORE, PLAYER_FULL, PLAYER_CLOSED,
 typedef enum PlayerRepeat { PLAYER_REPEAT_OFF, PLAYER_REPEAT_ONE, PLAYER_REPEAT_ALL } PlayerRepeat;
 typedef struct PlayerSnapshot {
     uint64_t generation;
+    uint64_t clock_serial; /* Acknowledges explicit owner-side clock samples. */
     uint8_t track_id[16];
     uint64_t position_frames;
     uint64_t duration_frames; /* Zero until decoder length is known. */
@@ -72,7 +73,8 @@ typedef struct PlayerConfig {
     Arena *codec[2], *work[2]; /* Empty, distinct, fixed 256 KiB / 64 KiB arenas. */
 } PlayerConfig;
 /* Core allocation is fixed, counted under its existing <=128 KiB cap. No heap
- * or new thread. All APIs except submit/snapshot/take_request are owner-only.
+ * or new thread. submit/snapshot/refresh_clock and network consumption are
+ * thread-safe; pump/device/decoder/wait-timeout APIs remain owner-only.
  * Decoder and device ownership share a worker; network remains separate. */
 PlayerResult player_create(Arena *core, const PlayerConfig *, Player **);
 /* MPSC UI/Connect/SMTC commands AND network replies; FULL retains caller data.
@@ -80,6 +82,9 @@ PlayerResult player_create(Arena *core, const PlayerConfig *, Player **);
  * A successful SHUTDOWN closes control admission but allows retire replies. */
 PlayerResult player_submit(Player *, const PlayerCommand *);
 PlayerSnapshot player_snapshot(Player *); /* Immutable copy, short publication lock. */
+/* Thread-safe, coalesced wake; no command/decoder/device work on the caller.
+ * The next owner pump samples the sink and publishes clock_serial. */
+PlayerResult player_refresh_clock(Player *);
 void player_queue_snapshot(Player *, PlayerQueueSnapshot *);
 HANDLE player_state_event(Player *); /* Borrowed manual reset, one network consumer. */
 void player_take_state(Player *, PlayerQueueSnapshot *); /* Copy and reset atomically. */

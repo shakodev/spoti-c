@@ -11,6 +11,7 @@ void app_desktop_prepare(void *context, UiWindow *window, uint32_t dirty)
     AppDesktop *d = context;
     ui_surface_prepare(&d->surface,window,dirty);
     if (!d->surface.ready || !d->app.alive) { return; }
+    app_refresh_clock(&d->app,dirty);
     if (d->fixture) { app_fixture_pump(d->fixture); }
     (void)app_update(&d->app,GetTickCount64());
     RECT rect; GetClientRect(window->hwnd,&rect);
@@ -30,7 +31,8 @@ bool app_desktop_input(void *context, UiWindow *w, UINT message, WPARAM wp, LPAR
         ((MINMAXINFO *)lp)->ptMinTrackSize = (POINT){MulDiv(420,(int)dpi,96),MulDiv(360,(int)dpi,96)}; return true;
     }
     if (!d->app.alive) { return false; }
-    if (playlist_text_message(&d->app,w->hwnd,message,wp,lp)) { return true; }
+    if (app_search_text_message(&d->app,w->hwnd,message,wp,lp) ||
+        (d->app.model.location.screen==APP_PLAYLIST && playlist_text_message(&d->app,w->hwnd,message,wp,lp))) { return true; }
     if (message == WM_KEYDOWN || message == WM_SYSKEYDOWN) {
         AppKey key;
         switch (wp) {

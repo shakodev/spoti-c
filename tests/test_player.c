@@ -94,6 +94,29 @@ static void queue_and_mpsc(void)
     CHECK(player_submit(pt.player, &append) == PLAYER_OK); pt_drive();
     pt_close();
 }
+static DWORD WINAPI request_clock(void *context)
+{
+    Player *p=context;
+    for (unsigned i=0;i<100;++i) { CHECK(player_refresh_clock(p)==PLAYER_OK); }
+    return 0;
+}
+static void clock_refresh(void)
+{
+    pt_open(); pt_track(PLAYER_LOAD,0,true); pt_drive();
+    PlayerSnapshot before=player_snapshot(pt.player); pt_render(1000);
+    HANDLE thread=CreateThread(NULL,0,request_clock,pt.player,0,NULL); CHECK(thread);
+    CHECK(WaitForSingleObject(thread,5000)==WAIT_OBJECT_0 && CloseHandle(thread));
+    HANDLE handles[3]; (void)player_wait_handles(pt.player,handles);
+    CHECK(WaitForSingleObject(handles[0],0)==WAIT_OBJECT_0);
+    CHECK(player_snapshot(pt.player).clock_serial==before.clock_serial && pt.player->command_count==0);
+    pt_drive(); PlayerSnapshot after=player_snapshot(pt.player);
+    CHECK(after.clock_serial==before.clock_serial+100 && after.generation==before.generation);
+    CHECK(after.position_frames==before.position_frames+1000 && after.timeline_valid);
+    CHECK(player_refresh_clock(NULL)==PLAYER_INVALID);
+    pt.player->clock_requested=UINT64_MAX; CHECK(player_refresh_clock(pt.player)==PLAYER_LIMIT);
+    pt.player->clock_requested=after.clock_serial;
+    pt_close();
+}
 static void rapid_commands(void)
 {
     pt_open(); pt_track(PLAYER_LOAD, 0, true); pt_drive();
@@ -207,7 +230,7 @@ static void unavailable_device(void)
 static DWORD WINAPI run(void *ctx)
 {
     (void)ctx; pt_load_fixtures(); DWORD before, after; CHECK(GetProcessHandleCount(GetCurrentProcess(), &before));
-    command_matrix(); underrun_and_format(); queue_and_mpsc(); rapid_commands();
+    command_matrix(); underrun_and_format(); queue_and_mpsc(); clock_refresh(); rapid_commands();
     shutdown_and_errors(); timeline_ledger(); queue_policy(); seek_limits(); unavailable_device();
     CHECK(GetProcessHandleCount(GetCurrentProcess(), &after)); CHECK(before == after);
     puts("player: passed"); return 0;

@@ -46,6 +46,12 @@ size_t json_page_pool_resident(const JsonPagePool *pool)
     }
     return count;
 }
+JsonResult json_page_pool_dispose(JsonPagePool *pool)
+{
+    if (pool==NULL) { return JSON_INVALID; }
+    if (json_page_pool_resident(pool)!=0) { return JSON_INVALID; }
+    UNPOISON(pool,sizeof(*pool)); memset(pool,0,sizeof(*pool)); return JSON_OK;
+}
 
 JsonResult json_page_acquire(JsonPagePool *pool, JsonPage *page, uint64_t generation)
 {

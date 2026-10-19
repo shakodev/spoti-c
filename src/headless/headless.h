@@ -13,7 +13,8 @@ typedef struct HeadlessConfig {
     void (*observe)(void *, const float *, size_t); /* Fake sink, decode owner. */
     void *observe_context;
     /* Optional nonblocking state-edge wake from decode owner, never WASAPI.
-     * No position/callback-period notification; UI samples consumed frames at 1 Hz. */
+     * Explicit UI clock-sample acknowledgements also wake; audio callbacks and
+     * ordinary position publication never produce callback-period UI wakes. */
     void (*state_changed)(void *);
     void *state_context;
 } HeadlessConfig;
@@ -30,6 +31,7 @@ typedef struct HeadlessMetrics {
 bool headless_open(const HeadlessConfig *, Headless **);
 PlayerResult headless_submit(Headless *, const PlayerCommand *);
 PlayerSnapshot headless_snapshot(Headless *);
+PlayerResult headless_refresh_clock(Headless *);
 /* Commands: play, pause, seek <milliseconds>, volume <0..1>, next, stop.
  * Reject trailing input, nonfinite/overflow and out-of-range values. */
 bool headless_command(Headless *, const char *);

@@ -27,6 +27,7 @@ struct Player {
     PlayerRequest requests[PLAYER_REQUEST_CAP];
     size_t command_head, command_count, request_head, request_count;
     PlayerSnapshot published, view;
+    uint64_t clock_requested; /* Protected by publication lock. */
     PlayerQueueSnapshot published_queue;
     uint64_t durations[PLAYER_QUEUE_CAP];
     PlayerConfig config;

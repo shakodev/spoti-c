@@ -14,14 +14,16 @@ struct PlaylistQueue;
 #define APP_CONTROLS 48u
 #define APP_IMAGES 16u
 #define APP_INPUTS 16u
-typedef enum AppResult { APP_OK, APP_PENDING, APP_FULL, APP_INVALID, APP_STALE,
-    APP_CANCELLED, APP_UNAVAILABLE, APP_FAILED } AppResult;
-typedef enum AppScreen { APP_HOME, APP_LIBRARY, APP_SETTINGS, APP_SHELF, APP_PLAYLIST } AppScreen;
+#include "app_result.h"
+#include "screens/catalog_view.h"
+typedef enum AppScreen { APP_HOME, APP_LIBRARY, APP_SETTINGS, APP_SHELF, APP_PLAYLIST,
+    APP_SEARCH, APP_ALBUM, APP_ARTIST, APP_LYRICS } AppScreen;
 typedef enum AppStatus { APP_LOADING, APP_CONTENT, APP_EMPTY, APP_ERROR,
     APP_AUTH_EXPIRED, APP_OFFLINE, APP_SIGNED_OUT } AppStatus;
 typedef struct AppEntity { CollectionItemKind kind; char uri[192], title[192]; uint8_t id[16]; bool playable; } AppEntity;
-typedef struct AppLocation { AppScreen screen; AppEntity entity; double scroll; } AppLocation;
-typedef struct AppRequest { uint64_t generation, serial; uint32_t cursor; CollectionKind kind; char uri[192]; } AppRequest;
+typedef struct AppLocation { AppScreen screen; AppEntity entity; double scroll; uint32_t selector; char query[APP_QUERY_BYTES]; } AppLocation;
+typedef struct AppRequest { uint64_t generation, serial; uint32_t cursor; CollectionKind kind; char uri[192];
+    AppScreen screen; uint32_t selector; char query[APP_QUERY_BYTES]; } AppRequest;
 typedef enum AppAuth { APP_LOGIN, APP_LOGOUT } AppAuth;
 /* Callbacks run on the UI preparation boundary, NEVER layout/render. They must
  * enqueue bounded work to their service owner and return immediately. request
@@ -31,10 +33,13 @@ typedef enum AppAuth { APP_LOGIN, APP_LOGOUT } AppAuth;
  * with app_session. No credential data belongs to App. */
 typedef struct AppServices {
     AppResult (*request)(void *, const AppRequest *);
+    AppResult (*catalog)(void *, const AppRequest *, JsonString artwork);
     void (*cancel)(void *, const AppRequest *);
+    void (*retire)(void *, uint64_t generation); /* Enqueue owner-side route-reference retirement. */
     AppResult (*auth)(void *, AppAuth);
     PlayerResult (*submit)(void *, const PlayerCommand *);
     PlayerSnapshot (*snapshot)(void *);
+    PlayerResult (*refresh_clock)(void *); /* Nonblocking owner sample on timer wakes. */
     void (*wake)(void *);
     void *context;
     Player *player; /* Optional direct thread-safe existing Player binding. */
@@ -46,7 +51,9 @@ typedef struct AppServices {
 typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_BACK,
     APP_RETRY, APP_MORE, APP_SIGN_IN, APP_SIGN_OUT, APP_SELECT, APP_TOGGLE_PLAY,
     APP_PREVIOUS, APP_NEXT, APP_SEEK, APP_VOLUME, APP_DETAIL,
-    APP_TRACK_QUERY, APP_TRACK_SORT, APP_TRACK_PLAY, APP_TRACK_WINDOW } AppActionType;
+    APP_TRACK_QUERY, APP_TRACK_SORT, APP_TRACK_PLAY, APP_TRACK_WINDOW,
+    APP_GO_SEARCH, APP_GO_LYRICS, APP_CATALOG_QUERY, APP_CATALOG_SECTION,
+    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
 typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
@@ -60,12 +67,19 @@ typedef struct AppModel {
     const CollectionPage *page; /* ONE owned immutable delivery reference. */
     PlayerSnapshot player;
     AppEntity selected, playing;
+    char playing_artwork[512];
+    uint8_t playing_artwork_id[16];
     AppStatus status;
     AppResult last_result;
     bool logged_in, online, pending, detail, auth_pending;
 } AppModel;
 typedef struct App {
     AppModel model;
+    CatalogView catalog;
+    /* Fixed route-controller storage charged to UI state, used exclusively by
+     * the bound serialized network owner; it outlives its cancellation ack. */
+    _Alignas(uint64_t) unsigned char catalog_storage[80u*1024u];
+    _Alignas(uint64_t) unsigned char lyrics_storage[18u*1024u];
     AppServices services;
     UiWidgets widgets;
     UiScheduler *scheduler;
@@ -89,7 +103,8 @@ typedef struct App {
 } App;
 _Static_assert(sizeof(App) <= 256u * 1024u, "combined app + widget state budget");
 /* UI-thread only. No copies while live. Services and pools outlive disposal.
- * Once initialized, bind prepared font cache with app_bind_fonts if supplied. */
+ * Once initialized, bind prepared font cache with app_bind_fonts if supplied.
+ * App storage outlives workers bound to its route-controller buffers. */
 AppResult app_init(App *, const AppServices *, UiScheduler *, void *clay, size_t clay_bytes,
     void *scratch, size_t scratch_bytes);
 void app_bind_fonts(App *, FontMeasureContext *);
@@ -98,12 +113,15 @@ AppResult app_geometry(float physical_width, float physical_height, float dpi, b
 AppResult app_enqueue(App *, AppAction);
 AppResult app_update(App *, uint64_t now); /* Bounded preparation/service dispatch. */
 AppResult app_session(App *, bool logged_in, bool online, uint64_t now);
+AppResult app_refresh(App *); /* Preparation only; retire generation and reload route. */
 /* Consumes the owned delivery reference on ALL outcomes, including stale/error.
  * The producer must first release its own service reference on reset/disposal. */
 AppResult app_deliver(App *, AppRequest, CollectionResult, const CollectionPage *);
 AppResult app_publish_player(App *, PlayerSnapshot, uint64_t now);
+void app_refresh_clock(App *, uint32_t dirty);
 Clay_RenderCommandArray app_layout(App *, float physical_width, float physical_height, float dpi, UiWidgetInput);
 bool app_button(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled);
+bool app_track_control(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled);
 void app_label(Clay_String, uint16_t size, Clay_Color);
 Clay_String app_text(App *, Clay_String); /* Frame-owned stable text copy. */
 AppResult app_entity(const CollectionItem *, AppEntity *);

@@ -75,6 +75,14 @@ PlayerSnapshot headless_snapshot(Headless *h)
     if (!h || atomic_load(&h->failed)) { return (PlayerSnapshot){.state = PLAYER_ERROR}; }
     return player_snapshot(h->player);
 }
+PlayerResult headless_refresh_clock(Headless *h)
+{
+    if (!h) { return PLAYER_INVALID; }
+    AcquireSRWLockShared(&h->lifecycle);
+    PlayerResult r=atomic_load(&h->closing) || atomic_load(&h->failed) || atomic_load(&h->decode_finished) ?
+        PLAYER_CLOSED : player_refresh_clock(h->player);
+    ReleaseSRWLockShared(&h->lifecycle); return r;
+}
 bool headless_close(Headless *h, HeadlessMetrics *out)
 {
     if (!out) { return false; }
