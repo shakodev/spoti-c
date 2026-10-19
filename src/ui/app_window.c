@@ -20,6 +20,7 @@ void app_desktop_prepare(void *context, UiWindow *window, uint32_t dirty)
         (void)app_layout(&d->app,(float)rect.right,(float)rect.bottom,(float)window->dpi,d->app.inputs[i]);
         (void)app_update(&d->app,GetTickCount64());
     }
+    app_desktop_media_prepare(d,GetTickCount64());
     (void)font_prepare_pending(&d->surface.fonts);
     (void)font_upload_renderer(&d->surface.fonts,&d->surface.renderer);
 }
@@ -31,6 +32,10 @@ bool app_desktop_input(void *context, UiWindow *w, UINT message, WPARAM wp, LPAR
         ((MINMAXINFO *)lp)->ptMinTrackSize = (POINT){MulDiv(420,(int)dpi,96),MulDiv(360,(int)dpi,96)}; return true;
     }
     if (!d->app.alive) { return false; }
+    if (d->media.alive && message==WM_APPCOMMAND &&
+        media_controls_appcommand(&d->media,GET_APPCOMMAND_LPARAM(lp),GetTickCount64())!=MEDIA_UNSUPPORTED) { *out=TRUE; return true; }
+    if (d->media.alive && message==WM_KEYDOWN &&
+        media_controls_key(&d->media,(unsigned)wp,(lp&((LPARAM)1<<30))!=0,GetTickCount64())!=MEDIA_UNSUPPORTED) { return true; }
     if (app_search_text_message(&d->app,w->hwnd,message,wp,lp) ||
         (d->app.model.location.screen==APP_PLAYLIST && playlist_text_message(&d->app,w->hwnd,message,wp,lp))) { return true; }
     if (message == WM_KEYDOWN || message == WM_SYSKEYDOWN) {

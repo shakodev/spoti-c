@@ -145,6 +145,8 @@ AppResult app_catalog_activate(App *a, uint32_t index)
     AppResult r=app_catalog_entity(item,&entity); if (r!=APP_OK) { return r; }
     if (entity.playable) {
         memcpy(a->model.playing_artwork_id,entity.id,16);
+        title(item->as.track.artist_name,a->model.playing_artist);
+        memcpy(a->model.playing_artist_id,entity.id,16);
         JsonString image=item->image.url;
         if (!image.bytes && a->catalog.page->detail.kind==CATALOG_ALBUM) { image=a->catalog.page->detail.image.url; }
         if (json_base_string_copy(image,a->model.playing_artwork,sizeof(a->model.playing_artwork))!=JSON_OK) { a->model.playing_artwork[0]=0; }

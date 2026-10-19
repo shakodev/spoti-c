@@ -87,7 +87,9 @@ AppResult app_publish_player(App *a, PlayerSnapshot snapshot, uint64_t now)
     if (!isfinite(snapshot.volume) || snapshot.volume < 0 || snapshot.volume > 1 ||
         snapshot.state > PLAYER_ERROR || snapshot.rate > 384000) { return APP_INVALID; }
     if (memcmp(snapshot.track_id,a->model.player.track_id,16)) {
-        if (memcmp(snapshot.track_id,a->model.playing.id,16)) { a->model.playing = (AppEntity){0}; a->model.playing_artwork[0]=0; }
+        if (memcmp(snapshot.track_id,a->model.playing.id,16)) {
+            a->model.playing = (AppEntity){0}; a->model.playing_artwork[0]=0; a->model.playing_artist[0]=0;
+        }
         a->widgets.seeks[0] = (UiSeekSlider){0};
     }
     PlayerSnapshot before=a->model.player;
@@ -129,6 +131,8 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
         a->model.history_count = 0; memset(a->model.history,0,sizeof(a->model.history));
         a->model.selected = a->model.playing = (AppEntity){0};
         memset(a->model.playing_artwork,0,sizeof(a->model.playing_artwork));
+        memset(a->model.playing_artist,0,sizeof(a->model.playing_artist));
+        memset(a->model.playing_artist_id,0,sizeof(a->model.playing_artist_id));
         memset(a->model.playing_artwork_id,0,sizeof(a->model.playing_artwork_id));
         a->model.location = (AppLocation){.screen=APP_HOME};
         a->model.player = (PlayerSnapshot){0};

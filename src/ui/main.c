@@ -69,11 +69,13 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
             desktop.surface.app=&desktop.app;
             desktop.surface.text.config.weight=400; desktop.surface.text.config.max_width=260; desktop.surface.text.config.ellipsis=true;
             app_bind_fonts(&desktop.app,&desktop.surface.text);
+            (void)app_desktop_media_open(&desktop,&window);
             if (desktop.fixture) { (void)app_session(&desktop.app,true,true,GetTickCount64()); }
             ShowWindow(window.hwnd,SW_SHOWNORMAL);
             while (ui_window_step(&window,INFINITE)) { }
         } else { clean=false; }
     } else if (created) { ShowWindow(window.hwnd,SW_SHOWNORMAL); while (ui_window_step(&window,INFINITE)) { } }
+    if (!app_desktop_media_close(&desktop)) { return 1; }
     /* Font binding borrows the Clay arena: unbind before disposing App. */
     ui_surface_destroy(&desktop.surface); app_dispose(&desktop.app);
     if (desktop.fixture && !app_fixture_stop(desktop.fixture)) { return 1; }

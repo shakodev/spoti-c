@@ -36,5 +36,8 @@ void app_playlist_prepare(App *a)
         memcpy(a->model.playing.id,queue.transfer.ids[0],16);
         const char *title=row ? p->strings+row->title : "Playlist track";
         memcpy(a->model.playing.title,title,strlen(title)+1);
+        const char *artist=row ? p->strings+row->artist : "";
+        strcpy_s(a->model.playing_artist,sizeof(a->model.playing_artist),artist);
+        memcpy(a->model.playing_artist_id,a->model.playing.id,16);
     }
 }

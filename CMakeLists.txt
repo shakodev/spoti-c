@@ -23,6 +23,7 @@ option(ENABLE_LIVE_HEADLESS_TEST "Enable account/WASAPI headless playback accept
 option(ENABLE_LIVE_CDN_TEST "Enable public-network native CDN HTTPS compatibility test" OFF)
 option(ENABLE_LIVE_CONNECT_TEST "Enable account/WASAPI/two-device Connect acceptance" OFF)
 option(ENABLE_RENDERER_GPU_TESTS "Enable optional WARP DX11 pixel/device tests" OFF)
+option(ENABLE_MEDIA_CONTROLS_NATIVE_TEST "Enable optional native HWND/WinRT SMTC smoke" OFF)
 option(ENABLE_LIVE_ARTWORK_TEST "Enable public-network bounded artwork HTTPS test" OFF)
 
 add_library(spotic_build_options INTERFACE)
@@ -215,7 +216,7 @@ target_include_directories(spotic_ui PUBLIC src)
 target_compile_definitions(spotic_ui PUBLIC UNICODE _UNICODE)
 target_link_libraries(spotic_ui PUBLIC spotic_core user32 gdi32 dwmapi)
 include(cmake/UiShaders.cmake)
-add_library(spotic_ui_surface STATIC src/ui/ui_surface.c src/ui/app_window.c)
+add_library(spotic_ui_surface STATIC src/ui/ui_surface.c src/ui/app_window.c src/ui/app_media.c)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_ui spotic_renderer)
 add_library(spotic_font STATIC src/ui/font.c src/ui/font_draw.c src/ui/font_atlas.c src/ui/text_cache.c)
 target_include_directories(spotic_font PUBLIC src vendor)
@@ -240,10 +241,21 @@ add_library(spotic_app STATIC src/ui/app.c src/ui/app_model.c src/ui/app_input.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
     src/ui/screens/catalog_view.c src/ui/screens/search.c src/ui/screens/album.c
     src/ui/screens/artist.c src/ui/screens/lyrics.c)
+add_library(spotic_media_controls STATIC src/ui/media_controls.c src/ui/media_controls_winrt.c src/ui/media_controls_events.c)
+target_include_directories(spotic_media_controls PUBLIC src)
+target_link_libraries(spotic_media_controls PUBLIC spotic_player PRIVATE runtimeobject ole32 uuid)
+file(TO_CMAKE_PATH "$ENV{WindowsSdkDir}/Include/$ENV{WindowsSDKVersion}" MEDIA_SDK_HINT)
+find_path(MEDIA_SDK_INCLUDE winrt/windows.media.h HINTS "${MEDIA_SDK_HINT}" REQUIRED)
+add_custom_target(check_media_abi
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/check_media_abi.py"
+        "${MEDIA_SDK_INCLUDE}" "${CMAKE_CURRENT_SOURCE_DIR}/src/ui/media_controls_abi.h"
+    VERBATIM)
+add_dependencies(spotic_media_controls check_media_abi)
 target_link_libraries(spotic_app PUBLIC spotic_widgets spotic_font spotic_collections spotic_catalog spotic_lyrics spotic_artwork spotic_player spotic_ui spotic_oauth)
 add_library(spotic_app_fixture STATIC src/ui/app_fixture.c src/ui/app_fixture_playlist.c src/ui/app_fixture_catalog.c)
 target_link_libraries(spotic_app_fixture PUBLIC spotic_app)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_app spotic_app_fixture)
+target_link_libraries(spotic_ui_surface PUBLIC spotic_media_controls)
 add_executable(spotic WIN32 src/ui/main.c)
 target_link_libraries(spotic PRIVATE spotic_ui_surface spotic_app_fixture spotic_headless spotic_headless_fixture)
 target_compile_definitions(spotic PRIVATE
@@ -251,6 +263,16 @@ target_compile_definitions(spotic PRIVATE
     APP_AUDIO_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio/synthetic.enc")
 
 if(BUILD_TESTING)
+    add_executable(test_media_controls tests/test_media_controls.c tests/media_controls_events_test.c
+        tests/media_controls_native_test.c tests/media_controls_app_test.c)
+    target_include_directories(test_media_controls PRIVATE tests)
+    target_link_libraries(test_media_controls PRIVATE spotic_media_controls spotic_ui_surface)
+    add_test(NAME app_media_controls COMMAND test_media_controls)
+    set_tests_properties(app_media_controls PROPERTIES TIMEOUT 60)
+    if(ENABLE_MEDIA_CONTROLS_NATIVE_TEST)
+        add_test(NAME app_media_controls_native COMMAND test_media_controls --native)
+        set_tests_properties(app_media_controls_native PROPERTIES TIMEOUT 60 LABELS "native;optional" SKIP_RETURN_CODE 77)
+    endif()
     add_executable(test_catalog_screens tests/test_catalog_screens.c tests/catalog_screens_support.c
         tests/catalog_screens_faults.c tests/catalog_screens_visual.c)
     target_include_directories(test_catalog_screens PRIVATE tests)

@@ -68,6 +68,8 @@ typedef struct AppModel {
     PlayerSnapshot player;
     AppEntity selected, playing;
     char playing_artwork[512];
+    char playing_artist[192];
+    uint8_t playing_artist_id[16];
     uint8_t playing_artwork_id[16];
     AppStatus status;
     AppResult last_result;
