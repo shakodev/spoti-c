@@ -25,6 +25,7 @@ option(ENABLE_LIVE_CONNECT_TEST "Enable account/WASAPI/two-device Connect accept
 option(ENABLE_RENDERER_GPU_TESTS "Enable optional WARP DX11 pixel/device tests" OFF)
 option(ENABLE_MEDIA_CONTROLS_NATIVE_TEST "Enable optional native HWND/WinRT SMTC smoke" OFF)
 option(ENABLE_LIVE_ARTWORK_TEST "Enable public-network bounded artwork HTTPS test" OFF)
+option(ENABLE_STARTUP_NATIVE_BENCH "Enable Release process-launch benchmark requiring a visible Windows desktop/DX11" OFF)
 
 add_library(spotic_build_options INTERFACE)
 target_compile_features(spotic_build_options INTERFACE c_std_17)
@@ -67,7 +68,7 @@ target_link_libraries(spotic_windows INTERFACE
 include(CTest)
 add_library(spotic_core STATIC
     src/core/arena.c src/core/spsc_ring.c src/core/clock.c
-    src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c)
+    src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c src/core/state_cache.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options)
 include(cmake/Proto.cmake)
@@ -235,7 +236,7 @@ add_library(spotic_artwork STATIC src/ui/artwork.c src/ui/image_decode.c
 target_include_directories(spotic_artwork PUBLIC src PRIVATE vendor)
 target_link_libraries(spotic_artwork PUBLIC spotic_core spotic_renderer
     PRIVATE windowscodecs ole32 uuid psapi winhttp)
-add_library(spotic_app STATIC src/ui/app.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
+add_library(spotic_app STATIC src/ui/app.c src/ui/startup.c src/ui/startup_shell.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
     src/ui/sidebar.c src/ui/now_playing.c src/ui/screens/home.c src/ui/screens/library.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
@@ -263,6 +264,18 @@ target_compile_definitions(spotic PRIVATE
     APP_AUDIO_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio/synthetic.enc")
 
 if(BUILD_TESTING)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT ENABLE_ASAN AND ENABLE_STARTUP_NATIVE_BENCH)
+        add_executable(bench_startup tests/bench_startup.c)
+        target_link_libraries(bench_startup PRIVATE spotic_app)
+        add_dependencies(bench_startup spotic)
+        add_test(NAME bench_startup COMMAND bench_startup "$<TARGET_FILE:spotic>")
+        set_tests_properties(bench_startup PROPERTIES TIMEOUT 360 LABELS "performance;native;gpu;optional")
+    endif()
+    add_executable(test_state_cache tests/test_state_cache.c)
+    target_include_directories(test_state_cache PRIVATE tests)
+    target_link_libraries(test_state_cache PRIVATE spotic_app)
+    add_test(NAME core_state_cache COMMAND test_state_cache)
+    set_tests_properties(core_state_cache PROPERTIES TIMEOUT 90)
     add_executable(test_media_controls tests/test_media_controls.c tests/media_controls_events_test.c
         tests/media_controls_native_test.c tests/media_controls_app_test.c)
     target_include_directories(test_media_controls PRIVATE tests)

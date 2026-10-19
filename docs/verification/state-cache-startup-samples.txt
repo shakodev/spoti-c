@@ -1,0 +1,24 @@
+condition=warm-file-cache; cache=valid; offline; actual DX11 app; 1 uncounted warmup + 20 samples
+OS-cold=unmeasured; requires separate controlled boot/cache conditions; no cache eviction or prefetch service used
+sample=0 warmup=1 creation_qpc=878037810407 frequency=10000000 WinMain_ms=22.580 window_ms=40.515 first_present_ms=314.216 services_ms=314.293 online_ready_ms=-1.000 target=MISS
+sample=1 warmup=0 creation_qpc=878041437417 frequency=10000000 WinMain_ms=16.117 window_ms=35.291 first_present_ms=326.423 services_ms=326.498 online_ready_ms=-1.000 target=MISS
+sample=2 warmup=0 creation_qpc=878045222071 frequency=10000000 WinMain_ms=14.598 window_ms=35.422 first_present_ms=315.666 services_ms=315.749 online_ready_ms=-1.000 target=MISS
+sample=3 warmup=0 creation_qpc=878048882889 frequency=10000000 WinMain_ms=14.881 window_ms=33.923 first_present_ms=313.860 services_ms=313.940 online_ready_ms=-1.000 target=MISS
+sample=4 warmup=0 creation_qpc=878052525469 frequency=10000000 WinMain_ms=14.886 window_ms=34.501 first_present_ms=313.913 services_ms=313.987 online_ready_ms=-1.000 target=MISS
+sample=5 warmup=0 creation_qpc=878056199944 frequency=10000000 WinMain_ms=14.955 window_ms=35.569 first_present_ms=314.300 services_ms=314.380 online_ready_ms=-1.000 target=MISS
+sample=6 warmup=0 creation_qpc=878059852903 frequency=10000000 WinMain_ms=15.056 window_ms=34.936 first_present_ms=320.459 services_ms=320.534 online_ready_ms=-1.000 target=MISS
+sample=7 warmup=0 creation_qpc=878063558406 frequency=10000000 WinMain_ms=14.090 window_ms=34.821 first_present_ms=310.650 services_ms=310.774 online_ready_ms=-1.000 target=MISS
+sample=8 warmup=0 creation_qpc=878067188544 frequency=10000000 WinMain_ms=15.074 window_ms=34.613 first_present_ms=311.954 services_ms=312.043 online_ready_ms=-1.000 target=MISS
+sample=9 warmup=0 creation_qpc=878070835413 frequency=10000000 WinMain_ms=14.190 window_ms=34.725 first_present_ms=315.117 services_ms=315.195 online_ready_ms=-1.000 target=MISS
+sample=10 warmup=0 creation_qpc=878074508517 frequency=10000000 WinMain_ms=14.493 window_ms=34.352 first_present_ms=322.909 services_ms=322.983 online_ready_ms=-1.000 target=MISS
+sample=11 warmup=0 creation_qpc=878078263976 frequency=10000000 WinMain_ms=13.870 window_ms=34.891 first_present_ms=333.067 services_ms=333.151 online_ready_ms=-1.000 target=MISS
+sample=12 warmup=0 creation_qpc=878082130554 frequency=10000000 WinMain_ms=15.080 window_ms=35.095 first_present_ms=321.337 services_ms=321.409 online_ready_ms=-1.000 target=MISS
+sample=13 warmup=0 creation_qpc=878085881080 frequency=10000000 WinMain_ms=14.974 window_ms=36.119 first_present_ms=310.602 services_ms=310.686 online_ready_ms=-1.000 target=MISS
+sample=14 warmup=0 creation_qpc=878089457099 frequency=10000000 WinMain_ms=15.271 window_ms=34.894 first_present_ms=320.889 services_ms=320.966 online_ready_ms=-1.000 target=MISS
+sample=15 warmup=0 creation_qpc=878093165596 frequency=10000000 WinMain_ms=15.014 window_ms=34.458 first_present_ms=332.182 services_ms=332.542 online_ready_ms=-1.000 target=MISS
+sample=16 warmup=0 creation_qpc=878097027234 frequency=10000000 WinMain_ms=14.566 window_ms=34.650 first_present_ms=317.447 services_ms=317.522 online_ready_ms=-1.000 target=MISS
+sample=17 warmup=0 creation_qpc=878100728298 frequency=10000000 WinMain_ms=13.828 window_ms=34.709 first_present_ms=313.226 services_ms=313.317 online_ready_ms=-1.000 target=MISS
+sample=18 warmup=0 creation_qpc=878104374835 frequency=10000000 WinMain_ms=14.394 window_ms=35.473 first_present_ms=321.962 services_ms=322.037 online_ready_ms=-1.000 target=MISS
+sample=19 warmup=0 creation_qpc=878108124212 frequency=10000000 WinMain_ms=15.748 window_ms=35.478 first_present_ms=311.352 services_ms=311.420 online_ready_ms=-1.000 target=MISS
+sample=20 warmup=0 creation_qpc=878111764811 frequency=10000000 WinMain_ms=14.502 window_ms=35.228 first_present_ms=315.146 services_ms=315.226 online_ready_ms=-1.000 target=MISS
+process creation -> useful first present: p50=315.146 ms p95=332.182 ms target_misses=20/20; online-ready=unavailable (offline)

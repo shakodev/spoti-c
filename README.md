@@ -43,7 +43,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The reviewed Debug suite contains 49 tests. Project targets use `/W4 /WX` on
+The reviewed Debug suite contains 52 tests. Project targets use `/W4 /WX` on
 MSVC or `-Wall -Wextra -Werror` with compatible drivers. Protobuf generation
 verifies pinned inputs; [the codec specification](docs/specs/protobuf.md)
 documents generation and the optional C/runtime audit. Vendored sources and
@@ -70,6 +70,9 @@ from the default suite. A skipped live test is not evidence of compatibility.
   through the offline fake device. `--demo-wasapi` explicitly enables audible
   synthetic audio on a physical device. See [shell usage and verification](docs/verification/app-shell.md)
   for service-host integration and current limits.
+  Startup restores a bounded offline shell from `%LOCALAPPDATA%/spoti-c/shell.state`
+  before service initialization; cached items never authorize playback. See
+  [cache validation and startup measurements](docs/verification/state-cache.md).
   Select a playlist in the demo's Home or Library to browse 10,005 synthetic
   tracks, filter title/artist/album, change order and play selected rows.
   See [playlist verification and timings](docs/verification/playlist-screen.md).

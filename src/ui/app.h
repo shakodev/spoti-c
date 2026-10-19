@@ -76,6 +76,7 @@ typedef struct AppModel {
     bool logged_in, online, pending, detail, auth_pending;
 } AppModel;
 typedef struct App {
+    const struct StateCache *cached; /* Borrowed startup snapshot; never authorizes playback. */
     AppModel model;
     CatalogView catalog;
     /* Fixed route-controller storage charged to UI state, used exclusively by

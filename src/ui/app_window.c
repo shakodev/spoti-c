@@ -5,12 +5,18 @@
 void app_desktop_frame(void *context, UiWindow *window, uint32_t dirty)
 {
     AppDesktop *d = context; ui_surface_frame(&d->surface,window,dirty);
+    if (d->startup && !d->startup->times.ticks[STARTUP_PRESENT] && d->surface.ready &&
+        d->surface.last_result==UI_RENDER_OK && !font_stats(&d->surface.fonts).pending && d->app.frames) {
+        startup_mark(&d->startup->times,STARTUP_PRESENT); d->startup->times.useful=1;
+        ui_scheduler_dirty(&window->scheduler,UI_DIRTY_STATE);
+    }
 }
 void app_desktop_prepare(void *context, UiWindow *window, uint32_t dirty)
 {
     AppDesktop *d = context;
     ui_surface_prepare(&d->surface,window,dirty);
     if (!d->surface.ready || !d->app.alive) { return; }
+    if (d->startup_prepare) { d->startup_prepare(window); }
     app_refresh_clock(&d->app,dirty);
     if (d->fixture) { app_fixture_pump(d->fixture); }
     (void)app_update(&d->app,GetTickCount64());

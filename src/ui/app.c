@@ -1,4 +1,5 @@
 #include "app.h"
+#include "startup.h"
 #include "screens/playlist.h"
 #include <math.h>
 #include <stdio.h>
@@ -111,7 +112,8 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                 if (a->model.last_result == APP_FULL || a->model.last_result == APP_FAILED || a->model.last_result == APP_UNAVAILABLE) {
                     app_label(CLAY_STRING("Action unavailable. Please try again."),14,(Clay_Color){240,165,130,255});
                 }
-                if (a->model.location.screen == APP_SETTINGS) { settings(a); }
+                if (a->cached && !a->model.logged_in && a->model.location.screen!=APP_SETTINGS) { startup_cached_view(a); }
+                else if (a->model.location.screen == APP_SETTINGS) { settings(a); }
                 else if (a->model.location.screen == APP_SEARCH) { app_search(a); }
                 else if (a->model.location.screen == APP_ALBUM) { app_album(a); }
                 else if (a->model.location.screen == APP_ARTIST) { app_artist(a); }

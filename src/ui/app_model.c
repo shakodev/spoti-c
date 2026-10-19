@@ -128,6 +128,7 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
     AppResult r = generation(a);
     if (r != APP_OK) { return r; }
     if (!logged_in) {
+        a->cached=NULL;
         a->model.history_count = 0; memset(a->model.history,0,sizeof(a->model.history));
         a->model.selected = a->model.playing = (AppEntity){0};
         memset(a->model.playing_artwork,0,sizeof(a->model.playing_artwork));
