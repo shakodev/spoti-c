@@ -68,4 +68,32 @@ MetricsSnapshot metrics_snapshot(Metrics *metrics);
  * errors/overflow. This does not claim to inspect untracked OS/driver memory. */
 bool metrics_balanced(Metrics *metrics);
 
+/* Diagnostic owner thread only. Includes all process pages and loaded DLLs.
+ * EX2 requires Windows 10/11 22H2 with the September 2023 update or newer.
+ * Never trims the working set. */
+typedef struct ProcessMetrics {
+    uint64_t resident, peak_resident, private_resident, private_commit;
+    uint64_t kernel_100ns, user_100ns, qpc, frequency;
+    uint32_t handles, processors;
+} ProcessMetrics;
+typedef struct CpuMetrics {
+    uint64_t kernel_100ns, user_100ns;
+    double elapsed_seconds, core_percent, machine_percent;
+} CpuMetrics;
+bool metrics_process(HANDLE process, ProcessMetrics *out);
+bool metrics_cpu(const ProcessMetrics *before, const ProcessMetrics *after, CpuMetrics *out);
+
+enum {
+    METRICS_FAIL_RESIDENT=1u, METRICS_FAIL_SIZE=2u, METRICS_FAIL_STARTUP=4u,
+    METRICS_FAIL_CPU=8u, METRICS_FAIL_IDLE=16u, METRICS_FAIL_EVIDENCE=32u
+};
+typedef struct ReleaseMeasurement {
+    uint64_t peak_resident, resident_limit, executable_bytes;
+    uint64_t idle_presents, idle_wakes, idle_timeouts;
+    double startup_ms, machine_cpu_percent;
+    bool process_valid, cpu_valid, idle, cold_verified, live_verified;
+} ReleaseMeasurement;
+/* Fail closed, including NaN and missing evidence; all limits are exclusive. */
+uint32_t metrics_release_failures(const ReleaseMeasurement *measurement);
+
 #endif

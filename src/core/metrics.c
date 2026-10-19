@@ -1,4 +1,6 @@
 #include "metrics.h"
+#include <psapi.h>
+#include <math.h>
 
 bool metrics_init(Metrics *metrics)
 {
@@ -182,4 +184,59 @@ bool metrics_balanced(Metrics *metrics)
         snapshot.reserved_bytes == 0 && snapshot.committed_vm_bytes == 0 &&
         snapshot.owned_allocations == 0 && snapshot.owned_bytes == 0 && snapshot.handles == 0 &&
         snapshot.errors == 0 && !snapshot.counter_overflow;
+}
+
+static uint64_t file_ticks(FILETIME t)
+{ return ((uint64_t)t.dwHighDateTime<<32)|t.dwLowDateTime; }
+
+bool metrics_process(HANDLE process, ProcessMetrics *out)
+{
+    if (!process || !out) { return false; }
+    *out=(ProcessMetrics){0};
+    PROCESS_MEMORY_COUNTERS_EX2 m={0}; m.cb=sizeof(m);
+    FILETIME created, exited, kernel, user; LARGE_INTEGER now, frequency; DWORD handles;
+    if (!GetProcessMemoryInfo(process,(PROCESS_MEMORY_COUNTERS *)&m,sizeof(m)) ||
+        !GetProcessTimes(process,&created,&exited,&kernel,&user) ||
+        !GetProcessHandleCount(process,&handles) || !QueryPerformanceCounter(&now) ||
+        !QueryPerformanceFrequency(&frequency) || frequency.QuadPart<=0) { return false; }
+    DWORD processors=GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+    if (!processors) { return false; }
+    *out=(ProcessMetrics){.resident=m.WorkingSetSize,.peak_resident=m.PeakWorkingSetSize,
+        .private_resident=m.PrivateWorkingSetSize,.private_commit=m.PrivateUsage,
+        .kernel_100ns=file_ticks(kernel),.user_100ns=file_ticks(user),
+        .qpc=(uint64_t)now.QuadPart,.frequency=(uint64_t)frequency.QuadPart,
+        .handles=handles,.processors=processors};
+    return true;
+}
+
+bool metrics_cpu(const ProcessMetrics *a, const ProcessMetrics *b, CpuMetrics *out)
+{
+    if (!out) { return false; }
+    *out=(CpuMetrics){0};
+    if (!a || !b || !a->frequency || a->frequency!=b->frequency ||
+        !a->processors || a->processors!=b->processors || b->qpc<=a->qpc ||
+        b->kernel_100ns<a->kernel_100ns || b->user_100ns<a->user_100ns) { return false; }
+    out->kernel_100ns=b->kernel_100ns-a->kernel_100ns;
+    out->user_100ns=b->user_100ns-a->user_100ns;
+    out->elapsed_seconds=(double)(b->qpc-a->qpc)/(double)a->frequency;
+    out->core_percent=((double)out->kernel_100ns+(double)out->user_100ns)/
+        (out->elapsed_seconds*100000.0);
+    out->machine_percent=out->core_percent/a->processors;
+    return isfinite(out->machine_percent);
+}
+
+uint32_t metrics_release_failures(const ReleaseMeasurement *m)
+{
+    if (!m) { return METRICS_FAIL_EVIDENCE; }
+    uint32_t failures=0;
+    if (!m->process_valid || !m->peak_resident || !m->resident_limit ||
+        m->peak_resident>=m->resident_limit) { failures|=METRICS_FAIL_RESIDENT; }
+    if (!m->executable_bytes || m->executable_bytes>=2000000) { failures|=METRICS_FAIL_SIZE; }
+    if (!m->cold_verified || !isfinite(m->startup_ms) ||
+        m->startup_ms<=0 || m->startup_ms>=30) { failures|=METRICS_FAIL_STARTUP; }
+    if (!m->cpu_valid || !isfinite(m->machine_cpu_percent) ||
+        m->machine_cpu_percent<0 || m->machine_cpu_percent>=0.05) { failures|=METRICS_FAIL_CPU; }
+    if (m->idle && (m->idle_presents || m->idle_wakes || m->idle_timeouts)) { failures|=METRICS_FAIL_IDLE; }
+    if (!m->live_verified) { failures|=METRICS_FAIL_EVIDENCE; }
+    return failures;
 }

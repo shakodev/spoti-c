@@ -1,0 +1,32 @@
+Test project C:/Users/Daan/Documents/Projects/spoti-c/build-rel
+    Start 2: bench_navigation
+1/4 Test #2: bench_navigation .................   Passed    0.92 sec
+    Start 3: bench_dependency_audit
+2/4 Test #3: bench_dependency_audit ...........   Passed   10.95 sec
+    Start 4: bench_release
+3/4 Test #4: bench_release ....................***Failed  663.30 sec
+gapless player: passed
+player: passed
+artwork: bounded decode/cache/worker ownership checks passed
+600-second headless benchmark: peak resident working set=7581696 limit=8000000 healthy=1
+bench_release: raw results in bench-release.jsonl and headless-metrics.jsonl
+Cold boot and account/WASAPI/Connect acceptance require separate evidence; this run cannot certify them.
+
+    Start 5: bench_idle
+4/4 Test #5: bench_idle .......................***Failed   29.64 sec
+bench_idle: FAIL (bench-idle.jsonl)
+
+
+50% tests passed, 2 tests failed out of 4
+
+Label Time Summary:
+gpu            = 692.94 sec*proc (2 tests)
+native         = 692.94 sec*proc (2 tests)
+performance    = 704.81 sec*proc (4 tests)
+
+Total Test time (real) = 704.86 sec
+
+The following tests FAILED:
+	  4 - bench_release (Failed)                            gpu native performance
+	  5 - bench_idle (Failed)                               gpu native performance
+Errors while running CTest

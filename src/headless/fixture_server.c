@@ -6,7 +6,10 @@
 static bool wait_socket(HeadlessServer *s, SOCKET socket)
 {
     HANDLE handles[] = {s->stop,s->network};
-    if (WaitForMultipleObjects(2, handles, FALSE, 10000) != WAIT_OBJECT_0 + 1) { return false; }
+    /* No request deadline exists before accept. A paused/demo client may leave
+     * the listener idle indefinitely; stop still wakes it without polling. */
+    DWORD timeout=socket==s->listener ? INFINITE : 10000;
+    if (WaitForMultipleObjects(2, handles, FALSE, timeout) != WAIT_OBJECT_0 + 1) { return false; }
     WSANETWORKEVENTS events; return WSAEnumNetworkEvents(socket, s->network, &events) == 0;
 }
 static bool send_all(HeadlessServer *s, const void *data, size_t bytes)

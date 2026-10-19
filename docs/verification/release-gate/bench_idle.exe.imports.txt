@@ -1,0 +1,149 @@
+Microsoft (R) COFF/PE Dumper Version 14.51.36252.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file C:\Users\Daan\Documents\Projects\spoti-c\build-rel\bench_idle.exe
+
+File Type: EXECUTABLE IMAGE
+
+  Section contains the following imports:
+
+    USER32.dll
+             140004100 Import Address Table
+             1400055F8 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                         206 GetWindowThreadProcessId
+                         1E9 GetWindow
+                         32C SendMessageTimeoutW
+                         2BC PostMessageW
+                         401 WaitForInputIdle
+                         25C IsWindowVisible
+                         111 EnumWindows
+
+    KERNEL32.dll
+             140004000 Import Address Table
+             1400054F8 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                         64C WideCharToMultiByte
+                         31A GetSystemTimeAsFileTime
+                         39A InitializeSListHead
+                         5B8 SetUnhandledExceptionFilter
+                         5C8 Sleep
+                         263 GetEnvironmentVariableA
+                          9D CloseHandle
+                         28D GetLastError
+                         625 WaitForSingleObject
+                         242 GetCurrentProcessId
+                         5D8 TerminateProcess
+                         267 GetExitCodeProcess
+                         102 CreateProcessW
+                         371 GlobalMemoryStatusEx
+                         33D GetTickCount64
+                          E3 CreateFileMappingW
+                         412 MapViewOfFile
+                         5FE UnmapViewOfFile
+                         2A5 GetModuleHandleW
+                         2DD GetProcAddress
+                         205 GetComputerNameA
+                         1DC GetActiveProcessorCount
+                         246 GetCurrentThreadId
+                         118 CreateToolhelp32Snapshot
+                         417 Module32FirstW
+                         419 Module32NextW
+                         481 QueryPerformanceCounter
+                         482 QueryPerformanceFrequency
+                         2EE GetProcessTimes
+                         2E3 GetProcessHandleCount
+                         3DB K32GetProcessMemoryInfo
+
+    VCRUNTIME140.dll
+             140004140 Import Address Table
+             140005638 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                           8 __C_specific_handler
+                          3E memset
+                          1B __current_exception
+                          1C __current_exception_context
+                          3C memcpy
+
+    api-ms-win-crt-stdio-l1-1-0.dll
+             140004238 Import Address Table
+             140005730 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                          76 ferror
+                          77 fflush
+                          54 _set_fmode
+                          80 fputs
+                          7F fputc
+                           1 __p__commode
+                           3 __stdio_common_vfprintf
+                          74 fclose
+                          7E fopen_s
+                           0 __acrt_iob_func
+                          13 __stdio_common_vswprintf_s
+
+    api-ms-win-crt-runtime-l1-1-0.dll
+             1400041A0 Import Address Table
+             140005698 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                          35 _initialize_wide_environment
+                          29 _get_initial_wide_environment
+                          36 _initterm
+                          19 _configure_wide_argv
+                          42 _set_app_type
+                          55 exit
+                          23 _exit
+                          40 _seh_filter_exe
+                           4 __p___argc
+                           6 __p___wargv
+                          16 _cexit
+                          15 _c_exit
+                          3D _register_thread_local_exe_atexit_callback
+                          37 _initterm_e
+                          67 terminate
+                          34 _initialize_onexit_table
+                          3C _register_onexit_function
+                          1E _crt_atexit
+
+    api-ms-win-crt-math-l1-1-0.dll
+             140004190 Import Address Table
+             140005688 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                           9 __setusermatherr
+
+    api-ms-win-crt-locale-l1-1-0.dll
+             140004180 Import Address Table
+             140005678 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                           8 _configthreadlocale
+
+    api-ms-win-crt-heap-l1-1-0.dll
+             140004170 Import Address Table
+             140005668 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                          16 _set_new_mode
+
+  Summary
+
+        1000 .data
+        1000 .pdata
+        2000 .rdata
+        1000 .reloc
+        1000 .rsrc
+        3000 .text

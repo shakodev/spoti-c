@@ -2,6 +2,7 @@
 #include "headless/headless.h"
 #include "app_desktop.h"
 #include "app_fixture.h"
+#include "benchmark.h"
 #include <windowsx.h>
 #include <wchar.h>
 #include <stdio.h>
@@ -21,6 +22,13 @@ static Arena arena;
 static EventQueue *queue;
 static bool demo, wasapi, probe;
 static StartupTimes *probe_times;
+static BenchProbe benchmark;
+
+static bool input(void *context,UiWindow *window,UINT message,WPARAM wp,LPARAM lp,LRESULT *out)
+{
+    if (bench_probe_input(&benchmark,&desktop,window,playback,message,wp,out)) { return true; }
+    return app_desktop_input(context,window,message,wp,lp,out);
+}
 
 static void player_wake(void *context)
 {
@@ -95,12 +103,16 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
     wchar_t path[240]={0};
     probe=wcsstr(command,L"--startup-probe=")!=NULL; demo=wcsstr(command,L"--demo")!=NULL; wasapi=wcsstr(command,L"--demo-wasapi")!=NULL;
     HANDLE mapping=NULL;
+    const wchar_t *benchmark_name=wcsstr(command,L"--benchmark=");
+    if (benchmark_name && !bench_probe_open(&benchmark,benchmark_name+12)) { return 1; }
     if (probe) {
         const wchar_t *name=wcsstr(command,L"--startup-probe=")+16;
         mapping=OpenFileMappingW(FILE_MAP_WRITE,FALSE,name);
         if (!mapping) { return 1; }
         probe_times=MapViewOfFile(mapping,FILE_MAP_WRITE,0,0,sizeof(StartupTimes));
         wcscpy_s(path,240,L".cache/startup-bench.state");
+    } else if (benchmark.shared) {
+        wcscpy_s(path,240,L".cache/release-bench.state");
     } else {
         DWORD n=GetEnvironmentVariableW(L"LOCALAPPDATA",path,200);
         if (n && n<200) { wcscat_s(path,240,L"/spoti-c/shell.state"); }
@@ -111,9 +123,11 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
     if (!SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) { return 1; }
     UiWindow window = {0}; bool clean = true;
     if (!arena_init(&arena,storage,sizeof(storage))) { return 1; }
+    if (benchmark.shared && !metrics_attach_arena(&benchmark.metrics,&arena,&benchmark.binding)) { return 1; }
     if (event_queue_create(&arena,32,&queue) != CORE_OK) { arena_dispose(&arena); return 1; }
     UiWindowConfig config = {.instance=instance,.title=L"spoti-c",.width=1100,.height=720,
-        .workers=queue,.frame=app_desktop_frame,.prepare=app_desktop_prepare,.input=app_desktop_input,.context=&desktop};
+        .workers=queue,.frame=app_desktop_frame,.prepare=app_desktop_prepare,.input=input,.context=&desktop,
+        .metrics=benchmark.shared ? &benchmark.metrics : NULL};
     bool created = ui_window_create(&window,&config);
     if (created) { startup_mark(&startup.times,STARTUP_WINDOW); startup_place(window.hwnd,&startup.restored); }
     if (created && ui_surface_create(&desktop.surface,&window,false) == UI_RENDER_OK) {
@@ -145,6 +159,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
     (void)event_queue_close(queue); Event events[32]; size_t count;
     (void)event_drain(queue,events,32,&count); clean=event_queue_destroy(queue)==CORE_OK&&clean;
     arena_dispose(&arena);
+    if (benchmark.shared) { bench_probe_close(&benchmark,clean&&metrics_balanced(&benchmark.metrics)); }
     if (probe_times) { UnmapViewOfFile(probe_times); } if (mapping) { CloseHandle(mapping); }
     return created&&clean&&!window.failed ? 0 : 1;
 }

@@ -3,14 +3,14 @@
 A native Windows Spotify client written in C17, using Win32, DX11, Clay,
 DirectWrite, miniaudio/WASAPI and bounded protocol/API services.
 
-As reviewed on 2026-10-19, issues #1–#31 are implemented. The repository includes
+As reviewed on 2026-10-19, issues #1–#34 are implemented. The repository includes
 core memory/worker primitives, authenticated transport and playback modules,
 a headless player, API page models, rendering, fonts, artwork and widgets.
 `spotic.exe` presents a responsive Home/Library shell, a virtualized Playlist
 with instant filtering, keyboard navigation and a persistent playback bar.
-SMTC, additional screens, startup state cache
-and final release gates remain in
-[issues #32–#35](https://github.com/shakodev/spoti-c/issues?q=is%3Aissue+is%3Aopen).
+Search/Album/Artist/Lyrics screens, SMTC and the startup state cache are also
+implemented. Final release acceptance remains in
+[issue #35](https://github.com/shakodev/spoti-c/issues/35).
 Closed module issues do not establish final application usability or every
 live-service and hardware compatibility claim. See each module's specification
 for its tested scope and remaining limits.
@@ -19,6 +19,10 @@ The project targets <20 MB resident RAM, <2 MB executable size, <30 ms cold
 startup and displayed 0.0% idle/playback CPU. These are acceptance targets;
 the complete GUI release gates remain open. See [the roadmap](docs/ROADMAP.md)
 and [engineering instructions](AGENTS.md).
+
+The [release benchmark guide](docs/benchmarks.md) documents the #35 runners,
+raw measurements and remaining acceptance failures. Issue #35 stays open until
+the performance targets and required live/cold-start checks are verified.
 
 ## Build and test
 
@@ -43,7 +47,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The reviewed Debug suite contains 52 tests. Project targets use `/W4 /WX` on
+The reviewed Debug suite contains 53 tests. Project targets use `/W4 /WX` on
 MSVC or `-Wall -Wextra -Werror` with compatible drivers. Protobuf generation
 verifies pinned inputs; [the codec specification](docs/specs/protobuf.md)
 documents generation and the optional C/runtime audit. Vendored sources and

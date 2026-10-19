@@ -110,9 +110,17 @@ static void device_import_startup(void)
     CHECK(headless_open(&good,&h)); hf_load(h,true); hf_wait(h,PLAYER_ENDED);
     HeadlessMetrics m; CHECK(headless_close(h,&m) && m.balanced); hf_close(&f);
 }
+static void idle_listener(void)
+{
+    HeadlessFixture f; hf_open(&f);
+    Sleep(11000); /* Regression: listener previously exited after 10 idle seconds. */
+    Headless *h; HeadlessConfig config={.cache_directory=f.cache,.fixture_url=f.url};
+    CHECK(headless_open(&config,&h)); hf_load(h,true); hf_wait(h,PLAYER_ENDED);
+    HeadlessMetrics m; CHECK(headless_close(h,&m)&&m.balanced&&m.frames==576137); hf_close(&f);
+}
 int main(void)
 {
-    parser(); failed_startup(); HeadlessFixture f; hf_open(&f);
+    parser(); failed_startup(); idle_listener(); HeadlessFixture f; hf_open(&f);
     duration_and_gapless(&f); controls_and_cancel(&f); hf_close(&f); source_errors(); device_import_startup();
     puts("Encrypted HTTP/cache/CTR/header/Vorbis/gapless duration, commands and cancellation passed."); return 0;
 }

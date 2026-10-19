@@ -1,0 +1,156 @@
+{
+  "evidence_id": "ev_dd6de7e2746a99f0027d5ee448dcfbc7e0c5234792ac9c5cf03bbf4c8b2fb6d7",
+  "subject": {
+    "name": "spotic-headless.exe",
+    "digest": {
+      "sha256": "feafc508454baca76218fcb7e5f49ea86c60833e84a981098022186f11e32227"
+    },
+    "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/build-rel/spotic-headless.exe",
+    "format": "pe",
+    "architecture": null
+  },
+  "provider": {
+    "id": "rea-pe-resources",
+    "name": "REA PE resource parser",
+    "version": "1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_pe_resources",
+  "parameters": {
+    "path": "C:/Users/Daan/Documents/Projects/spoti-c/build-rel/spotic-headless.exe",
+    "max_file_bytes": 67108864,
+    "max_entries": 16384
+  },
+  "raw_result": null,
+  "normalized_result": {
+    "artifact": {
+      "path": "C:/Users/Daan/Documents/Projects/spoti-c/build-rel/spotic-headless.exe",
+      "sha256": "feafc508454baca76218fcb7e5f49ea86c60833e84a981098022186f11e32227",
+      "bytes": 528384
+    },
+    "format": "pe32-plus",
+    "machine": 34404,
+    "directory": {
+      "rva": 540672,
+      "location": {
+        "offset": 526336,
+        "bytes": 480
+      },
+      "data_directory_location": {
+        "offset": 400,
+        "bytes": 8
+      }
+    },
+    "directories": [
+      {
+        "location": {
+          "offset": 526336,
+          "bytes": 24
+        },
+        "characteristics": 0,
+        "timestamp": 0,
+        "major_version": 0,
+        "minor_version": 0,
+        "named_entries": 0,
+        "id_entries": 1
+      },
+      {
+        "location": {
+          "offset": 526360,
+          "bytes": 24
+        },
+        "characteristics": 0,
+        "timestamp": 0,
+        "major_version": 0,
+        "minor_version": 0,
+        "named_entries": 0,
+        "id_entries": 1
+      },
+      {
+        "location": {
+          "offset": 526384,
+          "bytes": 24
+        },
+        "characteristics": 0,
+        "timestamp": 0,
+        "major_version": 0,
+        "minor_version": 0,
+        "named_entries": 0,
+        "id_entries": 1
+      }
+    ],
+    "resources": [
+      {
+        "index": 0,
+        "type": {
+          "kind": "id",
+          "id": 24
+        },
+        "name": {
+          "kind": "id",
+          "id": 1
+        },
+        "language": {
+          "kind": "id",
+          "id": 1033
+        },
+        "entry_locations": [
+          {
+            "offset": 526352,
+            "bytes": 8
+          },
+          {
+            "offset": 526376,
+            "bytes": 8
+          },
+          {
+            "offset": 526400,
+            "bytes": 8
+          }
+        ],
+        "data_entry_location": {
+          "offset": 526408,
+          "bytes": 16
+        },
+        "code_page": 0,
+        "reserved": 0,
+        "payload": {
+          "rva": 540768,
+          "location": {
+            "offset": 526432,
+            "bytes": 381
+          },
+          "sha256": "4bb79dcea0a901f7d9eac5aa05728ae92acb42e0cb22e5dd14134f4421a3d8df"
+        }
+      }
+    ],
+    "icon_groups": [],
+    "coverage": {
+      "status": "complete",
+      "examined_entries": 3,
+      "resources": 1
+    },
+    "limitations": [
+      "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+      "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+      "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+    ]
+  },
+  "confidence": "observed",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+    "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+    "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+  ],
+  "relationship_coverage": null,
+  "locations": [
+    {
+      "kind": "artifact-path",
+      "path": "C:/Users/Daan/Documents/Projects/spoti-c/build-rel/spotic-headless.exe"
+    }
+  ],
+  "evidence_links": []
+}
