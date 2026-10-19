@@ -14,6 +14,7 @@ tests/fixtures/crypto-vectors.json text eol=lf
 tests/fixtures/decrypt/*.bin binary
 tests/fixtures/decrypt/manifest.json text eol=lf
 vendor/stb_vorbis.c -text -whitespace
+vendor/stb_image.h -text -whitespace
 vendor/miniaudio.h -text -whitespace
 vendor/clay.h -text -whitespace
 vendor/licenses/clay/** -text
