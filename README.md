@@ -3,12 +3,13 @@
 A native Windows Spotify client written in C17, using Win32, DX11, Clay,
 DirectWrite, miniaudio/WASAPI and bounded protocol/API services.
 
-As reviewed on 2026-10-19, issues #1–#29 are closed. The repository includes
+As reviewed on 2026-10-19, issues #1–#30 are implemented. The repository includes
 core memory/worker primitives, authenticated transport and playback modules,
 a headless player, API page models, rendering, fonts, artwork and widgets.
-`spotic.exe` currently presents a foundation window; composing the application
-screens, navigation, SMTC, startup state cache and final release gates remains
-in [issues #30–#35](https://github.com/shakodev/spoti-c/issues?q=is%3Aissue+is%3Aopen).
+`spotic.exe` presents a responsive Home/Library shell with keyboard navigation
+and a persistent playback bar. SMTC, additional screens, startup state cache
+and final release gates remain in
+[issues #31–#35](https://github.com/shakodev/spoti-c/issues?q=is%3Aissue+is%3Aopen).
 Closed module issues do not establish final application usability or every
 live-service and hardware compatibility claim. See each module's specification
 for its tested scope and remaining limits.
@@ -41,7 +42,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The reviewed Debug suite contains 47 tests. Project targets use `/W4 /WX` on
+The reviewed Debug suite contains 48 tests. Project targets use `/W4 /WX` on
 MSVC or `-Wall -Wextra -Werror` with compatible drivers. Protobuf generation
 verifies pinned inputs; [the codec specification](docs/specs/protobuf.md)
 documents generation and the optional C/runtime audit. Vendored sources and
@@ -62,8 +63,12 @@ from the default suite. A skipped live test is not evidence of compatibility.
 
 ## Executables and source
 
-- `build/spotic.exe`: Win32/DX11 foundation window. Screen composition remains
-  application work tracked in #30–#32.
+- `build/spotic.exe`: Win32/DX11 application shell; the default host is signed
+  out and has no configured live collection/account transport. Run
+  `build/spotic.exe --demo` for synthetic Home/Library pages and real playback
+  through the offline fake device. `--demo-wasapi` explicitly enables audible
+  synthetic audio on a physical device. See [shell usage and verification](docs/verification/app-shell.md)
+  for service-host integration and current limits.
 - `build/spotic-headless.exe`: bounded playback harness with deterministic
   offline fixtures and separate live opt-ins; see [usage and validation](docs/headless.md).
 - `src/core/`, `src/protocol/`, `src/audio/`, `src/api/`, `src/ui/`: implemented

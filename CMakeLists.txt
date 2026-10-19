@@ -215,7 +215,7 @@ target_include_directories(spotic_ui PUBLIC src)
 target_compile_definitions(spotic_ui PUBLIC UNICODE _UNICODE)
 target_link_libraries(spotic_ui PUBLIC spotic_core user32 gdi32 dwmapi)
 include(cmake/UiShaders.cmake)
-add_library(spotic_ui_surface STATIC src/ui/ui_surface.c)
+add_library(spotic_ui_surface STATIC src/ui/ui_surface.c src/ui/app_window.c)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_ui spotic_renderer)
 add_library(spotic_font STATIC src/ui/font.c src/ui/font_draw.c src/ui/font_atlas.c src/ui/text_cache.c)
 target_include_directories(spotic_font PUBLIC src vendor)
@@ -234,10 +234,32 @@ add_library(spotic_artwork STATIC src/ui/artwork.c src/ui/image_decode.c
 target_include_directories(spotic_artwork PUBLIC src PRIVATE vendor)
 target_link_libraries(spotic_artwork PUBLIC spotic_core spotic_renderer
     PRIVATE windowscodecs ole32 uuid psapi winhttp)
+add_library(spotic_app STATIC src/ui/app.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
+    src/ui/sidebar.c src/ui/now_playing.c src/ui/screens/home.c src/ui/screens/library.c)
+target_link_libraries(spotic_app PUBLIC spotic_widgets spotic_font spotic_collections spotic_artwork spotic_player spotic_ui spotic_oauth)
+add_library(spotic_app_fixture STATIC src/ui/app_fixture.c)
+target_link_libraries(spotic_app_fixture PUBLIC spotic_app)
+target_link_libraries(spotic_ui_surface PUBLIC spotic_app spotic_app_fixture)
 add_executable(spotic WIN32 src/ui/main.c)
-target_link_libraries(spotic PRIVATE spotic_ui_surface)
+target_link_libraries(spotic PRIVATE spotic_ui_surface spotic_app_fixture spotic_headless spotic_headless_fixture)
+target_compile_definitions(spotic PRIVATE
+    APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
+    APP_AUDIO_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio/synthetic.enc")
 
 if(BUILD_TESTING)
+    add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_support.c tests/app_shell_window.c
+        tests/app_shell_resources.c tests/player_test_support.c)
+    target_include_directories(test_app_shell PRIVATE tests)
+    target_compile_definitions(test_app_shell PRIVATE
+        APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
+        VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
+    target_link_libraries(test_app_shell PRIVATE spotic_app spotic_app_fixture spotic_ui_surface)
+    add_test(NAME app_shell COMMAND test_app_shell)
+    set_tests_properties(app_shell PROPERTIES TIMEOUT 60)
+    if(ENABLE_RENDERER_GPU_TESTS)
+        add_test(NAME app_shell_visual COMMAND test_app_shell --visual)
+        set_tests_properties(app_shell_visual PROPERTIES TIMEOUT 90 LABELS "gpu;optional" SKIP_RETURN_CODE 77)
+    endif()
     add_executable(test_widgets tests/test_widgets.c)
     target_include_directories(test_widgets PRIVATE tests)
     target_link_libraries(test_widgets PRIVATE spotic_widgets spotic_renderer)

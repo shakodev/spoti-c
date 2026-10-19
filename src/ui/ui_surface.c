@@ -1,4 +1,5 @@
 #include "ui_surface.h"
+#include "app.h"
 
 static const char caption[] = "spoti-c";
 static void text_wake(void *context) { ui_scheduler_dirty(&((UiWindow *)context)->scheduler,UI_DIRTY_STATE); }
@@ -87,11 +88,18 @@ void ui_surface_frame(void *context, UiWindow *w, uint32_t dirty)
     RECT rect; GetClientRect(w->hwnd, &rect);
     float scale = (float)w->dpi / 96, width = (float)rect.right / scale, height = (float)rect.bottom / scale;
     s->last_result = ui_frame_begin(&s->frame, (uint32_t)rect.right, (uint32_t)rect.bottom, scale);
-    /* Foundation surface until the Clay screens/font atlas land. */
-    if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,8,52,180,height - 124,0.065f); }
-    if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,196,52,width - 204,height - 124,0.09f); }
-    if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,8,height - 64,width - 16,56,0.065f); }
-    if (s->fonts_ready && s->text.last_result == FONT_OK) {
+    if (s->app) {
+        UiWidgetInput input = s->app->widgets.input;
+        input.pressed = input.released = input.activate = input.cancel = false;
+        Clay_RenderCommandArray commands = app_layout(s->app,(float)rect.right,(float)rect.bottom,(float)w->dpi,input);
+        UiClayBridge bridge = {.custom=app_render_custom,.context=s->app};
+        if (s->last_result == UI_RENDER_OK) { s->last_result = ui_frame_clay(&s->frame,commands,&bridge); }
+    } else {
+        if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,8,52,180,height - 124,0.065f); }
+        if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,196,52,width - 204,height - 124,0.09f); }
+        if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,8,height - 64,width - 16,56,0.065f); }
+    }
+    if (!s->app && s->fonts_ready && s->text.last_result == FONT_OK) {
         const float white[4] = {0.95f,0.95f,0.95f,1};
         s->text.last_result = font_render_text(&s->fonts,s->caption,&s->frame,40,4,white);
     }

@@ -68,6 +68,8 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
     if (DwmDefWindowProc(hwnd, message, wp, lp, &dwm_result)) {
         return dwm_result;
     }
+    LRESULT routed = 0;
+    if (w->config.input && w->config.input(w->config.context,w,message,wp,lp,&routed)) { return routed; }
     switch (message) {
     case UI_WINDOW_OCCLUSION_MESSAGE:
         ui_window_set_occluded(w, false);

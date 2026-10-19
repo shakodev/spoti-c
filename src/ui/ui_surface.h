@@ -3,12 +3,14 @@
 #include "renderer.h"
 #include "window.h"
 #include "font.h"
+struct App;
 typedef struct UiSurface {
     UiRenderer renderer;
     UiRenderFrame frame;
     FontCache fonts;
     FontMeasureContext text;
     FontHandle caption;
+    struct App *app; /* Optional borrowed shell; buffers outlive font unbinding. */
     bool fonts_ready;
     bool ready, recovery_pending, fallback_pending, recovery_attempted;
     UiRenderResult last_result;

@@ -1,0 +1,87 @@
+#include "app.h"
+#include <math.h>
+
+static uint64_t key_at(void *context, uint32_t index)
+{
+    App *a = context; return (uint64_t)a->model.page->offset + index + 1;
+}
+static bool index_of(void *context, uint64_t key, uint32_t *index)
+{
+    App *a = context; uint32_t offset = a->model.page->offset;
+    if (key <= offset || key - offset > a->model.page->count) { return false; }
+    *index = (uint32_t)(key-offset-1); return true;
+}
+AppResult app_pointer(App *a, UiWidgetInput input)
+{
+    if (!a || !a->alive || !isfinite(input.x) || !isfinite(input.y)) { return APP_INVALID; }
+    if (a->input_count == APP_INPUTS) {
+        if (!input.pressed && !input.released && !input.cancel && !input.activate &&
+            !a->inputs[APP_INPUTS-1].pressed && !a->inputs[APP_INPUTS-1].released && !a->inputs[APP_INPUTS-1].cancel) {
+            a->inputs[APP_INPUTS-1] = input; return APP_OK;
+        }
+        if (input.pressed || input.released || input.cancel) {
+            /* Overflow cannot strand a captured gesture. Retire it explicitly
+             * rather than replaying an incomplete edge sequence as a click. */
+            a->input_count=1; a->inputs[0]=(UiWidgetInput){.x=input.x,.y=input.y,.cancel=true};
+        }
+        a->model.last_result = APP_FULL; return APP_FULL;
+    }
+    a->inputs[a->input_count++] = input; return APP_OK;
+}
+void app_scroll(App *a, double delta)
+{
+    if (!a || !a->alive || !isfinite(delta)) { return; }
+    a->widgets.lists[0].scroll = fmax(0,a->widgets.lists[0].scroll+delta);
+    if (a->scheduler) { ui_scheduler_dirty(a->scheduler,UI_DIRTY_INPUT); }
+}
+AppResult app_key(App *a, AppKey key, bool shift)
+{
+    if (!a || !a->alive || key > APP_KEY_PAGE_DOWN) { return APP_INVALID; }
+    if (key == APP_KEY_BACK) { return app_enqueue(a,(AppAction){.type=APP_BACK}); }
+    if (!a->control_count) { return APP_PENDING; }
+    uint32_t focused = 0;
+    for (uint32_t i = 0; i < a->control_count; ++i) { if (a->controls[i].id.id == a->widgets.focus) { focused = i; break; } }
+    if (key == APP_KEY_TAB) {
+        for (uint32_t i = 0; i < a->control_count; ++i) {
+            focused = shift ? (focused+a->control_count-1)%a->control_count : (focused+1)%a->control_count;
+            if (!a->controls[focused].disabled) { a->widgets.focus = a->controls[focused].id.id; return APP_OK; }
+        }
+        return APP_CANCELLED;
+    }
+    AppControl *control = &a->controls[focused];
+    if (control->disabled) { return APP_CANCELLED; }
+    if (control->id.id == CLAY_ID("AppSeek").id) {
+        double value = a->widgets.seeks[0].value;
+        double step = a->model.player.duration_frames ? 5.0 * a->model.player.rate / (double)a->model.player.duration_frames : 0;
+        if (key == APP_KEY_HOME) { value = 0; } else if (key == APP_KEY_END) { value = 1; }
+        else if (key == APP_KEY_LEFT) { value -= step; } else if (key == APP_KEY_RIGHT) { value += step; }
+        else { return APP_CANCELLED; }
+        return app_enqueue(a,(AppAction){.type=APP_SEEK,.value=fmin(1,fmax(0,value))});
+    }
+    if (a->model.page && a->model.location.screen != APP_HOME && a->model.location.screen != APP_SETTINGS &&
+        control->action.type == APP_SELECT) {
+        if (control->action.value >= 0) { a->widgets.lists[0].focus = key_at(a,(uint32_t)control->action.value); }
+        UiNav nav;
+        switch (key) {
+        case APP_KEY_UP: nav = UI_NAV_UP; break;
+        case APP_KEY_DOWN: nav = UI_NAV_DOWN; break;
+        case APP_KEY_HOME: nav = UI_NAV_HOME; break;
+        case APP_KEY_END: nav = UI_NAV_END; break;
+        case APP_KEY_PAGE_UP: nav = UI_NAV_PAGE_UP; break;
+        case APP_KEY_PAGE_DOWN: nav = UI_NAV_PAGE_DOWN; break;
+        default: nav = (UiNav)-1; break;
+        }
+        if ((int)nav >= 0) {
+            UiWidgetResult r = ui_virtual_navigate(&a->widgets.lists[0],a->model.page->count,48,
+                fmin(384,a->geometry.viewport),nav,true,key_at,index_of,a);
+            a->widgets.focus = CLAY_ID("AppList").id; return r == UI_WIDGET_OK ? APP_OK : APP_CANCELLED;
+        }
+        if (key == APP_KEY_ENTER && control->id.id == CLAY_ID("AppList").id) {
+            uint32_t index; AppEntity entity;
+            if (!index_of(a,a->widgets.lists[0].focus,&index) || !a->model.page->items[index].available ||
+                app_entity(&a->model.page->items[index],&entity) != APP_OK) { return APP_CANCELLED; }
+            return app_enqueue(a,(AppAction){.type=APP_SELECT,.entity=entity});
+        }
+    }
+    return key == APP_KEY_ENTER ? app_enqueue(a,control->action) : APP_CANCELLED;
+}

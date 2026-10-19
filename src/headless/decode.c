@@ -28,10 +28,20 @@ DWORD WINAPI hl_decode(void *ctx)
     }
     SetEvent(h->decode_ready);
     uint64_t next = GetTickCount64();
+    PlayerSnapshot previous = {0};
     for (;;) {
         PlayerResult result = player_pump(h->player);
         if (result == PLAYER_CLOSED) { break; }
         if (result != PLAYER_OK && result != PLAYER_MORE) { ok = false; break; }
+        if (h->config.state_changed) {
+            PlayerSnapshot view = player_snapshot(h->player);
+            if (view.state != previous.state || view.generation != previous.generation ||
+                view.volume != previous.volume || view.rate != previous.rate ||
+                view.duration_frames != previous.duration_frames || view.timeline_valid != previous.timeline_valid ||
+                view.error != previous.error || memcmp(view.track_id,previous.track_id,16)) {
+                h->config.state_changed(h->config.state_context); previous = view;
+            }
+        }
         if (!h->config.wasapi && atomic_load(&h->sink.state) == SINK_RUNNING) {
             size_t available = spsc_readable(&h->sink.ring);
             if (available && (!h->config.realtime || GetTickCount64() >= next)) {

@@ -12,6 +12,10 @@ typedef struct HeadlessConfig {
     bool wasapi, realtime;
     void (*observe)(void *, const float *, size_t); /* Fake sink, decode owner. */
     void *observe_context;
+    /* Optional nonblocking state-edge wake from decode owner, never WASAPI.
+     * No position/callback-period notification; UI samples consumed frames at 1 Hz. */
+    void (*state_changed)(void *);
+    void *state_context;
 } HeadlessConfig;
 typedef struct HeadlessMetrics {
     uint64_t working_set, peak_working_set, private_working_set, private_commit;

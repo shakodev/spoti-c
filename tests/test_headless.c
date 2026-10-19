@@ -3,6 +3,8 @@
 #include <string.h>
 static FILE *golden;
 static uint64_t compared;
+static atomic_uint state_edges;
+static void state_changed(void *context) { atomic_fetch_add((atomic_uint *)context,1); }
 static void compare(void *ctx, const float *pcm, size_t frames)
 {
     (void)ctx; float expected[960]; CHECK(frames <= 480);
@@ -49,7 +51,9 @@ static void duration_and_gapless(HeadlessFixture *f)
 {
     for (unsigned run = 0; run < 2; ++run) {
         CHECK(fopen_s(&golden, HEADLESS_FIXTURE_DIR "/synthetic.f32", "rb") == 0); compared = 0;
-        Headless *h; HeadlessConfig c = {.cache_directory = f->cache, .fixture_url = f->url, .observe = compare};
+        atomic_init(&state_edges,0);
+        Headless *h; HeadlessConfig c = {.cache_directory = f->cache, .fixture_url = f->url, .observe = compare,
+            .state_changed=state_changed,.state_context=&state_edges};
         CHECK(headless_open(&c, &h)); hf_load(h, false);
         PlayerCommand next = {.type = PLAYER_QUEUE_APPEND}; next.track_id[15] = 2;
         CHECK(headless_submit(h, &next) == PLAYER_OK); CHECK(headless_command(h, "play"));
@@ -59,6 +63,7 @@ static void duration_and_gapless(HeadlessFixture *f)
         bool closed = headless_close(h, &m);
         if (!closed || !m.balanced) { headless_write_metrics(stderr, &m); }
         CHECK(closed && m.balanced && m.network_attempts + m.cache_hits > 0);
+        CHECK(atomic_load(&state_edges)>=3 && atomic_load(&state_edges)<m.callbacks);
         CHECK(m.peak_working_set >= peak && m.peak_working_set >= m.working_set);
         CHECK(m.working_set > 0 && m.process_handles > 0);
         if (run) { CHECK(m.cache_hits > 0); }

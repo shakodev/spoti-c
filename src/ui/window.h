@@ -9,6 +9,7 @@ typedef struct UiWindow UiWindow;
 typedef void (*UiFrame)(void *context, UiWindow *window, uint32_t dirty);
 typedef void (*UiWorkerEvent)(void *context, UiWindow *window, const Event *event);
 typedef void (*UiDeviceChange)(void *context, UiWindow *window);
+typedef bool (*UiInput)(void *context, UiWindow *window, UINT message, WPARAM wp, LPARAM lp, LRESULT *result);
 
 typedef struct UiWindowConfig {
     HINSTANCE instance;
@@ -22,6 +23,7 @@ typedef struct UiWindowConfig {
     UiFrame prepare; /* Optional resource resize/recovery BEFORE frame submit. */
     UiWorkerEvent worker;
     UiDeviceChange device;
+    UiInput input; /* Optional UI-owner router; true consumes this message. */
     void *context;
 } UiWindowConfig;
 
