@@ -11,6 +11,8 @@ static void render_dirty(UiWindow *w)
 {
     uint32_t reasons = ui_scheduler_frame(&w->scheduler, now_ms(w));
     if (reasons) {
+        if (w->config.prepare) { w->config.prepare(w->config.context, w, reasons); }
+        if (w->closed) { return; }
         metrics_count(w->config.metrics, METRIC_RENDER, 1);
         w->config.frame(w->config.context, w, reasons);
     }
@@ -67,6 +69,10 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
         return dwm_result;
     }
     switch (message) {
+    case UI_WINDOW_OCCLUSION_MESSAGE:
+        ui_window_set_occluded(w, false);
+        ui_scheduler_dirty(&w->scheduler, UI_DIRTY_PAINT);
+        return 0;
     case WM_NCCALCSIZE:
         if (wp) {
             /* Keep the system resize frame on three sides and use the caption

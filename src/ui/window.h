@@ -5,6 +5,7 @@
 #include "ui_scheduler.h"
 
 typedef struct UiWindow UiWindow;
+#define UI_WINDOW_OCCLUSION_MESSAGE (WM_APP + 26)
 typedef void (*UiFrame)(void *context, UiWindow *window, uint32_t dirty);
 typedef void (*UiWorkerEvent)(void *context, UiWindow *window, const Event *event);
 typedef void (*UiDeviceChange)(void *context, UiWindow *window);
@@ -18,6 +19,7 @@ typedef struct UiWindowConfig {
     CoreClock clock;
     Metrics *metrics;
     UiFrame frame; /* Nonblocking, no allocation; invoked only if dirty. */
+    UiFrame prepare; /* Optional resource resize/recovery BEFORE frame submit. */
     UiWorkerEvent worker;
     UiDeviceChange device;
     void *context;
