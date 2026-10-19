@@ -91,6 +91,11 @@ add_library(spotic_api_contract STATIC src/api/api_contract.c)
 target_include_directories(spotic_api_contract PUBLIC src)
 target_link_libraries(spotic_api_contract PUBLIC spotic_build_options)
 
+add_library(spotic_collections STATIC src/api/json_view.c src/api/collection_api.c
+    src/api/home_api.c src/api/library_api.c src/api/playlist_api.c)
+target_include_directories(spotic_collections PUBLIC src)
+target_link_libraries(spotic_collections PUBLIC spotic_json_base spotic_api_contract spotic_media)
+
 add_library(spotic_credentials STATIC src/protocol/credential_store.c)
 target_include_directories(spotic_credentials PUBLIC src)
 target_link_libraries(spotic_credentials PUBLIC spotic_crypto crypt32 advapi32)
@@ -191,6 +196,14 @@ add_executable(spotic-headless src/headless/main.c)
 target_link_libraries(spotic-headless PRIVATE spotic_headless_fixture spotic_headless)
 
 if(BUILD_TESTING)
+    add_executable(test_collection_api tests/test_collection_api.c tests/test_collection_errors.c
+        tests/test_collection_races.c)
+    target_include_directories(test_collection_api PRIVATE tests)
+    target_compile_definitions(test_collection_api PRIVATE
+        API_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/api")
+    target_link_libraries(test_collection_api PRIVATE spotic_collections)
+    add_test(NAME api_collections COMMAND test_collection_api)
+    set_tests_properties(api_collections PROPERTIES TIMEOUT 30)
     add_executable(test_api_contract tests/test_api_contract.c tests/test_api_contract_manifest.c)
     target_include_directories(test_api_contract PRIVATE tests)
     target_compile_definitions(test_api_contract PRIVATE
