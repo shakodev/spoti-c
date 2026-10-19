@@ -2,18 +2,15 @@
 #include <limits.h>
 #include <string.h>
 
-JsonResult json_page_parse(JsonPage *page, size_t bytes, void *pool, size_t pool_bytes)
+JsonResult json_page_parse(JsonPage *page, size_t bytes)
 {
     yyjson_alc allocator;
     yyjson_read_err error;
-    if (page == NULL || page->input == NULL || page->doc != NULL || pool == NULL ||
+    if (page == NULL || page->input == NULL || page->doc != NULL || page->pool == NULL ||
+        page->reservation == NULL ||
         atomic_load(&page->refcount) != UINT_MAX) { return JSON_INVALID; }
-    if (bytes > JSON_PAGE_BODY_CAP || pool_bytes > JSON_PAGE_POOL_CAP) { return JSON_TOO_LARGE; }
-    uintptr_t a = (uintptr_t)page->input, b = (uintptr_t)pool;
-    size_t capacity = JSON_PAGE_BODY_CAP + YYJSON_PADDING_SIZE;
-    if (capacity > UINTPTR_MAX - a || pool_bytes > UINTPTR_MAX - b ||
-        (a < b + pool_bytes && b < a + capacity)) { return JSON_INVALID; }
-    if (!yyjson_alc_pool_init(&allocator, pool, pool_bytes)) { return JSON_NO_MEMORY; }
+    if (bytes > JSON_PAGE_BODY_CAP) { return JSON_TOO_LARGE; }
+    if (!yyjson_alc_pool_init(&allocator, page->pool, JSON_PAGE_POOL_CAP)) { return JSON_NO_MEMORY; }
     memset(page->input + bytes, 0, YYJSON_PADDING_SIZE);
     page->doc = yyjson_read_opts(page->input, bytes, YYJSON_READ_INSITU, &allocator, &error);
     if (page->doc == NULL) {
@@ -42,8 +39,7 @@ bool page_release(JsonPage *page)
         if (atomic_compare_exchange_weak_explicit(&page->refcount, &count, next,
             memory_order_acq_rel, memory_order_acquire)) {
             if (next == UINT_MAX) {
-                yyjson_doc_free(page->doc); page->doc = NULL;
-                atomic_store_explicit(&page->refcount, 0, memory_order_release);
+                json_page_discard(page);
             }
             return true;
         }

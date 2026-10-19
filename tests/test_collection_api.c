@@ -2,7 +2,7 @@
 #include "core/memory_budget.h"
 #include <stdalign.h>
 
-static alignas(16) unsigned char storage[MEMORY_BUDGET_API_PAGES];
+static alignas(16) unsigned char storage[COLLECTION_MODEL_BUDGET], pool_storage[MEMORY_BUDGET_API_PAGES];
 CollectionService *collection_test_service;
 
 CollectionRequest collection_test_fetch(CollectionKind kind, uint32_t offset, uint64_t generation)
@@ -172,7 +172,9 @@ int main(void)
 {
     CHECK(collection_service_size() <= sizeof(storage));
     CHECK(collection_service_alignment() <= 16);
-    CHECK(collection_service_init(storage, sizeof(storage), &collection_test_service) == COLLECTION_OK);
+    JsonPagePool *pool;
+    CHECK(json_page_pool_init(pool_storage, sizeof(pool_storage), &pool) == JSON_OK);
+    CHECK(collection_service_init(storage, sizeof(storage), pool, &collection_test_service) == COLLECTION_OK);
     CHECK(collection_configure(collection_test_service, 2, (JsonString){0}) == COLLECTION_OK);
     predecessor_fixtures(); lifetimes_and_unions(); collection_error_tests(); collection_race_tests(); repeated_navigation();
     large_playlist();

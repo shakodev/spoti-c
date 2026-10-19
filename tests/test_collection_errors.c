@@ -118,7 +118,7 @@ static void statuses_and_partial(void)
 void collection_error_tests(void)
 {
     CollectionService *invalid = collection_test_service;
-    CHECK(collection_service_init(NULL, 0, &invalid) == COLLECTION_INVALID && invalid == NULL);
+    CHECK(collection_service_init(NULL, 0, NULL, &invalid) == COLLECTION_INVALID && invalid == NULL);
     CHECK(collection_configure(NULL, 2, (JsonString){0}) == COLLECTION_INVALID);
     CHECK(collection_configure(collection_test_service, 0, (JsonString){0}) == COLLECTION_INVALID);
     CHECK(collection_configure(collection_test_service, 65, (JsonString){0}) == COLLECTION_INVALID);

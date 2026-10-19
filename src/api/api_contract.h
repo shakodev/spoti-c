@@ -78,4 +78,7 @@ ApiContractResult contract_lookup(ApiOperation operation, const ApiContract **ou
 ApiContractResult contract_validate(const ApiContract *contract);
 uint32_t contract_missing_proofs(const ApiContract *contract);
 ApiContractResult contract_check_body(const ApiContract *contract, bool response, size_t bytes);
+/* Source-local public overrides only. NULL means use the session's value.
+ * Credential values are never stored here; callers still enforce headers[]. */
+const char *contract_header_override(ApiOperation operation, const char *canonical_header);
 #endif

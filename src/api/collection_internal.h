@@ -8,10 +8,9 @@ typedef struct CollectionSlot {
     CollectionPage page;
     uint64_t serial;
     bool pending, cancelled;
-    uint64_t pool[JSON_PAGE_POOL_CAP / sizeof(uint64_t)];
-    char input[JSON_PAGE_BODY_CAP + YYJSON_PADDING_SIZE];
 } CollectionSlot;
 struct CollectionService {
+    JsonPagePool *pool;
     uint64_t generation, serial;
     uint32_t next;
     uint32_t limit;

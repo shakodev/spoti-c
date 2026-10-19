@@ -3,18 +3,19 @@
 #include "protocol/media_source.h"
 #include <string.h>
 
-_Static_assert(sizeof(CollectionService) <= MEMORY_BUDGET_API_PAGES, "Shared API page budget");
+_Static_assert(sizeof(CollectionService) <= COLLECTION_MODEL_BUDGET, "Shared compact model budget");
 size_t collection_service_size(void) { return sizeof(CollectionService); }
 size_t collection_service_alignment(void) { return alignof(CollectionService); }
 
-CollectionResult collection_service_init(void *storage, size_t bytes, CollectionService **output)
+CollectionResult collection_service_init(void *storage, size_t bytes, JsonPagePool *pool, CollectionService **output)
 {
     if (output == NULL) { return COLLECTION_INVALID; }
     *output = NULL;
-    if (storage == NULL || bytes < sizeof(CollectionService) ||
+    if (storage == NULL || pool == NULL || bytes < sizeof(CollectionService) ||
         (uintptr_t)storage % alignof(CollectionService) != 0) { return COLLECTION_INVALID; }
     CollectionService *s = storage;
     memset(s, 0, sizeof(*s)); s->next = COLLECTION_END; s->limit = 64;
+    s->pool = pool;
     for (size_t i = 0; i < 2; ++i) { atomic_init(&s->slots[i].page.json.refcount, 0); }
     *output = s; return COLLECTION_OK;
 }
@@ -75,12 +76,13 @@ CollectionResult collection_fetch(CollectionService *s, CollectionKind kind,
             UINT_MAX, memory_order_acq_rel, memory_order_acquire)) { continue; }
         /* All fields except the live atomic can be reset after exclusive reservation. */
         memset((char *)&slot->page + sizeof(JsonPage), 0, sizeof(CollectionPage) - sizeof(JsonPage));
-        slot->page.json.input = slot->input; slot->page.json.doc = NULL;
-        slot->page.json.generation = generation;
+        if (json_page_acquire(s->pool, &slot->page.json, generation) != JSON_OK) {
+            json_page_discard(&slot->page.json); return COLLECTION_FULL;
+        }
         slot->page.kind = kind; slot->page.offset = cursor; slot->page.next = COLLECTION_END;
         slot->serial = ++s->serial; slot->pending = true; slot->cancelled = false;
         *request = (CollectionRequest){{i, slot->serial}, contract_inspect(operations[kind]),
-            kind, generation, cursor, s->limit, slot->input, JSON_PAGE_BODY_CAP};
+            kind, generation, cursor, s->limit, slot->page.json.input, JSON_PAGE_BODY_CAP};
         s->kind = kind; return COLLECTION_PENDING;
     }
     return COLLECTION_FULL;
@@ -169,7 +171,7 @@ CollectionResult collection_complete(CollectionService *s, CollectionTicket tick
     else if (slot->cancelled) { result = COLLECTION_CANCELLED; }
     else if (result == COLLECTION_OK) { result = collection_status(status); }
     if (result == COLLECTION_OK) {
-        JsonResult parsed = json_page_parse(&page->json, bytes, slot->pool, sizeof(slot->pool));
+        JsonResult parsed = json_page_parse(&page->json, bytes);
         result = parsed == JSON_OK ? COLLECTION_OK : parsed == JSON_TOO_LARGE ?
             COLLECTION_TOO_LARGE : parsed == JSON_NO_MEMORY ? COLLECTION_NO_MEMORY : COLLECTION_INVALID;
     }
@@ -186,8 +188,7 @@ CollectionResult collection_complete(CollectionService *s, CollectionTicket tick
         !json_span_equal(page->revision, s->current->revision)) { result = COLLECTION_REVISION; }
     slot->pending = false;
     if (result != COLLECTION_OK && result != COLLECTION_PARTIAL) {
-        yyjson_doc_free(page->json.doc); page->json.doc = NULL;
-        atomic_store_explicit(&page->json.refcount, 0, memory_order_release); return result;
+        json_page_discard(&page->json); return result;
     }
     duplicates(page, s->current);
     if (s->current != NULL) { page_release(&s->current->json); }

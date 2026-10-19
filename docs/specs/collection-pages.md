@@ -1,5 +1,10 @@
 # Bounded collection page service (#22)
 
+Issue #23 supersedes the private buffers below with a single explicit pool shared
+with catalog views. See [catalog-views.md](catalog-views.md) for current layout,
+budgets and measurements. `collection_service_init` now receives that pool;
+its own storage contains models and tickets only.
+
 Written before implementation. This extends the predecessor's
 [Home/Library/Playlist contracts](home-library-playlist.md),
 [native backing contracts](native-library-playlist.md) and `pathfinder.md`.

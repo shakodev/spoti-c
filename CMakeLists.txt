@@ -91,10 +91,18 @@ add_library(spotic_api_contract STATIC src/api/api_contract.c)
 target_include_directories(spotic_api_contract PUBLIC src)
 target_link_libraries(spotic_api_contract PUBLIC spotic_build_options)
 
-add_library(spotic_collections STATIC src/api/json_view.c src/api/collection_api.c
+add_library(spotic_json_view STATIC src/api/json_view.c src/api/json_page_pool.c)
+target_include_directories(spotic_json_view PUBLIC src)
+target_link_libraries(spotic_json_view PUBLIC spotic_json_base)
+add_library(spotic_collections STATIC src/api/collection_api.c
     src/api/home_api.c src/api/library_api.c src/api/playlist_api.c)
 target_include_directories(spotic_collections PUBLIC src)
-target_link_libraries(spotic_collections PUBLIC spotic_json_base spotic_api_contract spotic_media)
+target_link_libraries(spotic_collections PUBLIC spotic_json_view spotic_api_contract spotic_media)
+
+add_library(spotic_catalog STATIC src/api/catalog_api.c src/api/catalog_request.c
+    src/api/catalog_model.c src/api/search_api.c src/api/album_api.c src/api/artist_api.c)
+target_include_directories(spotic_catalog PUBLIC src)
+target_link_libraries(spotic_catalog PUBLIC spotic_json_view spotic_api_contract spotic_media)
 
 add_library(spotic_credentials STATIC src/protocol/credential_store.c)
 target_include_directories(spotic_credentials PUBLIC src)
@@ -196,6 +204,13 @@ add_executable(spotic-headless src/headless/main.c)
 target_link_libraries(spotic-headless PRIVATE spotic_headless_fixture spotic_headless)
 
 if(BUILD_TESTING)
+    add_executable(test_catalog_api tests/test_catalog_api.c tests/test_catalog_errors.c
+        tests/test_catalog_pool.c)
+    target_include_directories(test_catalog_api PRIVATE tests)
+    target_compile_definitions(test_catalog_api PRIVATE API_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/api")
+    target_link_libraries(test_catalog_api PRIVATE spotic_catalog spotic_collections)
+    add_test(NAME api_catalog COMMAND test_catalog_api)
+    set_tests_properties(api_catalog PROPERTIES TIMEOUT 30)
     add_executable(test_collection_api tests/test_collection_api.c tests/test_collection_errors.c
         tests/test_collection_races.c)
     target_include_directories(test_collection_api PRIVATE tests)

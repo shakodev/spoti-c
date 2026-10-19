@@ -5,6 +5,7 @@
 
 #define COLLECTION_ROW_CAP 128u
 #define COLLECTION_END UINT32_MAX
+#define COLLECTION_MODEL_BUDGET ((size_t)64 * 1024)
 typedef enum CollectionKind { COLLECTION_HOME, COLLECTION_HOME_SECTION,
     COLLECTION_LIBRARY, COLLECTION_PLAYLIST } CollectionKind;
 typedef enum CollectionResult {
@@ -45,7 +46,7 @@ typedef struct CollectionRequest {
 } CollectionRequest;
 typedef struct CollectionService CollectionService;
 
-/* Caller allocates aligned service storage from the shared API-page budget.
+/* Caller allocates aligned service storage from the shared compact-model budget.
  * No heap allocations. ONE network owner calls all service methods. The UI
  * receives retained immutable pages through a synchronized queue and may only
  * call page_retain/release. Retained input/pool/service storage must outlive UI.
@@ -53,7 +54,7 @@ typedef struct CollectionService CollectionService;
  * to be idle. Do not memset live service storage. */
 size_t collection_service_size(void);
 size_t collection_service_alignment(void);
-CollectionResult collection_service_init(void *storage, size_t bytes, CollectionService **output);
+CollectionResult collection_service_init(void *storage, size_t bytes, JsonPagePool *pool, CollectionService **output);
 /* Only while no slots are occupied. Copies an optional account-specific liked
  * playlist URI supplied by the adapter; never infers a universal URI. */
 CollectionResult collection_configure(CollectionService *service, uint32_t page_limit, JsonString liked_uri);

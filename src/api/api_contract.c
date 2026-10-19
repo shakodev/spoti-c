@@ -229,6 +229,12 @@ const ApiContract *contract_inspect(ApiOperation operation)
 {
     return (unsigned)operation >= API_OPERATION_COUNT ? NULL : &contracts[operation];
 }
+const char *contract_header_override(ApiOperation operation, const char *canonical_header)
+{
+    if (canonical_header != NULL && strcmp(canonical_header, "Spotify-App-Version") == 0 &&
+        (operation == API_ALBUM || operation == API_ALBUM_TRACKS || operation == API_ARTIST)) { return "896000000"; }
+    return NULL;
+}
 ApiContractResult contract_lookup(ApiOperation operation, const ApiContract **output)
 {
     if (output == NULL) { return API_CONTRACT_INVALID; }
