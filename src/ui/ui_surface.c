@@ -1,5 +1,8 @@
 #include "ui_surface.h"
 
+static const char caption[] = "spoti-c";
+static void text_wake(void *context) { ui_scheduler_dirty(&((UiWindow *)context)->scheduler,UI_DIRTY_STATE); }
+
 UiRenderResult ui_surface_create(UiSurface *s, UiWindow *w, bool warp)
 {
     if (!s || !w || !w->hwnd || s->ready) { return UI_RENDER_INVALID; }
@@ -9,11 +12,18 @@ UiRenderResult ui_surface_create(UiSurface *s, UiWindow *w, bool warp)
         .occlusion_message = UI_WINDOW_OCCLUSION_MESSAGE};
     s->last_result = ui_renderer_create(&s->renderer, &config);
     s->ready = s->last_result == UI_RENDER_OK;
+    if (s->ready) {
+        s->text = (FontMeasureContext){.cache=&s->fonts,.config={.size=20,.dpi=(uint16_t)w->dpi,.weight=700}};
+        s->text.last_result = font_cache_create(&s->fonts,text_wake,w);
+        s->fonts_ready = s->text.last_result == FONT_OK;
+        if (!s->fonts_ready) { ui_surface_destroy(s); s->last_result = UI_RENDER_OS_ERROR; }
+    }
     return s->last_result;
 }
 
 void ui_surface_destroy(UiSurface *s)
 {
+    if (s->fonts_ready) { font_cache_destroy(&s->fonts); s->fonts_ready = false; }
     ui_renderer_destroy(&s->renderer); s->ready = false;
 }
 
@@ -38,6 +48,17 @@ void ui_surface_prepare(void *context, UiWindow *w, uint32_t dirty)
         s->recovery_pending = true; ui_scheduler_dirty(&w->scheduler, UI_DIRTY_DEVICE);
     } else if (s->last_result != UI_RENDER_OK && s->last_result != UI_RENDER_SUSPENDED) {
         ui_surface_destroy(s);
+    }
+    if (s->ready && s->fonts_ready && s->last_result == UI_RENDER_OK) {
+        if (s->text.config.dpi != w->dpi) {
+            (void)font_cache_reset(&s->fonts); s->text.config.dpi = (uint16_t)w->dpi;
+        }
+        s->text.last_result = font_prepare_pending(&s->fonts);
+        if (s->text.last_result == FONT_OK) {
+            s->text.last_result = font_prepare_text(&s->fonts,(Clay_StringSlice){sizeof(caption)-1,caption,caption},
+                &s->text.config,&s->caption);
+        }
+        if (s->text.last_result == FONT_OK) { s->text.last_result = font_upload_renderer(&s->fonts,&s->renderer); }
     }
 }
 
@@ -70,6 +91,10 @@ void ui_surface_frame(void *context, UiWindow *w, uint32_t dirty)
     if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,8,52,180,height - 124,0.065f); }
     if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,196,52,width - 204,height - 124,0.09f); }
     if (s->last_result == UI_RENDER_OK) { s->last_result = panel(&s->frame,8,height - 64,width - 16,56,0.065f); }
+    if (s->fonts_ready && s->text.last_result == FONT_OK) {
+        const float white[4] = {0.95f,0.95f,0.95f,1};
+        s->text.last_result = font_render_text(&s->fonts,s->caption,&s->frame,40,4,white);
+    }
     const float clear[4] = {0,0,0,1};
     if (s->last_result == UI_RENDER_OK) { s->last_result = ui_renderer_submit(&s->renderer, &s->frame, clear); }
     if (s->last_result == UI_RENDER_OK) { s->last_result = ui_renderer_present(&s->renderer); }

@@ -60,14 +60,14 @@ typedef struct UiRendererConfig {
 typedef struct UiRendererStats {
     /* Logical buffer/texel sizes, not driver residency. System surfaces are a
      * two-buffer swapchain estimate; driver/shader implementation bytes unknown. */
-    uint64_t owned_gpu_bytes, system_surface_bytes, draw_calls, presents, maps;
+    uint64_t owned_gpu_bytes, system_surface_bytes, draw_calls, presents, maps, texture_updates;
     uint32_t resources, textures, generation;
     bool warp, debug_layer;
 } UiRendererStats;
 
 typedef struct UiGpuTexture {
     struct ID3D11ShaderResourceView *view;
-    uint32_t serial, bytes;
+    uint32_t serial, bytes, channels, width, height;
 } UiGpuTexture;
 /* Caller-owned, zero-initialized, no copies while live. Fields are private to
  * the backend; forward COM declarations keep Windows headers out of batching. */
@@ -103,6 +103,12 @@ UiRenderResult ui_renderer_present(UiRenderer *r);
 UiRenderResult ui_renderer_texture(UiRenderer *r, uint32_t width, uint32_t height,
     const unsigned char *rgba, size_t stride, UiTexture *out);
 UiRenderResult ui_renderer_texture_release(UiRenderer *r, UiTexture texture);
+UiRenderResult ui_renderer_texture_r8(UiRenderer *r, uint32_t width, uint32_t height,
+    const unsigned char *coverage, size_t stride, UiTexture *out);
+/* Safe preparation boundary only; R8 textures use DEFAULT usage for updates. */
+UiRenderResult ui_renderer_texture_update_r8(UiRenderer *r, UiTexture texture,
+    const unsigned char *coverage, size_t stride);
+bool ui_renderer_texture_valid(const UiRenderer *r, UiTexture texture);
 /* Offscreen testing only: caller buffer, RGBA8, no ownership transfer. */
 UiRenderResult ui_renderer_readback(UiRenderer *r, unsigned char *rgba, size_t stride, size_t bytes);
 UiRendererStats ui_renderer_stats(const UiRenderer *r);

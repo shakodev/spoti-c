@@ -53,7 +53,8 @@ int main(int argc, char **argv)
         CHECK(ui_window_step(&window,duration));
         UiRendererStats after = ui_renderer_stats(&surface.renderer);
         quiet = window.stats.timeouts == timeouts + 1 && GetTickCount64() - start >= duration - 20 &&
-            after.presents == before.presents && after.maps == before.maps && after.draw_calls == before.draw_calls;
+            after.presents == before.presents && after.maps == before.maps && after.draw_calls == before.draw_calls &&
+            after.texture_updates == before.texture_updates;
     }
     CHECK(quiet);
     printf("DX11 idle trace: %lu ms, 1 blocking wait, 0 Present, 0 Map, 0 Draw\n",(unsigned long)duration);

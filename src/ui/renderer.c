@@ -9,24 +9,31 @@ ID3D11ShaderResourceView *ui_gpu_texture_view(UiRenderer *r, UiTexture handle)
     UiGpuTexture *t = &r->textures[slot - 1];
     return t->serial == serial ? t->view : NULL;
 }
+bool ui_renderer_texture_valid(const UiRenderer *r, UiTexture texture)
+{
+    if (!ui_gpu_owner(r) || r->lost) { return false; }
+    uint32_t slot = texture & 255u;
+    return slot && slot <= UI_MAX_TEXTURES && r->textures[slot - 1].view &&
+        r->textures[slot - 1].serial == (texture >> 8);
+}
 
-UiRenderResult ui_renderer_texture(UiRenderer *r, uint32_t width, uint32_t height,
-    const unsigned char *rgba, size_t stride, UiTexture *out)
+static UiRenderResult texture_create(UiRenderer *r, uint32_t width, uint32_t height,
+    const unsigned char *rgba, size_t stride, UiTexture *out, uint32_t channels)
 {
     if (out) { *out = 0; }
     if (!ui_gpu_owner(r) || !r->device || !out || !rgba || !width || !height ||
-        width > UI_MAX_SURFACE || height > UI_MAX_SURFACE || stride < (size_t)width * 4 ||
+        width > UI_MAX_SURFACE || height > UI_MAX_SURFACE || stride < (size_t)width * channels ||
         stride > UINT32_MAX || stride > SIZE_MAX / height) { return UI_RENDER_INVALID; }
     if (r->lost) { return UI_RENDER_DEVICE_LOST; }
-    uint64_t bytes = (uint64_t)width * height * 4;
+    uint64_t bytes = (uint64_t)width * height * channels;
     if (bytes > UI_TEXTURE_BUDGET - r->texture_bytes || r->serial == 0xffffffu) { return UI_RENDER_FULL; }
     unsigned slot = 0;
     while (slot < UI_MAX_TEXTURES && r->textures[slot].view) { ++slot; }
     if (slot == UI_MAX_TEXTURES) { return UI_RENDER_FULL; }
     D3D11_TEXTURE2D_DESC desc = {0};
     desc.Width = width; desc.Height = height; desc.MipLevels = desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; desc.SampleDesc.Count = 1;
-    desc.Usage = D3D11_USAGE_IMMUTABLE; desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.Format = channels == 1 ? DXGI_FORMAT_R8_UNORM : DXGI_FORMAT_R8G8B8A8_UNORM; desc.SampleDesc.Count = 1;
+    desc.Usage = channels == 1 ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE; desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     D3D11_SUBRESOURCE_DATA data = {rgba, (UINT)stride, 0};
     ID3D11Texture2D *texture = NULL;
     HRESULT hr = ID3D11Device_CreateTexture2D(r->device, &desc, &data, &texture);
@@ -36,9 +43,35 @@ UiRenderResult ui_renderer_texture(UiRenderer *r, uint32_t width, uint32_t heigh
     ID3D11Texture2D_Release(texture);
     if (FAILED(hr)) { return ui_gpu_result(r, hr); } UI_OWN(r);
     UiGpuTexture *t = &r->textures[slot]; t->bytes = (uint32_t)bytes; t->serial = ++r->serial;
+    t->channels = channels; t->width = width; t->height = height;
     r->texture_bytes += t->bytes; ++r->stats.textures;
     *out = (t->serial << 8) | (slot + 1); ui_gpu_account(r);
     return UI_RENDER_OK;
+}
+
+UiRenderResult ui_renderer_texture(UiRenderer *r, uint32_t width, uint32_t height,
+    const unsigned char *rgba, size_t stride, UiTexture *out)
+{
+    return texture_create(r,width,height,rgba,stride,out,4);
+}
+UiRenderResult ui_renderer_texture_r8(UiRenderer *r, uint32_t width, uint32_t height,
+    const unsigned char *coverage, size_t stride, UiTexture *out)
+{
+    return texture_create(r,width,height,coverage,stride,out,1);
+}
+UiRenderResult ui_renderer_texture_update_r8(UiRenderer *r, UiTexture texture,
+    const unsigned char *coverage, size_t stride)
+{
+    if (!ui_gpu_owner(r) || !coverage || !ui_gpu_texture_view(r,texture)) { return UI_RENDER_INVALID; }
+    if (r->lost) { return UI_RENDER_DEVICE_LOST; }
+    UiGpuTexture *t = &r->textures[(texture & 255u) - 1];
+    if (t->channels != 1 || stride < t->width || stride > UINT32_MAX || stride > SIZE_MAX / t->height) { return UI_RENDER_INVALID; }
+    ID3D11Resource *resource = NULL;
+    ID3D11ShaderResourceView_GetResource(t->view,&resource);
+    ID3D11DeviceContext_UpdateSubresource(r->context,resource,0,NULL,coverage,(UINT)stride,0);
+    ++r->stats.texture_updates;
+    ID3D11Resource_Release(resource);
+    return ui_gpu_result(r,ID3D11Device_GetDeviceRemovedReason(r->device));
 }
 
 UiRenderResult ui_renderer_texture_release(UiRenderer *r, UiTexture texture)

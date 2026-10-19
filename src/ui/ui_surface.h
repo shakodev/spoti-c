@@ -2,9 +2,14 @@
 #define SPOTIC_UI_SURFACE_H
 #include "renderer.h"
 #include "window.h"
+#include "font.h"
 typedef struct UiSurface {
     UiRenderer renderer;
     UiRenderFrame frame;
+    FontCache fonts;
+    FontMeasureContext text;
+    FontHandle caption;
+    bool fonts_ready;
     bool ready, recovery_pending, fallback_pending, recovery_attempted;
     UiRenderResult last_result;
 } UiSurface;
