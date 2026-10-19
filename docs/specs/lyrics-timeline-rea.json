@@ -1,0 +1,751 @@
+[
+  {
+    "evidence_id": "ev_89200ee35cb438f14ae66461ea61bd70a1511c1c7498aec21371f7bd88298904",
+    "subject": {
+      "name": "xpui",
+      "digest": {
+        "sha256": "8fe63d71062b5b05fc69d319c4856d99431b4e5f404f0ffe641ce6c827712728"
+      },
+      "local_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\ref\\xpui",
+      "format": "directory",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_ce0ccb549a86a39853a36319ef3c5ef95c05974b59f62db64c4095ca70a85ac1",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_ce0ccb549a86a39853a36319ef3c5ef95c05974b59f62db64c4095ca70a85ac1",
+      "parent_operation": "analyze_javascript_application",
+      "parent_digest": "ce0ccb549a86a39853a36319ef3c5ef95c05974b59f62db64c4095ca70a85ac1",
+      "view_digest": "81d018bfd3c7da4c0d7d55c86e94d4161d37eadb38572f3908d76570b012b73d",
+      "artifact": {
+        "path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\ref\\xpui",
+        "sha256": "8fe63d71062b5b05fc69d319c4856d99431b4e5f404f0ffe641ce6c827712728"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 871,
+        "total": 1651,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+        "Caller-selected source analysis leaves 269 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+        "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+        "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+        "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+        "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+        "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+        "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+        "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+      ],
+      "unknowns": [
+        "269 application graph unknowns remain in the parent Evidence.",
+        "27303 semantic graph unknowns remain in the parent Evidence.",
+        "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+        "Caller-selected source analysis leaves 269 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+        "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+        "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+        "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+        "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+        "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+        "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+        "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code.",
+        "graph.coverage.status is partial",
+        "semantic_graph.coverage.status is partial"
+      ],
+      "summary": {
+        "input_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\ref\\xpui",
+        "format": "directory",
+        "root_artifact_sha256": "8fe63d71062b5b05fc69d319c4856d99431b4e5f404f0ffe641ce6c827712728",
+        "source_selection": {
+          "requested_paths": [
+            "xpui-routes-lyrics.js",
+            "dwp-panel-section.js"
+          ],
+          "unselected_files": 269
+        },
+        "statistics": {
+          "relevant_files": 271,
+          "nested_asar_containers": 0,
+          "text_bytes_read": 527400,
+          "invalid_utf8_files": 0,
+          "parsed_javascript_files": 2,
+          "visited_ast_nodes": 159016,
+          "findings": 1402,
+          "modules": 59,
+          "parse_failures": 0
+        },
+        "electron": {
+          "browser_windows": 0,
+          "explicit_web_preferences": 0,
+          "preload_entrypoints": 0,
+          "context_bridge_apis": 0,
+          "exposed_api_members": 0,
+          "ipc": {
+            "operations": 0,
+            "literal_channels": 0,
+            "dynamic_channel_operations": 0,
+            "renderer_transmissions": 0,
+            "renderer_listeners": 0,
+            "main_handlers": 0,
+            "paired_renderer_transmissions": 0,
+            "ambiguous_renderer_transmissions": 0,
+            "unpaired_literal_renderer_transmissions": 0
+          },
+          "sender_validation_observations": 0,
+          "utility_processes": 0,
+          "resolved_utility_entrypoints": 0,
+          "native_addon_bindings": 0,
+          "resolved_native_addon_bindings": 0
+        },
+        "coverage": {
+          "application": {
+            "status": "partial",
+            "truncated": false,
+            "omitted_count": null,
+            "limits": []
+          },
+          "semantic": {
+            "status": "partial",
+            "truncated": true,
+            "omitted_nodes": null,
+            "omitted_relations": null,
+            "limits": [
+              {
+                "name": "semantic_graph_file_node_ceiling",
+                "value": 400,
+                "unit": "items"
+              },
+              {
+                "name": "semantic_graph_node_ceiling",
+                "value": 800,
+                "unit": "items"
+              }
+            ],
+            "families": [
+              {
+                "family": "boundary",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "call-flow",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 9280
+              },
+              {
+                "family": "child-process",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "closure",
+                "status": "partial",
+                "retained_relations": 6,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "configuration",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "data-flow",
+                "status": "partial",
+                "retained_relations": 91,
+                "omitted_relations": null,
+                "unknown_count": 197
+              },
+              {
+                "family": "event",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "object-flow",
+                "status": "partial",
+                "retained_relations": 11,
+                "omitted_relations": null,
+                "unknown_count": 16140
+              },
+              {
+                "family": "promise-ownership",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "request",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "resource-lifecycle",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 184
+              },
+              {
+                "family": "timer",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 214
+              }
+            ]
+          },
+          "application_unknowns": 269,
+          "semantic_unknowns": 27303
+        },
+        "limitation_count": 7
+      }
+    },
+    "confidence": "derived",
+    "authority": "shipped-artifact",
+    "environment": null,
+    "limitations": [
+      "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+      "Caller-selected source analysis leaves 269 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+      "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+      "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+      "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+      "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+      "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+      "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+      "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\ref\\xpui"
+      }
+    ],
+    "evidence_links": [
+      "ev_ce0ccb549a86a39853a36319ef3c5ef95c05974b59f62db64c4095ca70a85ac1"
+    ]
+  },
+  {
+    "evidence_id": "ev_ad2b39cefc8f151197af34f25d3e2cdb47eb3a306e82b8e8f0e63f89184bfad7",
+    "subject": {
+      "name": "api21-rspack",
+      "digest": {
+        "sha256": "7b118de88d0d502f6f87c91a5f36445cdf30d94bbc171d3fe52d3dcf8127fc90"
+      },
+      "local_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\api21-rspack",
+      "format": "directory",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_b8f841d1f93d4a5d9ad0cb54409ce41a1fcd5791c9df07ab8746771b284d5776",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_b8f841d1f93d4a5d9ad0cb54409ce41a1fcd5791c9df07ab8746771b284d5776",
+      "parent_operation": "analyze_javascript_application",
+      "parent_digest": "b8f841d1f93d4a5d9ad0cb54409ce41a1fcd5791c9df07ab8746771b284d5776",
+      "view_digest": "6a7ad4a3a6ce4d89c91b37a05e4f702f8da0c5ebed50e11e5f335fd11a92258b",
+      "artifact": {
+        "path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\api21-rspack",
+        "sha256": "7b118de88d0d502f6f87c91a5f36445cdf30d94bbc171d3fe52d3dcf8127fc90"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 2396,
+        "total": 4775,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+        "Caller-selected source analysis leaves 2375 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+        "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+        "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+        "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+        "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+        "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+        "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+        "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+      ],
+      "unknowns": [
+        "2375 application graph unknowns remain in the parent Evidence.",
+        "28694 semantic graph unknowns remain in the parent Evidence.",
+        "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+        "Caller-selected source analysis leaves 2375 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+        "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+        "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+        "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+        "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+        "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+        "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+        "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code.",
+        "graph.coverage.status is partial",
+        "semantic_graph.coverage.status is partial"
+      ],
+      "summary": {
+        "input_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\api21-rspack",
+        "format": "directory",
+        "root_artifact_sha256": "7b118de88d0d502f6f87c91a5f36445cdf30d94bbc171d3fe52d3dcf8127fc90",
+        "source_selection": {
+          "requested_paths": [
+            "2200.js",
+            "24063.js"
+          ],
+          "unselected_files": 2375
+        },
+        "statistics": {
+          "relevant_files": 2377,
+          "nested_asar_containers": 0,
+          "text_bytes_read": 2387,
+          "invalid_utf8_files": 0,
+          "parsed_javascript_files": 2,
+          "visited_ast_nodes": 799,
+          "findings": 18,
+          "modules": 2,
+          "parse_failures": 0
+        },
+        "electron": {
+          "browser_windows": 0,
+          "explicit_web_preferences": 0,
+          "preload_entrypoints": 0,
+          "context_bridge_apis": 0,
+          "exposed_api_members": 0,
+          "ipc": {
+            "operations": 0,
+            "literal_channels": 0,
+            "dynamic_channel_operations": 0,
+            "renderer_transmissions": 0,
+            "renderer_listeners": 0,
+            "main_handlers": 0,
+            "paired_renderer_transmissions": 0,
+            "ambiguous_renderer_transmissions": 0,
+            "unpaired_literal_renderer_transmissions": 0
+          },
+          "sender_validation_observations": 0,
+          "utility_processes": 0,
+          "resolved_utility_entrypoints": 0,
+          "native_addon_bindings": 0,
+          "resolved_native_addon_bindings": 0
+        },
+        "coverage": {
+          "application": {
+            "status": "partial",
+            "truncated": false,
+            "omitted_count": null,
+            "limits": []
+          },
+          "semantic": {
+            "status": "partial",
+            "truncated": false,
+            "omitted_nodes": null,
+            "omitted_relations": null,
+            "limits": [],
+            "families": [
+              {
+                "family": "boundary",
+                "status": "partial",
+                "retained_relations": 2,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "call-flow",
+                "status": "partial",
+                "retained_relations": 17,
+                "omitted_relations": null,
+                "unknown_count": 2426
+              },
+              {
+                "family": "child-process",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "closure",
+                "status": "partial",
+                "retained_relations": 45,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "configuration",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "data-flow",
+                "status": "partial",
+                "retained_relations": 512,
+                "omitted_relations": null,
+                "unknown_count": 2445
+              },
+              {
+                "family": "event",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "object-flow",
+                "status": "partial",
+                "retained_relations": 51,
+                "omitted_relations": null,
+                "unknown_count": 2453
+              },
+              {
+                "family": "promise-ownership",
+                "status": "partial",
+                "retained_relations": 4,
+                "omitted_relations": null,
+                "unknown_count": 2378
+              },
+              {
+                "family": "request",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "resource-lifecycle",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              },
+              {
+                "family": "timer",
+                "status": "partial",
+                "retained_relations": 0,
+                "omitted_relations": null,
+                "unknown_count": 2374
+              }
+            ]
+          },
+          "application_unknowns": 2375,
+          "semantic_unknowns": 28694
+        },
+        "limitation_count": 7
+      }
+    },
+    "confidence": "derived",
+    "authority": "shipped-artifact",
+    "environment": null,
+    "limitations": [
+      "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+      "Caller-selected source analysis leaves 2375 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+      "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+      "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+      "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+      "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+      "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+      "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+      "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\api21-rspack"
+      }
+    ],
+    "evidence_links": [
+      "ev_b8f841d1f93d4a5d9ad0cb54409ce41a1fcd5791c9df07ab8746771b284d5776"
+    ]
+  },
+  {
+    "evidence_id": "ev_e6b221238f6ec2f2cadf94736714769ee4051148ed992638f18b0824e9814d04",
+    "subject": {
+      "name": "api21-boundaries-verified.har",
+      "digest": {
+        "sha256": "739e3d9ce6f4a56a3e3b60ee7c8a64870062936ee05589d930669ff0309bf00a"
+      },
+      "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-boundaries-verified.har",
+      "format": "file",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_f1bc65554c5932a3c3330e8448971219b6b90db74162d91cd0c5c290ef5d6e27",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_f1bc65554c5932a3c3330e8448971219b6b90db74162d91cd0c5c290ef5d6e27",
+      "parent_operation": "inspect_web_network_capture",
+      "parent_digest": "f1bc65554c5932a3c3330e8448971219b6b90db74162d91cd0c5c290ef5d6e27",
+      "view_digest": "18b47afaeaeb33fd1f932fdb56dbfd5188898b3847f46e0e8db2c8199b42f763",
+      "artifact": {
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-boundaries-verified.har",
+        "sha256": "739e3d9ce6f4a56a3e3b60ee7c8a64870062936ee05589d930669ff0309bf00a"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 7,
+        "total": 7,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+        "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+        "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+        "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+        "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+      ],
+      "unknowns": [
+        "Historical records do not establish live runtime attribution or deployment authenticity."
+      ],
+      "summary": {
+        "artifact": {
+          "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-boundaries-verified.har",
+          "sha256": "739e3d9ce6f4a56a3e3b60ee7c8a64870062936ee05589d930669ff0309bf00a",
+          "bytes": 60905
+        },
+        "decoder": {
+          "id": "har-schema/lossless-json",
+          "name": "REA HAR capture adapter",
+          "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+        },
+        "format": "har",
+        "total_records": 7,
+        "retained_records": 7,
+        "runtime_attribution": "unknown"
+      }
+    },
+    "confidence": "derived",
+    "authority": "historical-reference",
+    "environment": null,
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+      "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-boundaries-verified.har"
+      }
+    ],
+    "evidence_links": [
+      "ev_f1bc65554c5932a3c3330e8448971219b6b90db74162d91cd0c5c290ef5d6e27"
+    ]
+  },
+  {
+    "evidence_id": "ev_e48b5132ba0013286064f229938ef694284a2dd6dce03f543cbc704d3d6389fe",
+    "subject": {
+      "name": "api21-errors.har",
+      "digest": {
+        "sha256": "bbb3c9037b2794c7248a7f58c390bfc8ba1f64477aeea35f4b69189aebda7d2c"
+      },
+      "local_path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-errors.har",
+      "format": "file",
+      "architecture": null
+    },
+    "provider": {
+      "id": "rea-analysis-view",
+      "name": "REA analysis view projection",
+      "version": "1"
+    },
+    "analysis_profile": null,
+    "predicate_type": "rea.analysis-view",
+    "operation": "inspect_analysis_view",
+    "parameters": {
+      "parent_evidence_id": "ev_4a6129675e34fdb8d094b401eabe4d7f5eaf0cdea9417ba8de4690b9b1e105aa",
+      "view": {
+        "kind": "summary"
+      }
+    },
+    "raw_result": null,
+    "normalized_result": {
+      "kind": "summary",
+      "view": {
+        "kind": "summary"
+      },
+      "parent_evidence_id": "ev_4a6129675e34fdb8d094b401eabe4d7f5eaf0cdea9417ba8de4690b9b1e105aa",
+      "parent_operation": "inspect_web_network_capture",
+      "parent_digest": "4a6129675e34fdb8d094b401eabe4d7f5eaf0cdea9417ba8de4690b9b1e105aa",
+      "view_digest": "03d05ec8e7903775c77b341cacaa7845c238cc3b7367ecc41d54d079958c488c",
+      "artifact": {
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-errors.har",
+        "sha256": "bbb3c9037b2794c7248a7f58c390bfc8ba1f64477aeea35f4b69189aebda7d2c"
+      },
+      "coverage": {
+        "status": "complete-within-view",
+        "examined": 2,
+        "total": 2,
+        "next_offset": null,
+        "exhausted": true
+      },
+      "limitations": [
+        "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+        "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+        "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+        "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+        "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+      ],
+      "unknowns": [
+        "Historical records do not establish live runtime attribution or deployment authenticity."
+      ],
+      "summary": {
+        "artifact": {
+          "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-errors.har",
+          "sha256": "bbb3c9037b2794c7248a7f58c390bfc8ba1f64477aeea35f4b69189aebda7d2c",
+          "bytes": 63208
+        },
+        "decoder": {
+          "id": "har-schema/lossless-json",
+          "name": "REA HAR capture adapter",
+          "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+        },
+        "format": "har",
+        "total_records": 8,
+        "retained_records": 2,
+        "runtime_attribution": "unknown"
+      }
+    },
+    "confidence": "derived",
+    "authority": "historical-reference",
+    "environment": null,
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup.",
+      "Capture record pages cover the records selected into the parent Evidence, in that selected order; total_records counts the original decoded capture."
+    ],
+    "relationship_coverage": null,
+    "locations": [
+      {
+        "kind": "artifact-path",
+        "path": "C:/Users/Daan/Documents/Projects/spoti-c/.cache/api21-errors.har"
+      }
+    ],
+    "evidence_links": [
+      "ev_4a6129675e34fdb8d094b401eabe4d7f5eaf0cdea9417ba8de4690b9b1e105aa"
+    ]
+  }
+]

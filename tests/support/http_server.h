@@ -10,6 +10,7 @@ typedef struct TestHttpResponse {
     size_t bytes, fragment;
     bool hold_headers, hold_body;
     bool capture_upload; /* Capture bounded Content-Length body before responding. */
+    bool allow_disconnect; /* Explicit cancellation case: continue after a peer closes before headers. */
     unsigned char fill; /* body==NULL: generate bytes without a body allocation. */
 } TestHttpResponse;
 typedef struct TestHttpServer {

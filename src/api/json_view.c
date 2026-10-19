@@ -19,6 +19,19 @@ JsonResult json_page_parse(JsonPage *page, size_t bytes)
     return JSON_OK;
 }
 
+JsonResult json_page_materialize(JsonPage *page, const void *model, size_t bytes, void **output)
+{
+    if (output == NULL) { return JSON_INVALID; }
+    *output = NULL;
+    if (page == NULL || model == NULL || bytes == 0 || bytes > JSON_PAGE_POOL_CAP ||
+        page->pool == NULL || page->reservation == NULL || atomic_load(&page->refcount) != UINT_MAX) { return JSON_INVALID; }
+    uintptr_t a = (uintptr_t)model, b = (uintptr_t)page->pool;
+    if (bytes > UINTPTR_MAX - a || JSON_PAGE_POOL_CAP > UINTPTR_MAX - b ||
+        (a < b + JSON_PAGE_POOL_CAP && b < a + bytes)) { return JSON_INVALID; }
+    yyjson_doc_free(page->doc); page->doc = NULL;
+    memcpy(page->pool, model, bytes); *output = page->pool; return JSON_OK;
+}
+
 bool page_retain(JsonPage *page)
 {
     if (page == NULL) { return false; }

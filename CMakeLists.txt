@@ -104,6 +104,11 @@ add_library(spotic_catalog STATIC src/api/catalog_api.c src/api/catalog_request.
 target_include_directories(spotic_catalog PUBLIC src)
 target_link_libraries(spotic_catalog PUBLIC spotic_json_view spotic_api_contract spotic_media)
 
+add_library(spotic_lyrics STATIC src/api/lyrics.c src/api/lyrics_request.c
+    src/api/lyrics_parse.c src/api/lyrics_http.c src/api/lyrics_timeline.c)
+target_include_directories(spotic_lyrics PUBLIC src)
+target_link_libraries(spotic_lyrics PUBLIC spotic_json_view spotic_api_contract spotic_media spotic_player)
+
 add_library(spotic_credentials STATIC src/protocol/credential_store.c)
 target_include_directories(spotic_credentials PUBLIC src)
 target_link_libraries(spotic_credentials PUBLIC spotic_crypto crypt32 advapi32)
@@ -204,6 +209,16 @@ add_executable(spotic-headless src/headless/main.c)
 target_link_libraries(spotic-headless PRIVATE spotic_headless_fixture spotic_headless)
 
 if(BUILD_TESTING)
+    add_executable(test_lyrics tests/test_lyrics.c tests/test_lyrics_errors.c
+        tests/test_lyrics_timeline.c tests/test_lyrics_http.c tests/test_lyrics_lifetime.c tests/player_test_support.c
+        tests/support/http_server.c)
+    target_include_directories(test_lyrics PRIVATE tests)
+    target_compile_definitions(test_lyrics PRIVATE
+        API_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/api"
+        VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
+    target_link_libraries(test_lyrics PRIVATE spotic_lyrics spotic_collections spotic_catalog ws2_32)
+    add_test(NAME api_lyrics COMMAND test_lyrics)
+    set_tests_properties(api_lyrics PROPERTIES TIMEOUT 60)
     add_executable(test_catalog_api tests/test_catalog_api.c tests/test_catalog_errors.c
         tests/test_catalog_pool.c)
     target_include_directories(test_catalog_api PRIVATE tests)

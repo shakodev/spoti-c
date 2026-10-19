@@ -28,6 +28,10 @@ JsonResult json_page_pool_init(void *storage, size_t bytes, JsonPagePool **outpu
 size_t json_page_pool_resident(const JsonPagePool *pool);
 JsonResult json_page_acquire(JsonPagePool *pool, JsonPage *page, uint64_t generation);
 void json_page_discard(JsonPage *page); /* Exclusive UINT_MAX reservation only. */
+/* Exclusive owner: release the temporary DOM and replace it with a compact
+ * model. Source must be outside the pool; model spans may borrow input. The
+ * materialized payload and input retain exactly the JsonPage lifetime. */
+JsonResult json_page_materialize(JsonPage *page, const void *model, size_t bytes, void **output);
 bool page_retain(JsonPage *page);
 bool page_release(JsonPage *page);
 JsonResult json_view_string(yyjson_val *object, const char *key, JsonString *output);

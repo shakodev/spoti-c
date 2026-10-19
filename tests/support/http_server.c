@@ -90,10 +90,14 @@ static DWORD WINAPI serve(void *context)
         }
         atomic_fetch_add(&s->accepted, 1); SetEvent(s->seen);
         if (r->hold_headers && !gate(s, s->release_headers)) { goto finished; }
-        if (!send_bytes(s, r->headers, strlen(r->headers), 0, 0)) { goto finished; }
+        if (!send_bytes(s, r->headers, strlen(r->headers), 0, 0)) {
+            if (!r->allow_disconnect) { goto finished; }
+            goto next_response;
+        }
         SetEvent(s->headers_sent);
         if (r->hold_body && !gate(s, s->release_body)) { goto finished; }
         (void)send_bytes(s, r->body, r->bytes, r->fragment, r->fill);
+next_response:
         shutdown(s->peer, SD_SEND);
         close_peer(s);
         CHECK(WSAEventSelect(s->listener, s->network, FD_ACCEPT | FD_CLOSE) == 0);
