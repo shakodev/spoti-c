@@ -6,6 +6,8 @@
 #include "ui_scheduler.h"
 #include "api/collection_api.h"
 #include "audio/player.h"
+struct Playlist;
+struct PlaylistQueue;
 
 #define APP_HISTORY 16u
 #define APP_ACTIONS 32u
@@ -14,7 +16,7 @@
 #define APP_INPUTS 16u
 typedef enum AppResult { APP_OK, APP_PENDING, APP_FULL, APP_INVALID, APP_STALE,
     APP_CANCELLED, APP_UNAVAILABLE, APP_FAILED } AppResult;
-typedef enum AppScreen { APP_HOME, APP_LIBRARY, APP_SETTINGS, APP_SHELF } AppScreen;
+typedef enum AppScreen { APP_HOME, APP_LIBRARY, APP_SETTINGS, APP_SHELF, APP_PLAYLIST } AppScreen;
 typedef enum AppStatus { APP_LOADING, APP_CONTENT, APP_EMPTY, APP_ERROR,
     APP_AUTH_EXPIRED, APP_OFFLINE, APP_SIGNED_OUT } AppStatus;
 typedef struct AppEntity { CollectionItemKind kind; char uri[192], title[192]; uint8_t id[16]; bool playable; } AppEntity;
@@ -37,11 +39,14 @@ typedef struct AppServices {
     void *context;
     Player *player; /* Optional direct thread-safe existing Player binding. */
     Artwork *artwork; /* Borrowed UI-owned #28 service, outlives App. */
+    struct Playlist *playlist; /* Shared bounded model; owner outlives cancelled jobs. */
+    PlayerResult (*playlist_queue)(void *, const struct PlaylistQueue *); /* Copies IDs+revision synchronously. */
     bool demo; /* Explicit synthetic/offline host, visibly identified in title. */
 } AppServices;
 typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_BACK,
     APP_RETRY, APP_MORE, APP_SIGN_IN, APP_SIGN_OUT, APP_SELECT, APP_TOGGLE_PLAY,
-    APP_PREVIOUS, APP_NEXT, APP_SEEK, APP_VOLUME, APP_DETAIL } AppActionType;
+    APP_PREVIOUS, APP_NEXT, APP_SEEK, APP_VOLUME, APP_DETAIL,
+    APP_TRACK_QUERY, APP_TRACK_SORT, APP_TRACK_PLAY, APP_TRACK_WINDOW } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
 typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
@@ -71,7 +76,7 @@ typedef struct App {
     uint32_t action_count, control_count, image_count, input_count;
     char labels[64][192];
     uint32_t label_count;
-    AppMeasure measures[256]; /* Clay word advances, independent of 32 glyph runs. */
+    AppMeasure measures[256]; /* Clay word advances, independent of glyph runs. */
     uint32_t measure_count, measure_next;
     uint64_t measure_generation;
     uint16_t measure_dpi;
@@ -115,4 +120,5 @@ void app_sidebar(App *);
 void app_home(App *);
 void app_library(App *);
 void app_now_playing(App *);
+void app_playlist_prepare(App *); /* Preparation only, existing player handoff. */
 #endif

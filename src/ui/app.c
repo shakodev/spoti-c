@@ -1,4 +1,5 @@
 #include "app.h"
+#include "screens/playlist.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -98,6 +99,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                     (void)app_button(a,CLAY_ID("AppBack"),CLAY_STRING("Back"),56,(AppAction){.type=APP_BACK},!a->model.history_count);
                     app_label(a->model.location.screen == APP_LIBRARY ? CLAY_STRING("Your Library") :
                         a->model.location.screen == APP_SETTINGS ? CLAY_STRING("Settings") :
+                        a->model.location.screen == APP_PLAYLIST ? CLAY_STRING("Playlist") :
                         a->model.location.screen == APP_SHELF ? CLAY_STRING("More for you") : CLAY_STRING("Home"),20,
                         (Clay_Color){245,245,245,255});
                 }
@@ -105,6 +107,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                     app_label(CLAY_STRING("Action unavailable. Please try again."),14,(Clay_Color){240,165,130,255});
                 }
                 if (a->model.location.screen == APP_SETTINGS) { settings(a); }
+                else if (a->model.location.screen == APP_PLAYLIST && a->model.logged_in) { app_playlist(a); }
                 else if (a->model.page && a->model.logged_in) {
                     if (a->model.status == APP_ERROR || !a->model.page->count) { status(a); }
                     if (a->model.page->count) {

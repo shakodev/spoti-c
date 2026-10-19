@@ -14,6 +14,9 @@ static void run(const Event *event, const CancelToken *cancel, void *context)
         }
         slot->result = COLLECTION_OK; return;
     }
+    if (slot->request.kind==COLLECTION_PLAYLIST) {
+        slot->playlist=true; slot->result=app_fixture_playlist_open(h,slot,cancel); return;
+    }
     CollectionRequest request;
     slot->result = collection_fetch(h->service,slot->request.kind,slot->request.cursor,
         slot->request.generation,&request);
@@ -46,6 +49,7 @@ static AppResult submit(AppFixture *h, const AppRequest *request, bool auth, App
         AppFixtureSlot *slot = &h->slots[i];
         if (atomic_load_explicit(&slot->phase,memory_order_acquire) != 0) { continue; }
         slot->request = *request; slot->authentication = auth; slot->auth = action;
+        slot->playlist=false;
         slot->page = NULL; slot->result = COLLECTION_CANCELLED;
         atomic_store(&slot->phase,1);
         WorkerJob job = {.request={.id=i},.run=run,.complete=complete,.context=h,.deadline=CORE_CLOCK_NEVER,.priority=WORKER_DISK};
@@ -83,17 +87,19 @@ static AppResult auth(void *context, AppAuth action)
 }
 AppServices app_fixture_services(AppFixture *h)
 {
-    return (AppServices){.request=request,.cancel=cancel,.auth=auth,.context=h,.demo=true};
+    return (AppServices){.request=request,.cancel=cancel,.auth=auth,.context=h,.demo=true,.playlist=&h->playlist};
 }
 AppResult app_fixture_init(AppFixture *h, Arena *core, EventQueue *events, App *app, const wchar_t *directory)
 {
     if (!h || !core || !events || !app || !directory || wcslen(directory) >= 256) { return APP_INVALID; }
     memset(h,0,sizeof(*h)); h->app = app; h->events = events;
+    h->disk.file=INVALID_HANDLE_VALUE;
     wcscpy_s(h->directory,256,directory);
     if (json_page_pool_init(h->pool_storage,sizeof(h->pool_storage),&h->pool) != JSON_OK ||
         collection_service_init(h->service_storage,sizeof(h->service_storage),h->pool,&h->service) != COLLECTION_OK) { return APP_FAILED; }
     for (unsigned i = 0; i < 4; ++i) { atomic_init(&h->slots[i].phase,0); }
-    return worker_start(core,4,(CoreClock){0},&h->worker) == CORE_OK ? APP_OK : APP_FAILED;
+    if (worker_start(core,4,(CoreClock){0},&h->worker)!=CORE_OK || track_filter_init(&h->filter,h->worker,events)!=TRACK_OK) { return APP_FAILED; }
+    playlist_init(&h->playlist,&h->filter); return APP_OK;
 }
 void app_fixture_pump(AppFixture *h)
 {
@@ -106,16 +112,23 @@ void app_fixture_pump(AppFixture *h)
                 if (slot->result==COLLECTION_OK) { (void)app_session(h->app,slot->auth == APP_LOGIN,true,GetTickCount64()); }
                 else { h->app->model.auth_pending=false; h->app->model.last_result=APP_FAILED; }
             }
+        } else if (slot->playlist && h->app->alive && h->app->model.generation==slot->request.generation &&
+            h->app->model.request.serial==slot->request.serial) {
+            if (slot->result==COLLECTION_OK) { (void)playlist_source(&h->playlist,&slot->source,slot->request.generation); }
+            else { h->app->model.pending=false; h->playlist.pending=false; h->playlist.result=TRACK_IO; }
         } else { (void)app_deliver(h->app,slot->request,slot->result,slot->page); }
         slot->page = NULL; atomic_store_explicit(&slot->phase,0,memory_order_release);
     }
 }
 bool app_fixture_stop(AppFixture *h)
 {
-    if (!h || !h->worker) { return true; }
+    if (!h) { return true; }
+    if (!h->worker) { return app_fixture_playlist_close(h); }
     h->stopping = true; (void)worker_stop(h->worker);
     if (worker_join(h->worker,5000) != CORE_OK) { return false; }
     h->worker = NULL;
+    if (!app_fixture_playlist_close(h)) { return false; }
+    track_filter_release(&h->filter); (void)track_filter_clear(&h->filter); memset(&h->last_queue,0,sizeof(h->last_queue));
     for (unsigned i = 0; i < 4; ++i) {
         if (h->slots[i].page) { (void)page_release((JsonPage *)&h->slots[i].page->json); h->slots[i].page = NULL; }
     }

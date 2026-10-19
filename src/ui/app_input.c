@@ -1,4 +1,5 @@
 #include "app.h"
+#include "screens/playlist.h"
 #include <math.h>
 
 static uint64_t key_at(void *context, uint32_t index)
@@ -50,6 +51,23 @@ AppResult app_key(App *a, AppKey key, bool shift)
     }
     AppControl *control = &a->controls[focused];
     if (control->disabled) { return APP_CANCELLED; }
+    if (a->model.location.screen==APP_PLAYLIST && control->action.type==APP_TRACK_PLAY) {
+        Playlist *p=a->services.playlist; if (!p || !p->ready || p->pending) { return APP_PENDING; }
+        UiVirtualList *list=&a->widgets.lists[0];
+        if (control->action.value>=1) { list->focus=(uint64_t)control->action.value; }
+        UiNav nav;
+        switch (key) {
+        case APP_KEY_UP: nav=UI_NAV_UP; break; case APP_KEY_DOWN: nav=UI_NAV_DOWN; break;
+        case APP_KEY_HOME: nav=UI_NAV_HOME; break; case APP_KEY_END: nav=UI_NAV_END; break;
+        case APP_KEY_PAGE_UP: nav=UI_NAV_PAGE_UP; break; case APP_KEY_PAGE_DOWN: nav=UI_NAV_PAGE_DOWN; break;
+        default: nav=(UiNav)-1; break;
+        }
+        if ((int)nav>=0) {
+            (void)ui_virtual_navigate(list,p->count,40,fmin(360,fmax(0,a->geometry.viewport-104)),nav,true,playlist_key,playlist_index,p);
+            (void)playlist_select(p,list->selection,false); a->widgets.focus=CLAY_ID("PlaylistList").id; return APP_OK;
+        }
+        if (key==APP_KEY_ENTER) { return app_enqueue(a,(AppAction){.type=APP_TRACK_PLAY,.value=(double)list->focus}); }
+    }
     if (control->id.id == CLAY_ID("AppSeek").id) {
         double value = a->widgets.seeks[0].value;
         double step = a->model.player.duration_frames ? 5.0 * a->model.player.rate / (double)a->model.player.duration_frames : 0;

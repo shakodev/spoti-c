@@ -61,6 +61,9 @@ UiWidgetResult ui_widgets_begin(UiWidgets *ui, float width, float height, UiWidg
     ui->in_frame = true; ui->input = input; ui->hover = 0;
     Clay_SetCurrentContext(ui->clay); Clay_SetLayoutDimensions((Clay_Dimensions){width,height});
     Clay_SetPointerState((Clay_Vector2){input.x,input.y},input.down);
+    /* Retire clips from virtual rows that left the viewport. Clay registers
+     * every clip as a scroll container even when scrolling is model-owned. */
+    Clay_UpdateScrollContainers(false,(Clay_Vector2){0},0);
     Clay_BeginLayout(); return ui->error;
 }
 Clay_RenderCommandArray ui_widgets_end(UiWidgets *ui)
@@ -123,7 +126,7 @@ bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width,
         .childAlignment={CLAY_ALIGN_X_CENTER,CLAY_ALIGN_Y_CENTER}},.backgroundColor=color,
         .cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color={220,220,220,255},
         .width=CLAY_BORDER_ALL(ui->focus == id.id ? 1 : 0)}}) {
-        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor={240,240,240,255}}));
+        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor={240,240,240,255},.wrapMode=CLAY_TEXT_WRAP_NONE}));
     }
     return activated;
 }

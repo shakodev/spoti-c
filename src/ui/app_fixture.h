@@ -2,6 +2,8 @@
 #define SPOTIC_UI_APP_FIXTURE_H
 #include "app.h"
 #include "core/memory_budget.h"
+#include "screens/playlist.h"
+#include "track_disk.h"
 
 #define APP_FIXTURE_EVENT (0x3000u)
 typedef struct AppFixtureSlot {
@@ -10,7 +12,8 @@ typedef struct AppFixtureSlot {
     CollectionResult result;
     uint64_t ticket;
     AppAuth auth;
-    bool authentication;
+    TrackSource source;
+    bool authentication, playlist;
     atomic_uint phase;
 } AppFixtureSlot;
 /* Explicit offline host. Runs real CollectionService on a serialized worker;
@@ -30,7 +33,15 @@ typedef struct AppFixture {
     wchar_t directory[256];
     uint64_t generation;
     bool stopping;
+    Playlist playlist;
+    TrackFilter filter;
+    TrackDisk disk;
+    PlaylistQueue last_queue;
+    wchar_t disk_path[MAX_PATH];
 } AppFixture;
+_Static_assert(sizeof(AppFixture)-MEMORY_BUDGET_API_PAGES<=512u*1024u,"shared fixture collection/playlist models");
+CollectionResult app_fixture_playlist_open(AppFixture *, AppFixtureSlot *, const CancelToken *);
+bool app_fixture_playlist_close(AppFixture *); /* Only after worker join, or on that worker. */
 AppResult app_fixture_init(AppFixture *, Arena *core, EventQueue *, App *, const wchar_t *directory);
 AppServices app_fixture_services(AppFixture *);
 void app_fixture_pump(AppFixture *); /* UI prep: consume published immutable pages. */

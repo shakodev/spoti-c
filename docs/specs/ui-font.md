@@ -49,10 +49,14 @@ Atlas entries cache rasterized visual glyph runs, retaining their shaped
 placement and native advances; they do not deduplicate individual characters.
 This preserves context-dependent shaping and fallback order without retaining
 DirectWrite layout/face objects between preparations. The CPU atlas backing is
-1 MiB, separate from the 256 KiB coverage scratch. There are 32 text runs (2048
-UTF-8 bytes and up to 64 visual patches each), 16 pending requests and 128 atlas
+1 MiB, separate from the 256 KiB coverage scratch. There are 64 text runs (2048
+UTF-8 bytes and up to 64 visual patches each), seven pending requests and 128 atlas
 entries packed into 32-pixel tiles with padding. Packing, request/run/glyph limits and long
 text produce explicit full/invalid/error results rather than reallocations.
+Issue #31 rebalances the original 32-run/16-request split for a four-column
+virtual table. A static assertion keeps runs, pending records, atlas descriptors
+and UTF-16 staging together within 256 KiB; raster scratch and atlas backing
+retain their separate caps. Preparation can span several bounded batches.
 Atlas uploads happen only in the resource preparation phase. Rendering a stale
 run queues preparation, never samples stale UVs. Retained run handles include a
 generation and cannot silently address a reused slot.

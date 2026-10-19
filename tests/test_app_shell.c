@@ -37,7 +37,7 @@ static void states(void)
             !memcmp(c->renderData.text.stringContents.chars,"Nothing here yet.",17)) { empty_label=true; }
     }
     CHECK(empty_label); shell_action(APP_RETRY); shell_deliver("library");
-    AppEntity private_entity={.kind=COLLECTION_PLAYLIST_ITEM,.title="Private title",.uri="private:entity"};
+    AppEntity private_entity={.kind=COLLECTION_ALBUM,.title="Private title",.uri="private:entity"};
     CHECK(app_enqueue(&app,(AppAction){.type=APP_SELECT,.entity=private_entity})==APP_OK);
     (void)app_update(&app,50); CHECK(app.model.selected.title[0]);
     shell_action(APP_SIGN_OUT); CHECK(!app.model.logged_in && !app.model.page && app.model.history_count==0);
@@ -68,6 +68,8 @@ static void bounds_and_keyboard(void)
     CHECK(app_key(&app,APP_KEY_HOME,false)==APP_OK && app.widgets.lists[0].focus==1);
     CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,0);
     CHECK(!strcmp(app.model.selected.title,"Evening rotation"));
+    CHECK(app.model.location.screen==APP_PLAYLIST && app.model.last_result==APP_UNAVAILABLE);
+    shell_action(APP_BACK); shell_deliver("library"); (void)shell_layout(1100,720,96);
     app.widgets.focus=CLAY_ID("NavSettings").id;
     CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,0);
     CHECK(app.model.location.screen==APP_SETTINGS);
@@ -134,6 +136,15 @@ static void asynchronous(void)
         Event batch[16]; size_t n; CHECK(event_drain(events,batch,16,&n)==CORE_OK); app_fixture_pump(&async_host);
     }
     CHECK(app.model.page && app.model.page->kind==COLLECTION_HOME);
+    AppEntity entity={.kind=COLLECTION_PLAYLIST_ITEM,.title="Offline playlist",.uri="fixture:playlist"};
+    CHECK(app_enqueue(&app,(AppAction){.type=APP_SELECT,.entity=entity})==APP_OK); (void)app_update(&app,0);
+    for (unsigned i=0;i<50 && !async_host.playlist.ready;++i) {
+        (void)WaitForSingleObject(event_wait_handle(events),100);
+        Event batch[16]; size_t n; CHECK(event_drain(events,batch,16,&n)==CORE_OK);
+        app_fixture_pump(&async_host); (void)app_update(&app,0);
+    }
+    CHECK(async_host.playlist.ready && async_host.playlist.count==10000 && async_host.playlist.source.total==10005);
+    CHECK(async_host.playlist.coverage==TRACK_WINDOW && async_host.disk_path[0]);
     shell_action(APP_GO_LIBRARY); shell_action(APP_GO_HOME); /* Cancel worker or queued completion. */
     app_dispose(&app); CHECK(app_fixture_stop(&async_host));
     CHECK(event_queue_close(events)==CORE_OK); Event batch[16]; size_t n;

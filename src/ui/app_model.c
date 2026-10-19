@@ -1,4 +1,5 @@
 #include "app.h"
+#include "screens/playlist.h"
 #include <math.h>
 #include <string.h>
 
@@ -16,6 +17,8 @@ static AppResult generation(App *a)
     if (a->model.generation == UINT64_MAX) { return APP_FULL; }
     if (a->model.pending && a->services.cancel) { a->services.cancel(a->services.context,&a->model.request); }
     a->model.pending = false; release_page(a); ++a->model.generation;
+    if (a->services.playlist) { playlist_close(a->services.playlist); }
+    (void)ui_text_set(&a->widgets.texts[0],"",0);
     memset(a->images,0,sizeof(a->images)); a->image_count = 0;
     for (uint32_t i=0;i<UI_WIDGET_SEEKS;++i) {
         if (a->widgets.seeks[i].dragging) { (void)ui_seek_cancel(&a->widgets.seeks[i]); }
@@ -31,10 +34,13 @@ static AppResult request(App *a, uint32_t cursor)
     if (!m->logged_in) { m->status = APP_SIGNED_OUT; return APP_UNAVAILABLE; }
     if (!m->online) { m->status = APP_OFFLINE; return APP_UNAVAILABLE; }
     if (m->location.screen == APP_SETTINGS) { m->status = APP_CONTENT; return APP_OK; }
+    if (m->location.screen == APP_PLAYLIST && (!a->services.playlist ||
+        playlist_route(a->services.playlist,m->location.entity.uri,m->generation)!=TRACK_PENDING)) { m->status=APP_ERROR; return APP_UNAVAILABLE; }
     if (m->serial == UINT64_MAX) { return APP_FULL; }
     m->request = (AppRequest){.generation=m->generation,.serial=++m->serial,.cursor=cursor,
         .kind=m->location.screen == APP_HOME ? COLLECTION_HOME :
-        m->location.screen == APP_SHELF ? COLLECTION_HOME_SECTION : COLLECTION_LIBRARY};
+        m->location.screen == APP_SHELF ? COLLECTION_HOME_SECTION :
+        m->location.screen == APP_PLAYLIST ? COLLECTION_PLAYLIST : COLLECTION_LIBRARY};
     memcpy(m->request.uri,m->location.entity.uri,sizeof(m->request.uri));
     AppResult r = a->services.request ? a->services.request(a->services.context,&m->request) : APP_UNAVAILABLE;
     m->pending = r == APP_PENDING;
@@ -92,6 +98,11 @@ static AppResult command(App *a, PlayerCommand c)
         a->services.submit(a->services.context,&c) : PLAYER_CLOSED;
     return r == PLAYER_OK ? APP_OK : r == PLAYER_FULL ? APP_FULL : APP_FAILED;
 }
+static AppResult track_result(TrackResult r)
+{
+    return r==TRACK_OK ? APP_OK : r==TRACK_PENDING ? APP_PENDING : r==TRACK_FULL ? APP_FULL :
+        r==TRACK_STALE ? APP_STALE : r==TRACK_INVALID ? APP_INVALID : r==TRACK_CANCELLED ? APP_CANCELLED : APP_FAILED;
+}
 AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
 {
     if (!a || !a->alive) { return APP_INVALID; }
@@ -146,7 +157,7 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_DETAIL ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_TRACK_WINDOW ||
         (action.type==APP_SELECT && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
     if (a->action_count == APP_ACTIONS) { a->model.last_result = APP_FULL; dirty(a); return APP_FULL; }
@@ -180,6 +191,9 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
         if (!m->logged_in) { return APP_UNAVAILABLE; }
         m->selected = action.entity;
         if (action.entity.kind == COLLECTION_SHELF) { return navigate(a,(AppLocation){.screen=APP_SHELF,.entity=action.entity},false); }
+        if (action.entity.kind == COLLECTION_PLAYLIST_ITEM || action.entity.kind == COLLECTION_LIKED) {
+            return navigate(a,(AppLocation){.screen=APP_PLAYLIST,.entity=action.entity},false);
+        }
         if (action.entity.playable) {
             PlayerCommand c = {.type=PLAYER_LOAD,.play=true}; memcpy(c.track_id,action.entity.id,16);
             AppResult r = command(a,c); if (r == APP_OK) { m->playing = action.entity; } return r;
@@ -198,6 +212,17 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
         if (!isfinite(action.value)) { return APP_INVALID; }
         return command(a,(PlayerCommand){.type=PLAYER_VOLUME,.volume=(float)fmin(1,fmax(0,action.value))});
     case APP_DETAIL: m->detail = !m->detail; return APP_OK;
+    case APP_TRACK_QUERY: case APP_TRACK_SORT:
+        if (!a->services.playlist || m->location.screen!=APP_PLAYLIST ||
+            (action.type==APP_TRACK_SORT && (!isfinite(action.value) || action.value<0 || action.value>TRACK_DURATION_ORDER))) { return APP_INVALID; }
+        return track_result(playlist_query(a->services.playlist,a->widgets.texts[0].text,
+            action.type==APP_TRACK_SORT ? (TrackSort)(int)action.value : a->services.playlist->sort));
+    case APP_TRACK_PLAY:
+        if (!a->services.playlist || m->location.screen!=APP_PLAYLIST || !isfinite(action.value) || action.value<1 || action.value>UINT32_MAX) { return APP_INVALID; }
+        return track_result(playlist_select(a->services.playlist,(uint64_t)action.value,true));
+    case APP_TRACK_WINDOW:
+        if (!a->services.playlist || m->location.screen!=APP_PLAYLIST) { return APP_INVALID; }
+        return track_result(playlist_window(a->services.playlist,action.value>0));
     default: return APP_INVALID;
     }
 }
@@ -210,6 +235,7 @@ AppResult app_update(App *a, uint64_t now)
         if (action.type==APP_SIGN_OUT) { break; } /* Discard pre-logout UI intents. */
     }
     memset(a->actions,0,sizeof(a->actions));
+    if (a->services.playlist) { app_playlist_prepare(a); }
     if (a->model.logged_in) {
         if (a->services.player) { (void)app_publish_player(a,player_snapshot(a->services.player),now); }
         else if (a->services.snapshot) { (void)app_publish_player(a,a->services.snapshot(a->services.context),now); }

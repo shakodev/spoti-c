@@ -28,6 +28,11 @@ static PlayerSnapshot demo_snapshot(void *context)
 {
     AppFixture *h = context; return headless_snapshot(h->player_context);
 }
+static PlayerResult demo_queue(void *context, const PlaylistQueue *queue)
+{
+    AppFixture *h=context; h->last_queue=*queue;
+    PlayerCommand command={.type=PLAYER_TRANSFER,.transfer=&queue->transfer}; return headless_submit(h->player_context,&command);
+}
 int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int show)
 {
     (void)previous; (void)show;
@@ -50,7 +55,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
                     HeadlessConfig hc = {.cache_directory=L".cache/app-demo",.fixture_url=url,.realtime=true,
                         .wasapi=wcsstr(command,L"--demo-wasapi")!=NULL,.state_changed=player_wake,.state_context=queue};
                     if (headless_open(&hc,&playback)) {
-                        fixtures.player_context=playback; services.submit=demo_submit; services.snapshot=demo_snapshot;
+                        fixtures.player_context=playback; services.submit=demo_submit; services.snapshot=demo_snapshot; services.playlist_queue=demo_queue;
                     }
                 }
             }

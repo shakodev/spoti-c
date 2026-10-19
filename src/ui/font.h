@@ -3,9 +3,9 @@
 #include "renderer_clay.h"
 
 #define FONT_TEXT_BYTES 2048u
-#define FONT_RUNS 32u
+#define FONT_RUNS 64u
 #define FONT_PATCHES 64u
-#define FONT_PENDING 16u
+#define FONT_PENDING 7u
 #define FONT_ATLAS_ENTRIES 128u
 #define FONT_ATLAS_SIDE 1024u
 #define FONT_SCRATCH_BYTES (256u * 1024u)
@@ -68,6 +68,9 @@ typedef struct FontCache {
     void *wake_context;
 } FontCache;
 _Static_assert(sizeof(((FontCache *)0)->scratch) <= 256u * 1024u, "glyph scratch budget");
+_Static_assert(sizeof(((FontCache *)0)->runs)+sizeof(((FontCache *)0)->pending)+
+    sizeof(((FontCache *)0)->entries)+sizeof(((FontCache *)0)->utf16)<=256u*1024u,
+    "bounded font CPU records, descriptors and UTF-16 staging");
 _Static_assert(sizeof(((FontCache *)0)->atlas) == 1024u * 1024u, "R8 atlas backing budget");
 typedef struct FontMeasureContext { FontCache *cache; FontConfig config; FontResult last_result; } FontMeasureContext;
 

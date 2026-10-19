@@ -8,14 +8,16 @@ integration and measurable release gates.
 
 ## Implementation status reviewed 2026-10-19
 
-GitHub issues **#1–#30 are implemented**; **#31–#35 remain open**. Current CMake builds
+GitHub issues **#1–#31 are implemented**; **#32–#35 remain open**. Current CMake builds
 `spotic`, `spotic-headless` and the module tests. The default Debug/ASan suite
-contains 48 tests. Core/protocol/audio/API and UI-engine modules have landed;
+contains 49 tests. Core/protocol/audio/API and UI-engine modules have landed;
 the GUI composes the responsive Home/Library shell and synchronized playback
-bar. Its explicit offline demo uses existing collection/player services; a live
+bar, plus a virtualized Playlist with bounded indices, metadata and filter/sort
+maps. Its explicit offline demo uses existing collection/player services; a live
 account transport host is not configured in the standalone executable. Additional
 screens, SMTC, startup state persistence and final full-client release gates
-remain open. See [shell verification](verification/app-shell.md).
+remain open. See [shell verification](verification/app-shell.md) and
+[playlist verification](verification/playlist-screen.md).
 The targets below are not claims that final resident RAM, startup or executable
 size thresholds already pass.
 

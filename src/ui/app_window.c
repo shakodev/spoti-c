@@ -1,4 +1,5 @@
 #include "app_desktop.h"
+#include "screens/playlist.h"
 #include <windowsx.h>
 
 void app_desktop_frame(void *context, UiWindow *window, uint32_t dirty)
@@ -29,6 +30,7 @@ bool app_desktop_input(void *context, UiWindow *w, UINT message, WPARAM wp, LPAR
         ((MINMAXINFO *)lp)->ptMinTrackSize = (POINT){MulDiv(420,(int)dpi,96),MulDiv(360,(int)dpi,96)}; return true;
     }
     if (!d->app.alive) { return false; }
+    if (playlist_text_message(&d->app,w->hwnd,message,wp,lp)) { return true; }
     if (message == WM_KEYDOWN || message == WM_SYSKEYDOWN) {
         AppKey key;
         switch (wp) {
