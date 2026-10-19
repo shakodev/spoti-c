@@ -1,0 +1,100 @@
+{
+  "source": "ref/librespot/protocol/proto",
+  "revision": "19959512c212cbc48a3ff64382fe204f52c659a7",
+  "roots": [
+    "keyexchange.proto",
+    "authentication.proto",
+    "mercury.proto",
+    "pubsub.proto",
+    "metadata.proto",
+    "spirc.proto",
+    "connect.proto",
+    "transfer_state.proto",
+    "storage-resolve.proto",
+    "extended_metadata.proto",
+    "spotify/clienttoken/v0/clienttoken_http.proto",
+    "spotify/login5/v3/login5.proto"
+  ],
+  "imports": {
+    "keyexchange.proto": [],
+    "authentication.proto": [],
+    "mercury.proto": [],
+    "pubsub.proto": [],
+    "metadata.proto": [],
+    "spirc.proto": [],
+    "connect.proto": [
+      "player.proto",
+      "devices.proto",
+      "media.proto"
+    ],
+    "player.proto": [],
+    "devices.proto": [],
+    "media.proto": [],
+    "transfer_state.proto": [
+      "context_player_options.proto",
+      "playback.proto",
+      "play_history.proto",
+      "session.proto",
+      "queue.proto"
+    ],
+    "context_player_options.proto": [],
+    "playback.proto": [
+      "context_track.proto"
+    ],
+    "context_track.proto": [],
+    "play_history.proto": [],
+    "session.proto": [
+      "context.proto",
+      "context_player_options.proto",
+      "play_origin.proto",
+      "suppressions.proto",
+      "instrumentation_params.proto"
+    ],
+    "context.proto": [
+      "context_page.proto",
+      "restrictions.proto"
+    ],
+    "context_page.proto": [
+      "context_track.proto"
+    ],
+    "restrictions.proto": [],
+    "play_origin.proto": [],
+    "suppressions.proto": [],
+    "instrumentation_params.proto": [],
+    "queue.proto": [
+      "context_track.proto"
+    ],
+    "storage-resolve.proto": [],
+    "extended_metadata.proto": [
+      "extension_kind.proto",
+      "entity_extension_data.proto"
+    ],
+    "extension_kind.proto": [],
+    "entity_extension_data.proto": [
+      "google/protobuf/any.proto"
+    ],
+    "google/protobuf/any.proto": [],
+    "spotify/clienttoken/v0/clienttoken_http.proto": [
+      "connectivity.proto"
+    ],
+    "connectivity.proto": [],
+    "spotify/login5/v3/login5.proto": [
+      "spotify/login5/v3/client_info.proto",
+      "spotify/login5/v3/user_info.proto",
+      "spotify/login5/v3/challenges/code.proto",
+      "spotify/login5/v3/challenges/hashcash.proto",
+      "spotify/login5/v3/credentials/credentials.proto",
+      "spotify/login5/v3/identifiers/identifiers.proto"
+    ],
+    "spotify/login5/v3/client_info.proto": [],
+    "spotify/login5/v3/user_info.proto": [],
+    "spotify/login5/v3/challenges/code.proto": [],
+    "spotify/login5/v3/challenges/hashcash.proto": [
+      "google/protobuf/duration.proto"
+    ],
+    "google/protobuf/duration.proto": [],
+    "spotify/login5/v3/credentials/credentials.proto": [],
+    "spotify/login5/v3/identifiers/identifiers.proto": []
+  },
+  "external_well_known_types": []
+}

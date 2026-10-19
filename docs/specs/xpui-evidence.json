@@ -1,0 +1,565 @@
+{
+  "inspected_on": "2026-10-17",
+  "method": "REA 6.5.0 inert static analysis plus bounded source inspection; no Spotify runtime/network observation",
+  "rea": [
+    {
+      "evidence_id": "ev_40a8864feaeed9523967983d24c87a0f7b49671e3921eb187ddef6af5b19344d",
+      "operation": "analyze_javascript_application",
+      "subject": {
+        "name": "xpui",
+        "digest": {
+          "sha256": "8fe63d71062b5b05fc69d319c4856d99431b4e5f404f0ffe641ce6c827712728"
+        },
+        "local_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\ref\\xpui",
+        "format": "directory",
+        "architecture": null
+      },
+      "parameters": {
+        "format": "auto",
+        "integrity_policy": "fail",
+        "source_paths": [
+          "home-v2.js",
+          "home-subfeed.js",
+          "home-v2-section.js",
+          "xpui-routes-search.js",
+          "xpui-routes-playlist.js",
+          "xpui-routes-album.js",
+          "xpui-routes-artist.js",
+          "xpui-routes-collection-songs.js",
+          "3308.js",
+          "9806.js"
+        ]
+      },
+      "statistics": {
+        "relevant_files": 271,
+        "nested_asar_containers": 0,
+        "text_bytes_read": 561533,
+        "invalid_utf8_files": 0,
+        "parsed_javascript_files": 10,
+        "visited_ast_nodes": 171609,
+        "findings": 2907,
+        "modules": 190,
+        "parse_failures": 0
+      },
+      "source_selection": {
+        "requested_paths": [
+          "home-v2.js",
+          "home-subfeed.js",
+          "home-v2-section.js",
+          "xpui-routes-search.js",
+          "xpui-routes-playlist.js",
+          "xpui-routes-album.js",
+          "xpui-routes-artist.js",
+          "xpui-routes-collection-songs.js",
+          "3308.js",
+          "9806.js"
+        ],
+        "unselected_files": 261
+      },
+      "limitations": [
+        "9806.js: Resource constraint during analyze_javascript_application: Semantic graph for 9806.js exceeds the parent's remaining result budget; static and module facts were retained",
+        "Caller-selected source analysis leaves 261 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+      ],
+      "local_evidence": ".cache/rea-xpui-roadmap.json",
+      "evidence_file_sha256": "f7000e1677e57e18e0fc24bd3f80ff2b78787de3d9119710f40e282d7b9a6bc5"
+    },
+    {
+      "evidence_id": "ev_bccb24f5aae88349db668a9d993cea3eca35a9a49bc70101fb90bce22d400701",
+      "operation": "analyze_javascript_application",
+      "subject": {
+        "name": "xpui",
+        "digest": {
+          "sha256": "8fe63d71062b5b05fc69d319c4856d99431b4e5f404f0ffe641ce6c827712728"
+        },
+        "local_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\ref\\xpui",
+        "format": "directory",
+        "architecture": null
+      },
+      "parameters": {
+        "format": "auto",
+        "integrity_policy": "fail",
+        "source_paths": [
+          "xpui-snapshot.js",
+          "pip-mini-player-snapshot.js",
+          "xpui-debug-window-contents.js",
+          "home-ads-container.js",
+          "xpui-routes-lyrics.js",
+          "xpui-routes-your-library-x.js"
+        ]
+      },
+      "statistics": {
+        "relevant_files": 271,
+        "nested_asar_containers": 0,
+        "text_bytes_read": 597680,
+        "invalid_utf8_files": 0,
+        "parsed_javascript_files": 6,
+        "visited_ast_nodes": 172626,
+        "findings": 1055,
+        "modules": 47,
+        "parse_failures": 0
+      },
+      "source_selection": {
+        "requested_paths": [
+          "xpui-snapshot.js",
+          "pip-mini-player-snapshot.js",
+          "xpui-debug-window-contents.js",
+          "home-ads-container.js",
+          "xpui-routes-lyrics.js",
+          "xpui-routes-your-library-x.js"
+        ],
+        "unselected_files": 265
+      },
+      "limitations": [
+        "Caller-selected source analysis leaves 265 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+      ],
+      "local_evidence": ".cache/rea-xpui-auth-roadmap.json",
+      "evidence_file_sha256": "92a4bd28293c784715c096b85651835e199c2a5280a222f5902bfe8640b400dc"
+    }
+  ],
+  "query_literals": [
+    {
+      "file": "ref/xpui/3308.js",
+      "offset_utf8": 4199,
+      "operation": "queryArtistOverview",
+      "kind": "query",
+      "hash": "1ac33ddab5d39a3a9c27802774e6d78b9405cc188c6f75aed007df2a32737c72",
+      "file_sha256": "4fc254fb1d602a9f3e85c9b82fde38bb2d25f370a3359882f95e50dfcf87b721"
+    },
+    {
+      "file": "ref/xpui/7071.js",
+      "offset_utf8": 6367,
+      "operation": "searchConcertLocations",
+      "kind": "query",
+      "hash": "43ededefcba8b3f519fd0c2d6c025dfeec9f742cf47d04a3c3711d95b27deda3",
+      "file_sha256": "694c6530d0c57fa3f7d7bc51c63046f1fac17dba9caf629c57925858a99676db"
+    },
+    {
+      "file": "ref/xpui/pip-mini-player-snapshot.js",
+      "offset_utf8": 81949,
+      "operation": "getAlbumNameAndTracks",
+      "kind": "query",
+      "hash": "8628ad33de3267d7bef516c76a746979a5f98891a2c9eaff3dfec828abdcd983",
+      "file_sha256": "9260b144cd1053c23ef75f84fac6d05f7ea38cdb68848986a89cbd4d83e948eb"
+    },
+    {
+      "file": "ref/xpui/pip-mini-player-snapshot.js",
+      "offset_utf8": 88282,
+      "operation": "queryAlbumTrackUris",
+      "kind": "query",
+      "hash": "a2a17981f8439ca1798f56260277d9d7800ec0ca7040053b564e0f975d8aa344",
+      "file_sha256": "9260b144cd1053c23ef75f84fac6d05f7ea38cdb68848986a89cbd4d83e948eb"
+    },
+    {
+      "file": "ref/xpui/pip-mini-player-snapshot.js",
+      "offset_utf8": 245546,
+      "operation": "queryTrackArtists",
+      "kind": "query",
+      "hash": "ee2b038198f5e62c679c3996584d9249bbee55fe69fc212271c56492a022c798",
+      "file_sha256": "9260b144cd1053c23ef75f84fac6d05f7ea38cdb68848986a89cbd4d83e948eb"
+    },
+    {
+      "file": "ref/xpui/pip-mini-player-snapshot.js",
+      "offset_utf8": 247009,
+      "operation": "getAlbumNameAndTracks",
+      "kind": "query",
+      "hash": "8628ad33de3267d7bef516c76a746979a5f98891a2c9eaff3dfec828abdcd983",
+      "file_sha256": "9260b144cd1053c23ef75f84fac6d05f7ea38cdb68848986a89cbd4d83e948eb"
+    },
+    {
+      "file": "ref/xpui/pip-mini-player-snapshot.js",
+      "offset_utf8": 247121,
+      "operation": "getArtistNameAndTracks",
+      "kind": "query",
+      "hash": "0adaf1a1a8a94c7ed095639c4d9456d2b1cfac16ac511d5dd2b01b6dd89f748a",
+      "file_sha256": "9260b144cd1053c23ef75f84fac6d05f7ea38cdb68848986a89cbd4d83e948eb"
+    },
+    {
+      "file": "ref/xpui/pip-mini-player-snapshot.js",
+      "offset_utf8": 247234,
+      "operation": "getVideoTrackAssociatedAlbum",
+      "kind": "query",
+      "hash": "e9ecdc49f7777062fc841415262d47c3927e09ab6e6845b420a373caec602812",
+      "file_sha256": "9260b144cd1053c23ef75f84fac6d05f7ea38cdb68848986a89cbd4d83e948eb"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 24642,
+      "operation": "fetchExtractedColorAndImageForAlbumEntity",
+      "kind": "query",
+      "hash": "b2d6d99fb6237952dfa6638385f9c6085f1b1fb9d0468753ca6ad98ff45adc6f",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 24779,
+      "operation": "fetchExtractedColorAndImageForArtistEntity",
+      "kind": "query",
+      "hash": "b2d6d99fb6237952dfa6638385f9c6085f1b1fb9d0468753ca6ad98ff45adc6f",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 25056,
+      "operation": "fetchExtractedColorAndImageForPlaylistEntity",
+      "kind": "query",
+      "hash": "b2d6d99fb6237952dfa6638385f9c6085f1b1fb9d0468753ca6ad98ff45adc6f",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 25472,
+      "operation": "fetchExtractedColorForAlbumEntity",
+      "kind": "query",
+      "hash": "b2d6d99fb6237952dfa6638385f9c6085f1b1fb9d0468753ca6ad98ff45adc6f",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 25601,
+      "operation": "fetchExtractedColorForArtistEntity",
+      "kind": "query",
+      "hash": "b2d6d99fb6237952dfa6638385f9c6085f1b1fb9d0468753ca6ad98ff45adc6f",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 25862,
+      "operation": "fetchExtractedColorForPlaylistEntity",
+      "kind": "query",
+      "hash": "b2d6d99fb6237952dfa6638385f9c6085f1b1fb9d0468753ca6ad98ff45adc6f",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 119122,
+      "operation": "queryArtistAboutModal",
+      "kind": "query",
+      "hash": "702e29a866e0b4b4fabdf974454512a2c32d93643b1969b7a3a0dd92084f05f6",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 157939,
+      "operation": "searchModalEntityPage",
+      "kind": "query",
+      "hash": "25d73ce01f3011ff8b37f44c23ebbad18610db1a2cec2c84f20c1e822c748524",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-root-dialogs.js",
+      "offset_utf8": 162874,
+      "operation": "searchModalResults",
+      "kind": "query",
+      "hash": "9a79751378a306d87d9789fa0c4a8f7c7213891c47a3993a0d0b58ff26514e59",
+      "file_sha256": "f1870c0c1d7d9d50b315e91bd6d4ed0f2d645bd2bb87744e98ae3528f090f8f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-album-prerelease.js",
+      "offset_utf8": 1983,
+      "operation": "albumPreReleaseTracks",
+      "kind": "query",
+      "hash": "dfbdcf2688995adc2c2196fcdd7802b2a5137a2549b361aa7fb23cd6493f4672",
+      "file_sha256": "864f3b6af8fb042c633cade6d4124ae780f3a1800148087464877cab0c4570de"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-album-prerelease.js",
+      "offset_utf8": 4187,
+      "operation": "albumPreRelease",
+      "kind": "query",
+      "hash": "e1a5537a42c3b8a687f10ae865c3b6776d6d797f8c0c272b2d40dc159a8e1a94",
+      "file_sha256": "864f3b6af8fb042c633cade6d4124ae780f3a1800148087464877cab0c4570de"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-album.js",
+      "offset_utf8": 24662,
+      "operation": "queryAlbumMerch",
+      "kind": "query",
+      "hash": "3ef44ed6f17be67299538fe77faffab4075aeaf9e1085f10fc835592266711b5",
+      "file_sha256": "4c2cd6121a02c8deb8438c59ba65c3271ac99a8b13a27c5d17504936b1222b76"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 13434,
+      "operation": "queryArtistAppearsOn",
+      "kind": "query",
+      "hash": "9a4bb7a20d6720fe52d7b47bc001cfa91940ddf5e7113761460b4a288d18a4c1",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 20557,
+      "operation": "queryArtistDiscographyAlbums",
+      "kind": "query",
+      "hash": "5e07d323febb57b4a56a42abbf781490e58764aa45feb6e3dc0591564fc56599",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 20680,
+      "operation": "queryArtistDiscographySingles",
+      "kind": "query",
+      "hash": "5e07d323febb57b4a56a42abbf781490e58764aa45feb6e3dc0591564fc56599",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 20804,
+      "operation": "queryArtistDiscographyCompilations",
+      "kind": "query",
+      "hash": "5e07d323febb57b4a56a42abbf781490e58764aa45feb6e3dc0591564fc56599",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 20933,
+      "operation": "queryArtistDiscographyAll",
+      "kind": "query",
+      "hash": "5e07d323febb57b4a56a42abbf781490e58764aa45feb6e3dc0591564fc56599",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 21053,
+      "operation": "queryArtistDiscographyOverview",
+      "kind": "query",
+      "hash": "5e07d323febb57b4a56a42abbf781490e58764aa45feb6e3dc0591564fc56599",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 27093,
+      "operation": "queryArtistDiscoveredOn",
+      "kind": "query",
+      "hash": "71c2392e4cecf6b48b9ad1311ae08838cbdabcfd189c6bf0c66c2430b8dcfdb1",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 28137,
+      "operation": "queryArtistFeaturing",
+      "kind": "query",
+      "hash": "20842d6d9d2d28ef945984b68cb927bb33edd00eab84a8da1667def21f1f2c54",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 78194,
+      "operation": "queryArtistPlaylists",
+      "kind": "query",
+      "hash": "54f7e5a5a2af05b7dc98526df376a46c6b15c05440c8dfdc8f6cecb1a807eca7",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 79158,
+      "operation": "queryArtistRelated",
+      "kind": "query",
+      "hash": "3d031d6cb22a2aa7c8d203d49b49df731f58b1e2799cc38d9876d58771aa66f3",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 80099,
+      "operation": "queryArtistRelatedVideos",
+      "kind": "query",
+      "hash": "e4bbb4f420ad5786caa7028e2943542f13c8138f5c40736292b8499ac9672ce6",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 83802,
+      "operation": "queryArtistMinimal",
+      "kind": "query",
+      "hash": "53d3f76582c49ad0a05dc685955f20dc2a5f2209b192e5446e5e4e623ce23a48",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 87241,
+      "operation": "ArtistConcerts",
+      "kind": "query",
+      "hash": "ef53c43b865496b9890b7167eab1dc614a8949ef9451b3c41184ea888de8bd2b",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-artist.js",
+      "offset_utf8": 87350,
+      "operation": "ArtistConcertsPageLocation",
+      "kind": "query",
+      "hash": "320698465a352f0d0247ec8ed02471244106d4199820f99de4d0a785561c2b03",
+      "file_sha256": "f5161098f3ba4e16ee4b5dbec1d7b5291a08896948944ca751457bcda0bd814a"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-playlist.js",
+      "offset_utf8": 10565,
+      "operation": "thisisPlaylistExtension",
+      "kind": "query",
+      "hash": "906c2e14927400c8a71645c647576ce032f837a112d5e6f9375b19c80445c8cf",
+      "file_sha256": "ba01d3c8d15eda04889d5087274b7ee7f07511fd0f447897e3a5ab9e6671e9f5"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-playlist.js",
+      "offset_utf8": 11829,
+      "operation": "queryInlineCurationSearchV2",
+      "kind": "query",
+      "hash": "857838f3d49dde22e8d7bead4487d4cdb662f8daad165b80c0cad270ae2ff37b",
+      "file_sha256": "ba01d3c8d15eda04889d5087274b7ee7f07511fd0f447897e3a5ab9e6671e9f5"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-playlist.js",
+      "offset_utf8": 11951,
+      "operation": "queryInlineCurationSearchV2Booklists",
+      "kind": "query",
+      "hash": "857838f3d49dde22e8d7bead4487d4cdb662f8daad165b80c0cad270ae2ff37b",
+      "file_sha256": "ba01d3c8d15eda04889d5087274b7ee7f07511fd0f447897e3a5ab9e6671e9f5"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-playlist.js",
+      "offset_utf8": 12082,
+      "operation": "queryInlineCurationSearchAlbum",
+      "kind": "query",
+      "hash": "74a97c6afa1c6c23e1d9b897756fc362ca7e5ed718ac59ba65ffa85f687f7113",
+      "file_sha256": "ba01d3c8d15eda04889d5087274b7ee7f07511fd0f447897e3a5ab9e6671e9f5"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-playlist.js",
+      "offset_utf8": 12207,
+      "operation": "queryInlineCurationSearchArtist",
+      "kind": "query",
+      "hash": "657c07a8943ea6e49c61833dde16d8d51cb64e921dd80827255d6e2519621c34",
+      "file_sha256": "ba01d3c8d15eda04889d5087274b7ee7f07511fd0f447897e3a5ab9e6671e9f5"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-playlist.js",
+      "offset_utf8": 36663,
+      "operation": "playlistSection",
+      "kind": "query",
+      "hash": "2615df403a9043c1d7d3094fbeb4c9653b07b11a33d8081fbd31f0f7959ff4a1",
+      "file_sha256": "ba01d3c8d15eda04889d5087274b7ee7f07511fd0f447897e3a5ab9e6671e9f5"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 56996,
+      "operation": "searchDesktop",
+      "kind": "query",
+      "hash": "1148393611bbc58e84e47aed35ecc731275df9f9eb660956962e352dd3631d89",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 57124,
+      "operation": "searchAlbums",
+      "kind": "query",
+      "hash": "202cb3305e31e5a0767ba7925f28bd728cf8f8b0217e6da43909056071cd70e9",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 57494,
+      "operation": "searchArtists",
+      "kind": "query",
+      "hash": "7bf95d754fdbe32c8b161fbbe54d1ae50974900df4dce4c8f1afcbcad153224d",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 57798,
+      "operation": "searchAudiobooks",
+      "kind": "query",
+      "hash": "e05ac765d02c084f8783d3c1572b23d57761c43f47eb8b87ce2f9ccced3fa068",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 58108,
+      "operation": "searchAuthors",
+      "kind": "query",
+      "hash": "4a9d403a7cbc7e19da5520d619a865472b35382b043bfa458154e73a5c6f46bd",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 58412,
+      "operation": "searchEpisodes",
+      "kind": "query",
+      "hash": "c9ee277c533bd3f191f9f09bee04f8e4e81bdc48f4d2fadbf67e504c75dc3fe1",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 58703,
+      "operation": "searchFullEpisodes",
+      "kind": "query",
+      "hash": "d54e35fafe7520cb53883b86d012911cbad75c14ac079a917951c24cdb07c60f",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 59530,
+      "operation": "searchGenres",
+      "kind": "query",
+      "hash": "9e1c0e056c46239dd1956ea915b988913c87c04ce3dadccdb537774490266f46",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 59832,
+      "operation": "searchPlaylists",
+      "kind": "query",
+      "hash": "d520014e748f9ea44f7707d8df1819867ac1205e8b7f3e28f22fe5fc858921b1",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 60140,
+      "operation": "searchPodcasts",
+      "kind": "query",
+      "hash": "0195d9f61b43606d490bca64c3456e3593528cea6cc05c7e822c7c42beed0f4e",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 61534,
+      "operation": "searchTopResultsOnly",
+      "kind": "query",
+      "hash": "aadb6a92e246cb76e3986777c161dec16085a08e998b420a5c2ce10aa52e4e11",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 61768,
+      "operation": "searchTopResultsList",
+      "kind": "query",
+      "hash": "12d940b3f7381506a82ff5382eb59b0ed65118656e6bcdfbe4cebc528f75d29d",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 61920,
+      "operation": "searchTracks",
+      "kind": "query",
+      "hash": "b02683192a98dde7966b5e6655a79eeb62713eab703eda9902c932818dd52751",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    },
+    {
+      "file": "ref/xpui/xpui-routes-search.js",
+      "offset_utf8": 62208,
+      "operation": "searchUsers",
+      "kind": "query",
+      "hash": "8f358dd82e62f61dd4ceaa9f8cd0889e644c9b707f1b724fbfb356a757cb7e5a",
+      "file_sha256": "06ef397f7adcbbf695f2bc08b2aef737ad05325712554f0d75135f0da547b4f0"
+    }
+  ]
+}

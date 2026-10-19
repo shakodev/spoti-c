@@ -1,4 +1,6 @@
 # Preserve the bytes covered by the upstream SHA-256 manifests on every OS.
+# The original issue-creation manifest is hashed by backlog-verification.json.
+docs/backlog.json -text whitespace=cr-at-eol
 proto/** -text whitespace=cr-at-eol
 # Upstream files retain their original whitespace as part of the pinned hashes.
 proto/*.proto -whitespace

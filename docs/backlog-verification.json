@@ -1,0 +1,21 @@
+{
+  "verified_on": "2026-10-17",
+  "repository": "https://github.com/shakodev/spoti-c",
+  "issues_verified": 35,
+  "phase_labels": {
+    "phase-1-core": 4,
+    "phase-2-protocol": 8,
+    "phase-4-api": 6,
+    "phase-3-audio": 6,
+    "phase-5-ui-engine": 5,
+    "phase-6-app": 6
+  },
+  "milestones_verified": 6,
+  "dependency_edges": 127,
+  "dependency_graph": "acyclic; every direct prerequisite precedes its issue",
+  "remote_verification": "All 35 remote titles, complete bodies, labels and milestones match the local manifest; dependencies use actual issue numbers.",
+  "baseline_build": "Debug configured with ENABLE_ASAN=ON; build succeeded; existing smoke CTest passed 1/1. No feature code implemented.",
+  "future_test_targets": 50,
+  "rea": "16 selected XPUI sources across two static passes, zero parse failures; partial coverage and missing shared module contracts recorded in specs.",
+  "backlog_sha256": "08150c30fb86bb883f52e217e0e482a9e5b4d3014b119f1fc9326ee7a2ac0364"
+}

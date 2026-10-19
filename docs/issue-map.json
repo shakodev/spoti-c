@@ -1,0 +1,247 @@
+{
+  "1": {
+    "number": 1,
+    "url": "https://github.com/shakodev/spoti-c/issues/1",
+    "title": "[01/Core] Implement fixed-capacity Arena and Frame Scratch Allocators",
+    "label": "phase-1-core",
+    "milestone": "Phase 1: Core Infrastructure & Memory"
+  },
+  "2": {
+    "number": 2,
+    "url": "https://github.com/shakodev/spoti-c/issues/2",
+    "title": "[02/Core] Implement bounded lock-free SPSC audio and message rings",
+    "label": "phase-1-core",
+    "milestone": "Phase 1: Core Infrastructure & Memory"
+  },
+  "3": {
+    "number": 3,
+    "url": "https://github.com/shakodev/spoti-c/issues/3",
+    "title": "[03/Core] Implement bounded event queues and Win32 worker wakeups",
+    "label": "phase-1-core",
+    "milestone": "Phase 1: Core Infrastructure & Memory"
+  },
+  "4": {
+    "number": 4,
+    "url": "https://github.com/shakodev/spoti-c/issues/4",
+    "title": "[04/Core] Add structured logging, allocation telemetry and deterministic test fixtures",
+    "label": "phase-1-core",
+    "milestone": "Phase 1: Core Infrastructure & Memory"
+  },
+  "5": {
+    "number": 5,
+    "url": "https://github.com/shakodev/spoti-c/issues/5",
+    "title": "[05/Protocol] Integrate nanopb and the exact bounded Spotify protobuf closure",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "6": {
+    "number": 6,
+    "url": "https://github.com/shakodev/spoti-c/issues/6",
+    "title": "[06/Protocol] Port Shannon to pure C with known-answer and tamper tests",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "7": {
+    "number": 7,
+    "url": "https://github.com/shakodev/spoti-c/issues/7",
+    "title": "[07/Protocol] Implement CNG DH, AP signature verification and seekable AES-CTR",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "8": {
+    "number": 8,
+    "url": "https://github.com/shakodev/spoti-c/issues/8",
+    "title": "[08/API] Build a bounded WinHTTP asynchronous transport and connection pool",
+    "label": "phase-4-api",
+    "milestone": "Phase 4: REA Reverse Engineering & Internal APIs"
+  },
+  "9": {
+    "number": 9,
+    "url": "https://github.com/shakodev/spoti-c/issues/9",
+    "title": "[09/Protocol] Implement ApResolve and the authenticated Shannon AP connection",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "10": {
+    "number": 10,
+    "url": "https://github.com/shakodev/spoti-c/issues/10",
+    "title": "[10/Protocol] Add OAuth PKCE login and DPAPI-protected reusable credentials",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "11": {
+    "number": 11,
+    "url": "https://github.com/shakodev/spoti-c/issues/11",
+    "title": "[11/API] Verify auth contracts and implement clienttoken and Login5 bearer lifecycle",
+    "label": "phase-4-api",
+    "milestone": "Phase 4: REA Reverse Engineering & Internal APIs"
+  },
+  "12": {
+    "number": 12,
+    "url": "https://github.com/shakodev/spoti-c/issues/12",
+    "title": "[12/Protocol] Implement bounded Mercury requests, subscriptions and multipart events",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "13": {
+    "number": 13,
+    "url": "https://github.com/shakodev/spoti-c/issues/13",
+    "title": "[13/Protocol] Resolve playable metadata, AudioKeys and expiring CDN locations",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "14": {
+    "number": 14,
+    "url": "https://github.com/shakodev/spoti-c/issues/14",
+    "title": "[14/Audio] Implement HTTP range fetching and bounded encrypted audio caching",
+    "label": "phase-3-audio",
+    "milestone": "Phase 3: Audio Pipeline & Headless Playback"
+  },
+  "15": {
+    "number": 15,
+    "url": "https://github.com/shakodev/spoti-c/issues/15",
+    "title": "[15/Audio] Implement random-access stream decryption and Spotify Ogg prefix mapping",
+    "label": "phase-3-audio",
+    "milestone": "Phase 3: Audio Pipeline & Headless Playback"
+  },
+  "16": {
+    "number": 16,
+    "url": "https://github.com/shakodev/spoti-c/issues/16",
+    "title": "[16/Audio] Integrate bounded stb_vorbis push decoding and sample-accurate seeking",
+    "label": "phase-3-audio",
+    "milestone": "Phase 3: Audio Pipeline & Headless Playback"
+  },
+  "17": {
+    "number": 17,
+    "url": "https://github.com/shakodev/spoti-c/issues/17",
+    "title": "[17/Audio] Implement an event-driven miniaudio WASAPI sink",
+    "label": "phase-3-audio",
+    "milestone": "Phase 3: Audio Pipeline & Headless Playback"
+  },
+  "18": {
+    "number": 18,
+    "url": "https://github.com/shakodev/spoti-c/issues/18",
+    "title": "[18/Audio] Implement playback state, seek epochs and gapless prefetch",
+    "label": "phase-3-audio",
+    "milestone": "Phase 3: Audio Pipeline & Headless Playback"
+  },
+  "19": {
+    "number": 19,
+    "url": "https://github.com/shakodev/spoti-c/issues/19",
+    "title": "[19/Audio] Add a headless player and enforce the 8 MB playback budget",
+    "label": "phase-3-audio",
+    "milestone": "Phase 3: Audio Pipeline & Headless Playback"
+  },
+  "20": {
+    "number": 20,
+    "url": "https://github.com/shakodev/spoti-c/issues/20",
+    "title": "[20/Protocol] Implement modern Spotify Connect Dealer and connect-state control",
+    "label": "phase-2-protocol",
+    "milestone": "Phase 2: Cryptography, Protobufs & Spotify Session"
+  },
+  "21": {
+    "number": 21,
+    "url": "https://github.com/shakodev/spoti-c/issues/21",
+    "title": "[21/API] Complete REA-backed Home, Library, Playlist and catalog contracts",
+    "label": "phase-4-api",
+    "milestone": "Phase 4: REA Reverse Engineering & Internal APIs"
+  },
+  "22": {
+    "number": 22,
+    "url": "https://github.com/shakodev/spoti-c/issues/22",
+    "title": "[22/API] Implement bounded Home, Library and Playlist page models",
+    "label": "phase-4-api",
+    "milestone": "Phase 4: REA Reverse Engineering & Internal APIs"
+  },
+  "23": {
+    "number": 23,
+    "url": "https://github.com/shakodev/spoti-c/issues/23",
+    "title": "[23/API] Implement typed Search and Album/Artist catalog views",
+    "label": "phase-4-api",
+    "milestone": "Phase 4: REA Reverse Engineering & Internal APIs"
+  },
+  "24": {
+    "number": 24,
+    "url": "https://github.com/shakodev/spoti-c/issues/24",
+    "title": "[24/API] Implement synchronized lyrics fetch and a bounded line timeline",
+    "label": "phase-4-api",
+    "milestone": "Phase 4: REA Reverse Engineering & Internal APIs"
+  },
+  "25": {
+    "number": 25,
+    "url": "https://github.com/shakodev/spoti-c/issues/25",
+    "title": "[25/UI] Build the Win32 window and event-driven rendering scheduler",
+    "label": "phase-5-ui-engine",
+    "milestone": "Phase 5: Win32 + DirectX 11 + Clay UI Engine"
+  },
+  "26": {
+    "number": 26,
+    "url": "https://github.com/shakodev/spoti-c/issues/26",
+    "title": "[26/UI] Implement the DX11 instanced renderer and clipped shape shader",
+    "label": "phase-5-ui-engine",
+    "milestone": "Phase 5: Win32 + DirectX 11 + Clay UI Engine"
+  },
+  "27": {
+    "number": 27,
+    "url": "https://github.com/shakodev/spoti-c/issues/27",
+    "title": "[27/UI] Implement DirectWrite shaping and a bounded Clay font atlas",
+    "label": "phase-5-ui-engine",
+    "milestone": "Phase 5: Win32 + DirectX 11 + Clay UI Engine"
+  },
+  "28": {
+    "number": 28,
+    "url": "https://github.com/shakodev/spoti-c/issues/28",
+    "title": "[28/UI] Add asynchronous artwork decoding and a capped texture LRU",
+    "label": "phase-5-ui-engine",
+    "milestone": "Phase 5: Win32 + DirectX 11 + Clay UI Engine"
+  },
+  "29": {
+    "number": 29,
+    "url": "https://github.com/shakodev/spoti-c/issues/29",
+    "title": "[29/UI] Build Clay widgets, text input and virtualized list primitives",
+    "label": "phase-5-ui-engine",
+    "milestone": "Phase 5: Win32 + DirectX 11 + Clay UI Engine"
+  },
+  "30": {
+    "number": 30,
+    "url": "https://github.com/shakodev/spoti-c/issues/30",
+    "title": "[30/App] Compose the responsive three-pane shell, Home and Library navigation",
+    "label": "phase-6-app",
+    "milestone": "Phase 6: Custom Spotify UI Screens & Polish"
+  },
+  "31": {
+    "number": 31,
+    "url": "https://github.com/shakodev/spoti-c/issues/31",
+    "title": "[31/App] Implement the virtualized Playlist and Tracklist screen with instant filtering",
+    "label": "phase-6-app",
+    "milestone": "Phase 6: Custom Spotify UI Screens & Polish"
+  },
+  "32": {
+    "number": 32,
+    "url": "https://github.com/shakodev/spoti-c/issues/32",
+    "title": "[32/App] Build Search, Album, Artist and synchronized Lyrics screens",
+    "label": "phase-6-app",
+    "milestone": "Phase 6: Custom Spotify UI Screens & Polish"
+  },
+  "33": {
+    "number": 33,
+    "url": "https://github.com/shakodev/spoti-c/issues/33",
+    "title": "[33/App] Integrate SMTC, media keys and Windows playback metadata",
+    "label": "phase-6-app",
+    "milestone": "Phase 6: Custom Spotify UI Screens & Polish"
+  },
+  "34": {
+    "number": 34,
+    "url": "https://github.com/shakodev/spoti-c/issues/34",
+    "title": "[34/App] Add versioned binary state cache for instant offline startup",
+    "label": "phase-6-app",
+    "milestone": "Phase 6: Custom Spotify UI Screens & Polish"
+  },
+  "35": {
+    "number": 35,
+    "url": "https://github.com/shakodev/spoti-c/issues/35",
+    "title": "[35/App] Enforce final resident RAM, idle CPU, startup and executable benchmarks",
+    "label": "phase-6-app",
+    "milestone": "Phase 6: Custom Spotify UI Screens & Polish"
+  }
+}

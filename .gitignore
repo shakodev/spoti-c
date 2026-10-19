@@ -53,3 +53,40 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Local builds, references, and caches
+/build/
+/build-rel/
+/ref/
+/.cache/
+
+# Local environment, Spotify credentials, and authentication material
+.env
+.env.*
+!.env.example
+/credentials
+*credentials*.json
+*credentials*.toml
+*credentials*.yaml
+*credentials*.yml
+*credentials*.txt
+*credentials*.bin
+*credentials*.cache
+/token
+/tokens
+*token*.json
+*token*.toml
+*token*.yaml
+*token*.yml
+*token*.txt
+*token*.bin
+*token*.cache
+*.token
+*.tokens
+*.key
+*.pem
+/.spotify/
+/.credentials/
+/credentials/
+/tokens/
+/secrets/
