@@ -54,6 +54,7 @@ bool app_desktop_input(void *context, UiWindow *w, UINT message, WPARAM wp, LPAR
         AppKey key;
         switch (wp) {
         case VK_TAB: key=APP_KEY_TAB; break;
+        case VK_ESCAPE: key=APP_KEY_ESCAPE; break;
         case VK_RETURN: case VK_SPACE: key=APP_KEY_ENTER; break;
         case VK_BROWSER_BACK: key=APP_KEY_BACK; break;
         case VK_LEFT: key=GetKeyState(VK_MENU)<0 ? APP_KEY_BACK : APP_KEY_LEFT; break;

@@ -26,4 +26,5 @@ void shell_volume(void);
 void shell_browse(void);
 void shell_visibility(void);
 void shell_now_playing(void);
+void shell_sidebar(void);
 #endif

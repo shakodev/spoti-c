@@ -22,18 +22,28 @@ AppResult app_pointer(App *a, UiWidgetInput input)
 void app_scroll(App *a, double delta)
 {
     if (!a || !a->alive || !isfinite(delta)) { return; }
-    a->widgets.lists[0].scroll = fmax(0,a->widgets.lists[0].scroll+delta);
+    Clay_ElementData sidebar=Clay_GetElementData(CLAY_ID("AppSidebar"));
+    UiWidgetInput p=a->widgets.input;
+    bool side=sidebar.found && p.x>=sidebar.boundingBox.x && p.x<sidebar.boundingBox.x+sidebar.boundingBox.width &&
+        p.y>=sidebar.boundingBox.y && p.y<sidebar.boundingBox.y+sidebar.boundingBox.height;
+    UiVirtualList *list=&a->widgets.lists[side ? 1 : 0];
+    if (a->sidebar.profile) { return; }
+    list->scroll = fmax(0,list->scroll+delta);
     app_lyrics_hold(a);
     if (a->scheduler) { ui_scheduler_dirty(a->scheduler,UI_DIRTY_INPUT); }
 }
 AppResult app_key(App *a, AppKey key, bool shift)
 {
-    if (!a || !a->alive || key > APP_KEY_PAGE_DOWN) { return APP_INVALID; }
+    if (!a || !a->alive || key > APP_KEY_ESCAPE) { return APP_INVALID; }
+    if (key==APP_KEY_ESCAPE || (key==APP_KEY_BACK && a->sidebar.profile)) {
+        return a->sidebar.profile ? app_enqueue(a,(AppAction){.type=APP_PROFILE_CLOSE}) : APP_CANCELLED;
+    }
     if (key == APP_KEY_BACK) { return app_enqueue(a,(AppAction){.type=APP_BACK}); }
     if (!a->control_count) { return APP_PENDING; }
     uint32_t focused = 0;
     for (uint32_t i = 0; i < a->control_count; ++i) { if (a->controls[i].id.id == a->widgets.focus) { focused = i; break; } }
-    if (key == APP_KEY_TAB) {
+    if (key == APP_KEY_TAB || (a->sidebar.profile && (key==APP_KEY_UP || key==APP_KEY_DOWN))) {
+        if (key==APP_KEY_UP) { shift=true; }
         for (uint32_t i = 0; i < a->control_count; ++i) {
             focused = shift ? (focused+a->control_count-1)%a->control_count : (focused+1)%a->control_count;
             if (!a->controls[focused].disabled) { a->widgets.focus = a->controls[focused].id.id; return APP_OK; }
@@ -42,6 +52,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
     }
     AppControl *control = &a->controls[focused];
     if (control->disabled) { return APP_CANCELLED; }
+    if (control->action.type==APP_SIDEBAR_SELECT) { return app_sidebar_key(a,key,control); }
     if (control->id.id==CLAY_ID("AppVolume").id) { return app_volume_key(a,key); }
     if (a->model.location.screen==APP_LYRICS && control->id.id==CLAY_ID("LyricsList").id) {
         if (key==APP_KEY_UP || key==APP_KEY_DOWN || key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN || key==APP_KEY_HOME || key==APP_KEY_END) {

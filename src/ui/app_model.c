@@ -15,6 +15,7 @@ static void release_page(App *a)
 static AppResult generation(App *a)
 {
     if (a->model.generation == UINT64_MAX) { return APP_FULL; }
+    app_sidebar_cancel(a); a->sidebar.profile=false;
     if (a->model.pending && a->services.cancel) { a->services.cancel(a->services.context,&a->model.request); }
     a->model.pending = false; release_page(a); app_catalog_clear(a); ++a->model.generation;
     if (!a->model.auth_pending) { a->model.notice[0]=0; }
@@ -148,6 +149,7 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
     AppResult r = generation(a);
     if (r != APP_OK) { return r; }
     if (!logged_in) {
+        app_sidebar_clear(a);
         a->cached=NULL;
         memset(&a->now,0,sizeof(a->now));
         a->model.history_count = 0; memset(a->model.history,0,sizeof(a->model.history));
@@ -202,9 +204,9 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_QUEUE_PAGE ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_SIDEBAR_SELECT ||
         (action.type==APP_VOLUME && !isfinite(action.value)) ||
-        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
+        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO || action.type==APP_SIDEBAR_SELECT) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
     if (action.type==APP_VOLUME && a->action_count && a->actions[a->action_count-1].type==APP_VOLUME) {
         a->actions[a->action_count-1]=action; dirty(a); return APP_OK;
@@ -219,7 +221,24 @@ AppResult app_enqueue(App *a, AppAction action)
 static AppResult apply(App *a, AppAction action, uint64_t now)
 {
     AppModel *m = &a->model;
+    if (action.type!=APP_PROFILE_TOGGLE) { a->sidebar.profile=false; }
     switch (action.type) {
+    case APP_PROFILE_TOGGLE:
+        a->sidebar.profile=!a->sidebar.profile;
+        a->widgets.focus=a->sidebar.profile ? CLAY_IDI("ProfileItem",0).id : CLAY_ID("NavAuth").id; return APP_OK;
+    case APP_PROFILE_CLOSE: a->widgets.focus=CLAY_ID("NavAuth").id; return APP_OK;
+    case APP_SIDEBAR_MORE: return a->sidebar.page && a->sidebar.page->next!=COLLECTION_END ?
+        app_sidebar_request(a,a->sidebar.page->next) : APP_CANCELLED;
+    case APP_SIDEBAR_RETRY: a->sidebar.failed=false; return app_sidebar_request(a,a->sidebar.cursor);
+    case APP_SIDEBAR_QUERY: a->widgets.lists[1]=(UiVirtualList){0}; return APP_OK;
+    case APP_SIDEBAR_FOCUS: a->widgets.focus=CLAY_ID("SidebarQuery").id; return APP_OK;
+    case APP_SIDEBAR_SELECT:
+        if (!a->sidebar.page || !isfinite(action.value) || action.value<0 || action.value>=a->sidebar.page->count ||
+            floor(action.value)!=action.value) { return APP_INVALID; }
+        if (action.entity.uri[0] && strcmp(a->sidebar.page->items[(uint32_t)action.value].uri,action.entity.uri)) { return APP_STALE; }
+        CollectionItem side_item=app_rootlist_item(a->sidebar.page,(uint32_t)action.value);
+        if (app_entity(&side_item,&action.entity)!=APP_OK) { return APP_INVALID; }
+        action.type=APP_SELECT; return apply(a,action,now);
     case APP_SHUFFLE: return command(a,(PlayerCommand){.type=PLAYER_SHUFFLE,.value=m->player.shuffled ? 0 : 1});
     case APP_REPEAT: return command(a,(PlayerCommand){.type=PLAYER_REPEAT,.value=(m->player.repeat+1u)%3u});
     case APP_QUEUE:
@@ -362,6 +381,7 @@ AppResult app_update(App *a, uint64_t now)
     if (a->services.artwork) { (void)artwork_begin_visible(a->services.artwork); }
     app_catalog_prepare(a,now);
     app_now_prepare(a);
+    app_sidebar_prepare(a);
     app_browse_prepare(a);
     if (a->services.artwork) {
         for (uint32_t i = 0; i < a->image_count; ++i) {
@@ -377,6 +397,6 @@ AppResult app_update(App *a, uint64_t now)
 void app_dispose(App *a)
 {
     if (!a || !a->alive || a->widgets.in_frame) { return; }
-    (void)generation(a); release_page(a); (void)ui_widgets_dispose(&a->widgets);
+    (void)generation(a); release_page(a); app_sidebar_clear(a); (void)ui_widgets_dispose(&a->widgets);
     a->alive = false; memset(&a->model,0,sizeof(a->model)); a->control_count = a->action_count = 0;
 }

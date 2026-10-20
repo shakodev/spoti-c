@@ -245,7 +245,7 @@ target_link_libraries(spotic_artwork PUBLIC spotic_core spotic_renderer
     PRIVATE windowscodecs ole32 uuid psapi winhttp)
 add_library(spotic_app STATIC src/ui/app.c src/ui/startup.c src/ui/startup_shell.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
     src/ui/app_notice.c src/ui/notice_dialog.c src/ui/app_browse.c src/ui/app_browse_input.c
-    src/ui/app_header.c src/ui/collection_artwork.c
+    src/ui/app_header.c src/ui/app_profile.c src/ui/sidebar_model.c src/ui/rootlist_page.c src/ui/collection_artwork.c
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
     src/ui/sidebar.c src/ui/now_playing.c src/ui/now_metadata.c src/ui/player_controls.c src/ui/player_queue_view.c src/ui/app_volume.c src/ui/screens/home.c src/ui/screens/library.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
@@ -262,7 +262,7 @@ add_custom_target(check_media_abi
     VERBATIM)
 add_dependencies(spotic_media_controls check_media_abi)
 target_link_libraries(spotic_app PUBLIC spotic_widgets spotic_font spotic_collections spotic_catalog spotic_lyrics spotic_artwork spotic_player spotic_ui spotic_oauth)
-add_library(spotic_app_fixture STATIC src/ui/app_fixture.c src/ui/app_fixture_playlist.c src/ui/app_fixture_catalog.c)
+add_library(spotic_app_fixture STATIC src/ui/app_fixture.c src/ui/app_fixture_sidebar.c src/ui/app_fixture_playlist.c src/ui/app_fixture_catalog.c)
 target_link_libraries(spotic_app_fixture PUBLIC spotic_app)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_app spotic_app_fixture)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_media_controls)
@@ -406,13 +406,14 @@ if(BUILD_TESTING)
         set_tests_properties(bench_tracklist PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
     add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_now.c tests/app_shell_support.c tests/app_shell_window.c
-        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/app_shell_visual.c tests/player_test_support.c)
+        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/app_shell_sidebar.c tests/app_shell_visual.c tests/player_test_support.c)
     target_include_directories(test_app_shell PRIVATE tests)
     target_compile_definitions(test_app_shell PRIVATE
         APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
         VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
     target_link_libraries(test_app_shell PRIVATE spotic_app spotic_app_fixture spotic_ui_surface)
     add_test(NAME app_shell COMMAND test_app_shell)
+    add_test(NAME app_shell_persistent COMMAND test_app_shell --persistent)
     add_executable(capture_player_bar EXCLUDE_FROM_ALL tests/capture_player_bar.c tests/app_shell_support.c)
     target_include_directories(capture_player_bar PRIVATE tests)
     target_compile_definitions(capture_player_bar PRIVATE APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app")

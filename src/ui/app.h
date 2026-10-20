@@ -7,15 +7,17 @@
 #include "ui_scheduler.h"
 #include "api/collection_api.h"
 #include "audio/player.h"
+#include "rootlist_page.h"
 struct Playlist;
 struct PlaylistQueue;
 struct MediaDisplay;
 
 #define APP_HISTORY 16u
 #define APP_ACTIONS 32u
-#define APP_CONTROLS 48u
+#define APP_CONTROLS 52u
 #define APP_IMAGES 16u
 #define APP_INPUTS 16u
+#define APP_MEASURES 240u
 #include "app_result.h"
 #include "app_notice.h"
 #include "screens/catalog_view.h"
@@ -27,7 +29,7 @@ typedef enum AppStatus { APP_LOADING, APP_CONTENT, APP_EMPTY, APP_ERROR,
 typedef struct AppEntity { CollectionItemKind kind; char uri[192], title[192]; uint8_t id[16]; bool playable; } AppEntity;
 typedef struct AppLocation { AppScreen screen; AppEntity entity; double scroll; uint32_t selector; char query[APP_QUERY_BYTES]; bool grid; } AppLocation;
 typedef struct AppRequest { uint64_t generation, serial; uint32_t cursor; CollectionKind kind; char uri[192];
-    AppScreen screen; uint32_t selector; char query[APP_QUERY_BYTES]; } AppRequest;
+    AppScreen screen; uint32_t selector; char query[APP_QUERY_BYTES]; bool sidebar; } AppRequest;
 typedef enum AppAuth { APP_LOGIN, APP_LOGOUT } AppAuth;
 /* Callbacks run on the UI preparation boundary, NEVER layout/render. They must
  * enqueue bounded work to their service owner and return immediately. request
@@ -37,6 +39,7 @@ typedef enum AppAuth { APP_LOGIN, APP_LOGOUT } AppAuth;
  * with app_session. No credential data belongs to App. */
 typedef struct AppServices {
     AppResult (*request)(void *, const AppRequest *);
+    AppResult (*sidebar)(void *, const AppRequest *); /* Existing rootlist, independently retained. */
     AppResult (*catalog)(void *, const AppRequest *, JsonString artwork);
     void (*cancel)(void *, const AppRequest *);
     void (*retire)(void *, uint64_t generation); /* Enqueue owner-side route-reference retirement. */
@@ -61,10 +64,21 @@ typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_B
     APP_GO_SEARCH, APP_GO_LYRICS, APP_CATALOG_QUERY, APP_CATALOG_SECTION,
     APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES,
     APP_LIBRARY_GRID, APP_LIBRARY_FILTER, APP_LIBRARY_QUERY, APP_SIDEBAR_TOGGLE, APP_LIBRARY_FOCUS,
-    APP_SHUFFLE, APP_REPEAT, APP_QUEUE, APP_PLAYER_INFO, APP_QUEUE_PAGE } AppActionType;
+    APP_SHUFFLE, APP_REPEAT, APP_QUEUE, APP_PLAYER_INFO, APP_QUEUE_PAGE,
+    APP_PROFILE_TOGGLE, APP_PROFILE_CLOSE, APP_SIDEBAR_MORE, APP_SIDEBAR_RETRY,
+    APP_SIDEBAR_QUERY, APP_SIDEBAR_FOCUS, APP_SIDEBAR_SELECT } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; uint64_t generation; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
-enum { APP_CUSTOM_IMAGE=0x41525431, APP_CUSTOM_ICON=0x49434f31 };
+enum { APP_CUSTOM_IMAGE=0x41525431, APP_CUSTOM_ICON=0x49434f31, APP_CUSTOM_SIDEBAR=0x53494431 };
+typedef struct AppSidebarCover { uint32_t tag, index; ArtworkId id; ArtResult result; } AppSidebarCover;
+typedef struct AppSidebar {
+    const AppRootlistPage *page; /* Independent immutable finite rootlist projection. */
+    uint64_t generation, serial;
+    uint32_t cursor, cover_count, visible_count, visible[10], previous_count, previous[10];
+    uint16_t order[COLLECTION_ROW_CAP], count, surrogate;
+    AppSidebarCover covers[10];
+    bool pending, failed, profile;
+} AppSidebar;
 typedef struct AppImage { uint32_t tag; AppEntity entity; ArtworkId id; ArtworkHandle handle; ArtResult result; } AppImage;
 typedef struct AppGlyph { uint32_t tag; UiIcon icon; float color[4]; } AppGlyph;
 typedef struct AppTrack {
@@ -114,6 +128,7 @@ typedef struct App {
     const struct StateCache *cached; /* Borrowed startup snapshot; never authorizes playback. */
     AppModel model;
     AppBrowse browse;
+    AppSidebar sidebar;
     AppNow now;
     CatalogView catalog;
     /* Fixed route-controller storage charged to UI state, used exclusively by
@@ -130,7 +145,7 @@ typedef struct App {
     uint32_t action_count, control_count, image_count, input_count;
     char labels[64][192];
     uint32_t label_count;
-    AppMeasure measures[256]; /* Clay word advances, independent of glyph runs. */
+    AppMeasure measures[APP_MEASURES]; /* Bounded replaceable word-advance cache. */
     uint32_t measure_count, measure_next;
     uint64_t measure_generation;
     uint16_t measure_dpi;
@@ -170,13 +185,22 @@ AppResult app_image(App *, uint64_t generation, const AppEntity *, ArtworkId,
     const ArtworkSource *, size_t count); /* Safe preparation only. */
 UiRenderResult app_render_custom(void *, UiRenderFrame *, const Clay_RenderCommand *);
 typedef enum AppKey { APP_KEY_TAB, APP_KEY_ENTER, APP_KEY_BACK, APP_KEY_UP, APP_KEY_DOWN,
-    APP_KEY_HOME, APP_KEY_END, APP_KEY_LEFT, APP_KEY_RIGHT, APP_KEY_PAGE_UP, APP_KEY_PAGE_DOWN } AppKey;
+    APP_KEY_HOME, APP_KEY_END, APP_KEY_LEFT, APP_KEY_RIGHT, APP_KEY_PAGE_UP, APP_KEY_PAGE_DOWN, APP_KEY_ESCAPE } AppKey;
 AppResult app_key(App *, AppKey, bool shift);
 AppResult app_browse_key(App *, AppKey, const AppControl *);
 AppResult app_pointer(App *, UiWidgetInput);
 void app_scroll(App *, double dips);
 /* Screen composition entry points, invoked within app_layout only. */
 void app_sidebar(App *);
+void app_sidebar_prepare(App *);
+void app_sidebar_end(App *);
+void app_sidebar_clear(App *);
+void app_sidebar_cancel(App *);
+AppResult app_sidebar_request(App *, uint32_t cursor);
+AppResult app_sidebar_deliver(App *, AppRequest, CollectionResult, const AppRootlistPage *);
+AppResult app_sidebar_key(App *, AppKey, const AppControl *);
+void app_profile_menu(App *);
+UiWidgetInput app_profile_input(App *, UiWidgetInput);
 void app_home(App *);
 void app_library(App *);
 void app_now_playing(App *);

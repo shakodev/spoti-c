@@ -94,9 +94,27 @@ static void catalog_request_run(AppLive *h, LiveSlot *slot, const CancelToken *c
     slot->catalog_result=catalog_complete(h->catalog,request.ticket,result,completion.status,completion.bytes,
         (JsonString){request.contract->persisted_sha256,strlen(request.contract->persisted_sha256)},&slot->catalog_page);
 }
+static void sidebar_request(AppLive *h,LiveSlot *slot,const CancelToken *cancel)
+{
+    AppRequest *r=&slot->request;
+    if (!live_list_fetch(h,NULL,r->cursor,cancel)) { slot->result=COLLECTION_ERROR; return; }
+    AppRootlistPage *page=app_rootlist_begin(h->rootlists,r->generation,r->cursor,h->list.total);
+    if (!page) { slot->result=COLLECTION_FULL; return; }
+    uint32_t consumed=h->list.count<APP_ROOTLIST_ROWS ? h->list.count : APP_ROOTLIST_ROWS;
+    for (uint32_t i=0;i<consumed;++i) {
+        LiveRow *row=&h->list.rows[i];
+        if (strncmp(row->uri,"spotify:playlist:",17)) { continue; }
+        (void)app_rootlist_append(page,(JsonString){row->uri,strlen(row->uri)},
+            (JsonString){row->name,strlen(row->name)},(JsonString){row->image_uri,strlen(row->image_uri)},true);
+    }
+    uint64_t next=(uint64_t)r->cursor+consumed;
+    app_rootlist_publish(page,consumed && next<COLLECTION_END && (next<h->list.total || h->list.truncated) ? (uint32_t)next : COLLECTION_END);
+    slot->rootlist=page; slot->result=worker_cancelled(cancel) ? COLLECTION_CANCELLED : COLLECTION_OK;
+}
 void live_request(AppLive *h, LiveSlot *slot, const CancelToken *cancel)
 {
     AppRequest *r=&slot->request;
+    if (r->sidebar) { sidebar_request(h,slot,cancel); return; }
     if (r->screen==APP_LYRICS) { live_lyrics_request(h,slot,cancel); return; }
     if (r->screen>=APP_SEARCH) { catalog_request_run(h,slot,cancel); return; }
     if (r->screen==APP_PLAYLIST) {

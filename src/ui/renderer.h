@@ -8,7 +8,7 @@
 #define UI_MAX_QUADS 4096u
 #define UI_MAX_BATCHES 1024u
 #define UI_MAX_CLIPS 32u
-#define UI_MAX_TEXTURES 16u
+#define UI_MAX_TEXTURES 40u /* Font + bounded 32-entry artwork cache; GPU byte cap is unchanged. */
 #define UI_TEXTURE_BUDGET (16u * 1024u * 1024u)
 #define UI_MAX_SURFACE 16384u
 

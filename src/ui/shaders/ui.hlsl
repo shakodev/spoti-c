@@ -116,7 +116,10 @@ float iconDistance(float2 p, uint icon) {
         d = min(d,boxDistance(p,float2(12,11),float2(0.9,3)));
         d = min(d,length(p-float2(12,17))-1);
     }
-    else if (icon >= 18) {
+    else if (icon == 26) {
+        d=abs(length(p-float2(12,7.5))-3.5)-0.8;
+        d=min(d,max(abs(length(p-float2(12,20))-7)-0.8,13-p.y));
+    } else if (icon >= 18) {
         p *= 16.0 / 24.0;
         if (icon == 18) {
             d=min(segmentDistance(p,float2(2,4),float2(5,4)),segmentDistance(p,float2(5,4),float2(11,12)));

@@ -52,7 +52,7 @@ static AppResult enqueue(AppLive *h, AppRequest request, bool auth, bool logout,
         slot->request=request; slot->auth=auth; slot->logout=logout; slot->restore=restore; slot->retirement=retire;
         if (artwork.bytes>=sizeof(slot->artwork) || (artwork.bytes && !artwork.data)) { return APP_INVALID; }
         if (artwork.bytes) { memcpy(slot->artwork,artwork.data,artwork.bytes); } slot->artwork[artwork.bytes]=0;
-        slot->page=NULL; slot->catalog_page=NULL; slot->lyrics=NULL; slot->lyrics_result=LYRICS_ERROR; slot->source=(TrackSource){0};
+        slot->page=NULL; slot->rootlist=NULL; slot->catalog_page=NULL; slot->lyrics=NULL; slot->lyrics_result=LYRICS_ERROR; slot->source=(TrackSource){0};
         slot->success=false; slot->message[0]=0; slot->result=COLLECTION_ERROR; slot->catalog_result=CATALOG_ERROR;
         atomic_store_explicit(&slot->phase,1,memory_order_release);
         WorkerJob job={.request={.id=i},.run=run,.complete=complete,.context=h,
@@ -139,7 +139,7 @@ static PlayerResult queue(void *context, const PlaylistQueue *queue)
 }
 AppServices app_live_services(AppLive *h)
 {
-    return (AppServices){.context=h,.request=request,.catalog=catalog,.cancel=cancel,.retire=retire,.auth=auth,
+    return (AppServices){.context=h,.request=request,.sidebar=request,.catalog=catalog,.cancel=cancel,.retire=retire,.auth=auth,
         .submit=submit,.snapshot=snapshot,.track_info=track_info,.queue_snapshot=queue_snapshot,.refresh_clock=refresh,.playlist=&h->playlist,.playlist_queue=queue};
 }
 static bool environment(const char *name, char *out, DWORD cap, const char *fallback)
@@ -172,6 +172,7 @@ AppResult app_live_open(Arena *core, EventQueue *events, App *app, const wchar_t
         arena_init(&h->token_arena,h->token_storage,sizeof(h->token_storage)) &&
         json_page_pool_init(h->pool_storage,sizeof(h->pool_storage),&h->pool)==JSON_OK &&
         collection_service_init(h->collection_storage,sizeof(h->collection_storage),h->pool,&h->collections)==COLLECTION_OK;
+    if (ok) { h->rootlists=app_rootlist_store(h->collection_storage,sizeof(h->collection_storage)); ok=h->rootlists!=NULL; }
     if (!ok || worker_start(core,8,(CoreClock){0},&h->worker)!=CORE_OK) {
         arena_dispose(&h->http_arena); arena_dispose(&h->secret_arena); arena_dispose(&h->token_arena);
         VirtualFree(h,0,MEM_RELEASE); return APP_FAILED;
@@ -204,7 +205,9 @@ void app_live_pump(AppLive *h)
             } else if (had_session) { h->app->model.last_result=APP_FAILED; }
             strcpy_s(h->app->model.notice,sizeof(h->app->model.notice),slot->message);
         } else if (!slot->auth && !slot->retirement) {
-            if (slot->request.screen==APP_LYRICS) {
+            if (slot->request.sidebar) {
+                (void)app_sidebar_deliver(h->app,slot->request,slot->result,slot->rootlist); slot->rootlist=NULL;
+            } else if (slot->request.screen==APP_LYRICS) {
                 (void)app_lyrics_deliver(h->app,slot->request,slot->lyrics_result,slot->lyrics); slot->lyrics=NULL;
             } else if (slot->request.screen>=APP_SEARCH) {
                 (void)app_catalog_deliver(h->app,slot->request,slot->catalog_result,slot->catalog_page); slot->catalog_page=NULL;
@@ -217,11 +220,12 @@ void app_live_pump(AppLive *h)
                     }
                 }
             } else { (void)app_deliver(h->app,slot->request,slot->result,slot->page); slot->page=NULL; }
-            if (slot->message[0] && h->app->model.generation==slot->request.generation) {
+            if (!slot->request.sidebar && slot->message[0] && h->app->model.generation==slot->request.generation) {
                 strcpy_s(h->app->model.notice,sizeof(h->app->model.notice),slot->message);
             }
         }
         if (slot->page) { (void)page_release((JsonPage *)&slot->page->json); slot->page=NULL; }
+        app_rootlist_release(slot->rootlist); slot->rootlist=NULL;
         if (slot->catalog_page) { (void)page_release((JsonPage *)&slot->catalog_page->json); slot->catalog_page=NULL; }
         if (slot->lyrics) { (void)lyrics_document_release(slot->lyrics); slot->lyrics=NULL; }
         atomic_store_explicit(&slot->phase,0,memory_order_release);
@@ -267,6 +271,7 @@ bool app_live_close(AppLive *h)
     if (GetFileAttributesW(h->index_path)!=INVALID_FILE_ATTRIBUTES) { (void)DeleteFileW(h->index_path); }
     for (unsigned i=0;i<LIVE_SLOTS;++i) {
         if (h->slots[i].page) { (void)page_release((JsonPage *)&h->slots[i].page->json); }
+        app_rootlist_release(h->slots[i].rootlist);
         if (h->slots[i].catalog_page) { (void)page_release((JsonPage *)&h->slots[i].catalog_page->json); }
         if (h->slots[i].lyrics) { (void)lyrics_document_release(h->slots[i].lyrics); }
     }

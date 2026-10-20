@@ -89,9 +89,11 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
     }
     AppGeometry *g = &a->geometry;
     if (a->browse.collapsed && g->sidebar>64) { g->main+=g->sidebar-64; g->sidebar=64; }
+    input=app_profile_input(a,input);
     if (ui_widgets_begin(&a->widgets,g->width,g->height,input) != UI_WIDGET_OK) { return (Clay_RenderCommandArray){0}; }
     a->control_count = a->label_count = 0;
     app_browse_begin(a);
+    a->sidebar.visible_count=0;
     a->messages.length=0; a->messages.text[0]=0; a->messages.full=false;
     CLAY(CLAY_ID("AppRoot"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
         .padding=CLAY_PADDING_ALL(8),.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},.backgroundColor={8,8,8,255}}) {
@@ -145,9 +147,11 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
             }
         }
         app_now_playing(a);
+        app_profile_menu(a);
     }
     a->commands = ui_widgets_end(&a->widgets); ++a->frames;
     app_browse_end(a);
+    app_sidebar_end(a);
     bool found = false;
     for (uint32_t i = 0; i < a->control_count; ++i) { if (a->controls[i].id.id == a->widgets.focus) { found = true; } }
     if (!found && a->control_count) { a->widgets.focus = a->controls[0].id.id; }
@@ -185,6 +189,10 @@ UiRenderResult app_render_custom(void *context, UiRenderFrame *frame, const Clay
         if (image->tag==APP_CUSTOM_ICON) {
             AppGlyph *glyph=c->renderData.custom.customData;
             return ui_icon_draw(frame,glyph->icon,box,glyph->color,false);
+        }
+        if (image->tag==APP_CUSTOM_SIDEBAR && a->services.artwork) {
+            AppSidebarCover *cover=c->renderData.custom.customData;
+            return artwork_draw_rounded(a->services.artwork,cover->id,frame,box,4);
         }
         if (image->tag==APP_CUSTOM_IMAGE && a->services.artwork) { return artwork_draw_rounded(a->services.artwork,image->id,frame,
             (UiRect){c->boundingBox.x,c->boundingBox.y,c->boundingBox.width,c->boundingBox.height},4); }

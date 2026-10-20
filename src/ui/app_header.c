@@ -14,20 +14,29 @@ bool app_shell_button(App *a, Clay_ElementId id, Clay_String text, UiIcon icon,
 }
 void app_header(App *a)
 {
-    bool login=!a->model.logged_in || a->model.status==APP_AUTH_EXPIRED;
+    float group=fminf(602,a->geometry.width-200), side=(a->geometry.width-16-group)/2;
     CLAY(CLAY_ID("AppTitle"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(56)},
-        .childGap=8,.childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
-        (void)app_shell_button(a,CLAY_ID("NavHome"),CLAY_STRING(""),UI_ICON_HOME,UI_COMPONENT_ICON,48,48,
-            APP_GO_HOME,a->model.location.screen==APP_HOME,false);
-        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(48)}}}) {
+        .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
+        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(side),CLAY_SIZING_FIXED(48)},.childGap=4,
+            .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
+            (void)app_shell_button(a,CLAY_ID("NavBack"),CLAY_STRING(""),UI_ICON_CHEVRON_LEFT,UI_COMPONENT_ICON,40,40,
+                APP_BACK,false,!a->model.history_count);
+            (void)app_shell_button(a,CLAY_ID("NavForward"),CLAY_STRING(""),UI_ICON_CHEVRON_RIGHT,UI_COMPONENT_ICON,40,40,
+                APP_BACK,false,true);
+        }
+        CLAY(CLAY_ID("HeaderCenter"),{.layout={.sizing={CLAY_SIZING_FIXED(group),CLAY_SIZING_FIXED(48)},.childGap=8}}) {
+            (void)app_shell_button(a,CLAY_ID("NavHome"),CLAY_STRING(""),UI_ICON_HOME,UI_COMPONENT_ICON,48,48,
+                APP_GO_HOME,a->model.location.screen==APP_HOME,false);
             (void)app_shell_button(a,CLAY_ID("NavSearch"),a->services.demo ? CLAY_STRING("Search | Offline demo") : CLAY_STRING("Search"),
-                UI_ICON_SEARCH,UI_COMPONENT_SECONDARY,fminf(546,a->geometry.width-208),48,APP_GO_SEARCH,
+                UI_ICON_SEARCH,UI_COMPONENT_SECONDARY,group-56,48,APP_GO_SEARCH,
                 a->model.location.screen==APP_SEARCH,false);
         }
-        (void)app_shell_button(a,CLAY_ID("NavSettings"),CLAY_STRING(""),UI_ICON_MORE,UI_COMPONENT_ICON,40,40,
-            APP_GO_SETTINGS,a->model.location.screen==APP_SETTINGS,false);
-        (void)app_shell_button(a,CLAY_ID("NavAuth"),a->model.auth_pending ? CLAY_STRING("Cancel") : login ?
-            CLAY_STRING("Sign in") : CLAY_STRING("Log out"),UI_ICON_NONE,UI_COMPONENT_SECONDARY,80,40,
-            a->model.auth_pending || !login ? APP_SIGN_OUT : APP_SIGN_IN,false,false);
+        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(side),CLAY_SIZING_FIXED(48)},.childGap=4,
+            .childAlignment={CLAY_ALIGN_X_RIGHT,CLAY_ALIGN_Y_CENTER}}}) {
+            (void)app_shell_button(a,CLAY_ID("NavSettings"),CLAY_STRING(""),UI_ICON_MORE,UI_COMPONENT_ICON,36,40,
+                APP_GO_SETTINGS,a->model.location.screen==APP_SETTINGS,false);
+            (void)app_shell_button(a,CLAY_ID("NavAuth"),CLAY_STRING(""),UI_ICON_ACCOUNT,UI_COMPONENT_ICON,48,48,
+                APP_PROFILE_TOGGLE,a->sidebar.profile,false);
+        }
     }
 }

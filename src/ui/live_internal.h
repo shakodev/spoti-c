@@ -14,6 +14,7 @@
 typedef struct LiveSlot {
     AppRequest request;
     const CollectionPage *page;
+    const AppRootlistPage *rootlist;
     const CatalogPage *catalog_page;
     const LyricsDocument *lyrics;
     CollectionResult result;
@@ -52,6 +53,7 @@ struct AppLive {
     _Alignas(uint64_t) unsigned char collection_storage[COLLECTION_MODEL_BUDGET];
     unsigned char response[256u*1024u], json_work[128u*1024u];
     JsonPagePool *pool; CollectionService *collections; CatalogService *catalog;
+    AppRootlistStore *rootlists;
     LyricsService *lyrics;
     TrackFilter filter; Playlist playlist; TrackDisk disk;
     LiveList list;
