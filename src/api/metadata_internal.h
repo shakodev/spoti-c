@@ -18,5 +18,6 @@ MediaResult metadata_availability(MetadataSpan span, const MediaPolicy *policy, 
 MediaResult metadata_select_track(MetadataSpan span, const uint8_t gid[16],
                                    const MediaPolicy *policy, MediaTrack *output,
                                    MetadataAlternatives *alternatives);
+MediaResult metadata_display(MetadataSpan, MediaDisplay *);
 
 #endif

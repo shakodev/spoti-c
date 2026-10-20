@@ -154,7 +154,7 @@ static DWORD WINAPI run(void *context)
 {
     bool visual=*(bool *)context;
     pt_load_fixtures(); pt_open(); states(); bounds_and_keyboard(); player_and_frames(); asynchronous();
-    shell_account(); shell_artwork(); shell_volume();
+    shell_account(); shell_artwork(); shell_volume(); shell_now_playing();
     pt_close();
     shell_font_frames(); shell_native();
     int result=0;

@@ -2,6 +2,7 @@
 #define SPOTIC_MEDIA_SOURCE_H
 #include "audio_key.h"
 #include "api/token_manager.h"
+#include "media_display.h"
 
 enum { MEDIA_SOURCE_SLOTS = 4, MEDIA_URLS = 4, MEDIA_URI_BYTES = 37,
     MEDIA_URL_BYTES = 2048, MEDIA_RESPONSE_BYTES = 65536 };
@@ -19,6 +20,7 @@ typedef struct MediaTrack {
     uint8_t gid[16], file_id[20];
     int32_t format;
     uint32_t duration_ms;
+    MediaDisplay display;
 } MediaTrack;
 typedef struct MediaId { uint64_t generation; uint32_t slot, reserved; } MediaId;
 typedef MediaId MediaKeyHandle;

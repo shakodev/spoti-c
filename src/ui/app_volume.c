@@ -93,24 +93,24 @@ void app_volume_controls(App *a)
     bool enabled=app_volume_available(a); UiSeekSlider *slider=&a->widgets.seeks[1];
     if (!enabled) { cancel_drag(a); }
     slider_sync(a);
-    CLAY(CLAY_ID("AppVolumeControls"),{.layout={.sizing={CLAY_SIZING_FIT(),CLAY_SIZING_FIXED(28)},
-        .childGap=8,.childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
-        (void)app_button(a,CLAY_ID("PlayerMute"),a->model.volume.value>0 ? CLAY_STRING("Mute") : CLAY_STRING("Unmute"),
-            72,(AppAction){.type=APP_MUTE},!enabled);
+    (void)snprintf(a->volume,sizeof(a->volume),"Volume %u%% (arrows: 1%%; Home/End)",(unsigned)(slider->value*100+0.5));
+    CLAY(CLAY_ID("AppVolumeControls"),{.layout={.sizing={CLAY_SIZING_FIT(),CLAY_SIZING_FIXED(32)},
+        .childGap=4,.childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
+        app_player_icon(a,CLAY_ID("PlayerMute"),a->model.volume.value>0 ? UI_ICON_VOLUME : UI_ICON_MUTE,
+            (AppAction){.type=APP_MUTE},a->model.volume.value>0 ? "Mute" : "Unmute",
+            enabled ? NULL : "Volume unavailable: sign in and bind a playback service",false,false);
         if (a->control_count<APP_CONTROLS) {
             a->controls[a->control_count++]=(AppControl){.id=CLAY_ID("AppVolume"),.action={.type=APP_VOLUME},.disabled=!enabled};
         } else { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); }
-        ui_level_slider(&a->widgets,CLAY_ID("AppVolume"),slider,a->geometry.compact ? a->geometry.width-216 : 112,!enabled);
+        ui_level_slider(&a->widgets,CLAY_ID("AppVolume"),slider,112,!enabled);
+        if (a->widgets.hover==CLAY_ID("AppVolume").id || a->widgets.focus==CLAY_ID("AppVolume").id) {
+            a->now.tooltip=a->volume; a->now.tooltip_id=CLAY_ID("AppVolume");
+        }
         double value;
         if (enabled && (ui_seek_take_commit(slider,&value) || ui_seek_take_preview(slider,&value)) &&
             fabs(value-a->model.volume.value)>0.0001) {
             (void)app_enqueue(a,(AppAction){.type=APP_VOLUME,.value=value});
         }
         if (a->widgets.input.cancel) { slider->value=a->model.volume.value; }
-        (void)snprintf(a->volume,sizeof(a->volume),"Vol %u%%",(unsigned)(slider->value*100+0.5));
-        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(88),CLAY_SIZING_FIXED(28)},
-            .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
-            app_label(app_text(a,(Clay_String){false,(int32_t)strlen(a->volume),a->volume}),16,(Clay_Color){220,220,220,255});
-        }
     }
 }

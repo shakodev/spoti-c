@@ -73,8 +73,7 @@ static void geometry(void)
             CHECK(slider.boundingBox.width>=112 && slider.boundingBox.height==28);
             CHECK(mute.boundingBox.x>=bar.boundingBox.x && slider.boundingBox.x+slider.boundingBox.width<=bar.boundingBox.x+bar.boundingBox.width);
             CHECK(slider.boundingBox.y>=bar.boundingBox.y && slider.boundingBox.y+28<=bar.boundingBox.y+bar.boundingBox.height);
-            if (widths[i]<760) { CHECK(mute.boundingBox.y>=transport.boundingBox.y+transport.boundingBox.height); }
-            else { CHECK(mute.boundingBox.x>=transport.boundingBox.x+transport.boundingBox.width); }
+            CHECK(mute.boundingBox.x>=transport.boundingBox.x+transport.boundingBox.width);
         }
     }
 }
@@ -82,7 +81,7 @@ static void fake_state(void)
 {
     shell_open(NULL); submitted=0; submit_result=PLAYER_OK; snapshot=(PlayerSnapshot){.volume=1};
     level_is(app.model.volume.value,1); level_is(app.model.volume.nonzero,1);
-    (void)shell_layout(1100,720,96); CHECK(control("AppVolume")->disabled && control("PlayerMute")->disabled);
+    (void)shell_layout(1100,720,96); CHECK(control("AppVolume")->disabled && control("PlayerMute")->action.type==APP_PLAYER_INFO);
     volume(0.2); CHECK(app.model.last_result==APP_UNAVAILABLE); level_is(app.model.volume.value,1);
     CHECK(app_session(&app,true,true,0)==APP_PENDING); shell_deliver("home");
     volume(0.2); CHECK(app.model.last_result==APP_UNAVAILABLE);
@@ -103,7 +102,7 @@ static void fake_state(void)
     CHECK(submitted==before);
     acknowledge(0.66f); level_is(app.model.volume.value,0.66); level_is(app.widgets.seeks[1].value,0.66);
     shell_action(APP_GO_SETTINGS); Clay_RenderCommandArray layout=shell_layout(1100,720,96);
-    CHECK(text_is(layout,"66%") && text_is(layout,"Vol 66%")); CHECK(submitted==before);
+    CHECK(text_is(layout,"66%")); CHECK(submitted==before);
     app.widgets.focus=CLAY_ID("VolumeUp").id; CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK);
     (void)app_update(&app,100); level_is(volume_commands[submitted-1].volume,0.76); acknowledge(0.76f);
     app.widgets.focus=CLAY_ID("AppVolume").id;

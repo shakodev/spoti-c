@@ -39,7 +39,9 @@ DWORD WINAPI hl_decode(void *ctx)
                 view.clock_serial != previous.clock_serial ||
                 view.volume != previous.volume || view.volume_ticket != previous.volume_ticket || view.rate != previous.rate ||
                 view.duration_frames != previous.duration_frames || view.timeline_valid != previous.timeline_valid ||
-                view.error != previous.error || memcmp(view.track_id,previous.track_id,16)) {
+                view.error != previous.error || view.repeat!=previous.repeat || view.shuffled!=previous.shuffled ||
+                view.queue_count!=previous.queue_count || view.queue_index!=previous.queue_index ||
+                memcmp(view.track_id,previous.track_id,16)) {
                 h->config.state_changed(h->config.state_context); previous = view;
             }
         }

@@ -165,7 +165,7 @@ AppResult app_image(App *a, uint64_t gen, const AppEntity *entity, ArtworkId id,
     id.generation = gen;
     ArtResult r = artwork_request(a->services.artwork,id,sources,count);
     if (r != ART_OK && r != ART_PENDING) { return r == ART_FULL ? APP_FULL : APP_FAILED; }
-    a->images[slot] = (AppImage){.entity=*entity,.id=id};
+    a->images[slot] = (AppImage){.tag=APP_CUSTOM_IMAGE,.entity=*entity,.id=id};
     if (slot==a->image_count) { ++a->image_count; } return APP_PENDING;
 }
 UiRenderResult app_render_custom(void *context, UiRenderFrame *frame, const Clay_RenderCommand *c)
@@ -180,7 +180,12 @@ UiRenderResult app_render_custom(void *context, UiRenderFrame *frame, const Clay
     }
     if (c->commandType == CLAY_RENDER_COMMAND_TYPE_CUSTOM && c->renderData.custom.customData) {
         AppImage *image = c->renderData.custom.customData;
-        if (a->services.artwork) { return artwork_draw(a->services.artwork,image->id,frame,
+        UiRect box={c->boundingBox.x,c->boundingBox.y,c->boundingBox.width,c->boundingBox.height};
+        if (image->tag==APP_CUSTOM_ICON) {
+            AppGlyph *glyph=c->renderData.custom.customData;
+            return ui_icon_draw(frame,box,glyph->icon,glyph->color);
+        }
+        if (image->tag==APP_CUSTOM_IMAGE && a->services.artwork) { return artwork_draw(a->services.artwork,image->id,frame,
             (UiRect){c->boundingBox.x,c->boundingBox.y,c->boundingBox.width,c->boundingBox.height}); }
     }
     return UI_RENDER_UNSUPPORTED;

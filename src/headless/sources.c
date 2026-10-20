@@ -103,6 +103,7 @@ bool hl_sources(Headless *h)
             if (mr != MEDIA_OK) { fprintf(stderr,"headless media result=%u\n",(unsigned)mr); s->failed = true; }
             else {
                 if (!s->range.generation) {
+                    hl_publish_display(h,s->request.track_id,&s->media.track.display);
                     RangeResult open = range_source_open(h->ranges, &s->media, &s->range);
                     DecryptResult init = decrypt_stream_init(&s->stream, h->media, h->ranges, &s->media, s->range);
                     RangeResult request = range_request(h->ranges, s->range, 0, SPOTIFY_OGG_PROBE, RANGE_CURRENT, &s->prefix);

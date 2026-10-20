@@ -20,6 +20,9 @@ typedef struct PlayerSnapshot {
     uint32_t rate;
     float volume;
     PlayerState state;
+    PlayerRepeat repeat;
+    uint32_t queue_count, queue_index;
+    bool shuffled;
     AudioResult error;
     bool timeline_valid;
 } PlayerSnapshot;

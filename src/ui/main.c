@@ -46,6 +46,14 @@ static PlayerResult demo_refresh(void *context)
 {
     return headless_refresh_clock(((AppFixture *)context)->player_context);
 }
+static bool demo_info(void *context,const uint8_t id[16],MediaDisplay *out)
+{
+    return headless_track_info(((AppFixture *)context)->player_context,id,out);
+}
+static bool demo_queue_snapshot(void *context,PlayerQueueSnapshot *out)
+{
+    return headless_queue_snapshot(((AppFixture *)context)->player_context,out);
+}
 static PlayerResult demo_queue(void *context, const PlaylistQueue *items)
 {
     AppFixture *h=context; h->last_queue=*items;
@@ -72,6 +80,7 @@ static void deferred(UiWindow *window)
                 if (headless_open(&hc,&playback)) {
                     fixtures.player_context=playback; services.submit=demo_submit; services.snapshot=demo_snapshot;
                     services.refresh_clock=demo_refresh; services.playlist_queue=demo_queue;
+                    services.track_info=demo_info; services.queue_snapshot=demo_queue_snapshot;
                 }
             }
             desktop.app.services=services; (void)app_session(&desktop.app,true,true,GetTickCount64());
