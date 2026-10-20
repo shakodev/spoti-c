@@ -95,16 +95,20 @@ static void probe_images(const CollectionPage *page, const CancelToken *cancel)
 
 int main(int argc, char **argv)
 {
-    bool variants=false,capture=false;
+    bool variants=false,capture=false,matrix=false;
     for (int i=1;i<argc;++i) {
         if (!strcmp(argv[i],"--image-variants")) { variants=true; }
         else if (!strcmp(argv[i],"--capture")) { capture=true; }
-        else { fputs("Usage: spotic-live-probe [--image-variants] [--capture]\n",stderr); return 2; }
+        else if (!strcmp(argv[i],"--capture-matrix")) { matrix=true; }
+        else if (!strcmp(argv[i],"--help")) {
+            puts("Usage: spotic-live-probe [--image-variants] [--capture] [--capture-matrix]"); return 0;
+        } else { fputs("Usage: spotic-live-probe [--image-variants] [--capture] [--capture-matrix]\n",stderr); return 2; }
     }
     /* This diagnostic is a dedicated non-UI process/service owner. */
     core_thread_register_background();
     AppLive *h=VirtualAlloc(NULL,sizeof(*h),MEM_RESERVE|MEM_COMMIT,PAGE_READWRITE);
     if (!h) { return 1; } InitializeSRWLock(&h->player_lock);
+    const AppRootlistPage *sidebar=NULL;
     bool all_ok=true;
     bool ok=arena_init(&h->http_arena,h->http_storage,sizeof(h->http_storage)) &&
         arena_init(&h->secret_arena,h->secret_storage,sizeof(h->secret_storage)) &&
@@ -146,7 +150,16 @@ int main(int argc, char **argv)
     if (ok) {
         ok=json_page_pool_init(h->pool_storage,sizeof(h->pool_storage),&h->pool)==JSON_OK &&
             collection_service_init(h->collection_storage,sizeof(h->collection_storage),h->pool,&h->collections)==COLLECTION_OK;
+        if (ok) { h->rootlists=app_rootlist_store(h->collection_storage,sizeof(h->collection_storage)); ok=h->rootlists!=NULL; }
         strcpy_s(h->timezone,sizeof(h->timezone),"Europe/Amsterdam"); h->authenticated=true;
+        if (ok && (capture || matrix)) {
+            LiveSlot rootlist={.request={.kind=COLLECTION_LIBRARY,.screen=APP_LIBRARY,.generation=1,.serial=1,.sidebar=true}};
+            live_request(h,&rootlist,&cancel); sidebar=rootlist.rootlist;
+            bool accepted=rootlist.result==COLLECTION_OK && sidebar;
+            printf("Retained live sidebar: accepted %u; loaded playlist rows %u; finite source-row cap %u.\n",
+                (unsigned)accepted,sidebar ? sidebar->count : 0,APP_ROOTLIST_ROWS);
+            all_ok=accepted && all_ok;
+        }
         for (unsigned i=0;ok && i<2;++i) {
             LiveSlot slot={.request={.kind=i ? COLLECTION_LIBRARY : COLLECTION_HOME,.screen=i ? APP_LIBRARY : APP_HOME,.generation=i+1}};
             live_request(h,&slot,&cancel);
@@ -168,12 +181,17 @@ int main(int argc, char **argv)
             if (slot.page) {
                 probe_images(slot.page,&cancel);
                 if (capture) {
-                    bool captured=live_capture_page(slot.page,slot.request,slot.result,slot.message,
-                        "build/live-captures",i ? "library-list" : "home",false);
+                    bool captured=live_capture_page_at(slot.page,slot.request,slot.result,slot.message,
+                        "build/live-captures",i ? "library-list" : "home",false,(LiveCaptureViewport){1100,900,96},sidebar);
                     if (i && captured) {
-                        captured=live_capture_page(slot.page,slot.request,slot.result,slot.message,
-                            "build/live-captures","library-grid",true);
+                        captured=live_capture_page_at(slot.page,slot.request,slot.result,slot.message,
+                            "build/live-captures","library-grid",true,(LiveCaptureViewport){1100,900,96},sidebar);
                     }
+                    all_ok=captured && all_ok;
+                }
+                if (matrix) {
+                    bool captured=live_capture_matrix(slot.page,slot.request,slot.result,slot.message,
+                        "build/live-captures",i ? "library" : "home",sidebar);
                     all_ok=captured && all_ok;
                 }
                 (void)page_release((JsonPage *)&slot.page->json);
@@ -205,6 +223,7 @@ int main(int argc, char **argv)
     }
 done:
     ok=live_capture_shutdown(15000)&&ok;
+    app_rootlist_release(sidebar);
     if (h->pool) { (void)json_page_pool_dispose(h->pool); }
     ok=live_account_close(h,false)&&ok&&all_ok;
     if (cancel.wake) { (void)CloseHandle(cancel.wake); }
