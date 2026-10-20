@@ -1,4 +1,5 @@
 #include "app.h"
+#include "font_roles.h"
 #include <string.h>
 
 static bool same(FontConfig a, FontConfig b)

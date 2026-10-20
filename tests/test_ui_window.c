@@ -73,7 +73,10 @@ static void geometry(Harness *h)
     long children = 0;
     CHECK(SUCCEEDED(IAccessible_get_accChildCount(accessible, &children)) && children >= 5);
     IAccessible_Release(accessible);
-    SendMessageW(w->hwnd, WM_DEVICECHANGE, 0, 0); CHECK(h->devices == 1);
+    /* Windows may already have delivered an ambient device notification.
+     * Verify this synchronous message adds exactly one callback. */
+    uint64_t devices = h->devices;
+    SendMessageW(w->hwnd, WM_DEVICECHANGE, 0, 0); CHECK(h->devices == devices + 1);
     SendMessageW(w->hwnd, WM_IME_STARTCOMPOSITION, 0, 0);
     SendMessageW(w->hwnd, WM_IME_ENDCOMPOSITION, 0, 0);
     ShowWindow(w->hwnd, SW_SHOWNOACTIVATE);

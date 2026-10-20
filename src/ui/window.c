@@ -6,6 +6,14 @@ static const wchar_t window_class[] = L"SpoticWindow25";
 static uint64_t now_ms(const UiWindow *w) { return core_clock_now(&w->config.clock); }
 static int scaled(int value, UINT dpi) { return MulDiv(value, (int)dpi, 96); }
 
+static void motion_preference(UiWindow *w)
+{
+    BOOL enabled = TRUE;
+    if (SystemParametersInfoW(SPI_GETCLIENTAREAANIMATION,0,&enabled,0)) {
+        ui_scheduler_reduce_motion(&w->scheduler,enabled == FALSE);
+    }
+}
+
 static void render_dirty(UiWindow *w)
 {
     uint32_t reasons = ui_scheduler_frame(&w->scheduler, now_ms(w));
@@ -53,6 +61,7 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
         return 0;
     case WM_CREATE: {
         w->dpi = GetDpiForWindow(hwnd);
+        motion_preference(w);
         /* Keep the caption outside the opaque DX11 client surface. Native
          * layout/drawing/hit testing own the same button rectangles and states.
          * Older Windows versions simply retain their default native theme. */
@@ -60,6 +69,9 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
         (void)DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark, sizeof(dark));
         break;
     }
+    case WM_SETTINGCHANGE:
+        motion_preference(w);
+        break;
     case WM_DPICHANGED: {
         w->dpi = HIWORD(wp);
         RECT *rect = (RECT *)lp;

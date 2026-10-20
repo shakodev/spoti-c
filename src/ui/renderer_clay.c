@@ -1,4 +1,6 @@
 #include "renderer_clay.h"
+#include "icons_internal.h"
+#include "artwork_quad.h"
 
 static void color(float out[4], Clay_Color in)
 {
@@ -48,6 +50,15 @@ UiRenderResult ui_frame_clay(UiRenderFrame *f, Clay_RenderCommandArray commands,
         case CLAY_RENDER_COMMAND_TYPE_SCISSOR_END:
             result = ui_frame_clip_pop(f); if (result != UI_RENDER_OK) { return result; } continue;
         default:
+            {
+                bool handled = false;
+                result = ui_icon_dispatch(f,c,&handled);
+                if (result != UI_RENDER_OK) { return f->error = result; }
+                if (handled) { continue; }
+                result = ui_artwork_dispatch(f,c,&handled);
+                if (result != UI_RENDER_OK) { return f->error = result; }
+                if (handled) { continue; }
+            }
             if (!bridge || !bridge->custom) { return f->error = UI_RENDER_UNSUPPORTED; }
             result = bridge->custom(bridge->context, f, c);
             if (result != UI_RENDER_OK) { return f->error = result; } continue;

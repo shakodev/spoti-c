@@ -59,6 +59,8 @@ dkms.conf
 /build-rel/
 /ref/
 /.cache/
+__pycache__/
+*.pyc
 
 # Local environment, Spotify credentials, and authentication material
 .env

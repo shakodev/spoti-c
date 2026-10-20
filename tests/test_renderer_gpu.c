@@ -1,4 +1,6 @@
 #include "ui/renderer.h"
+#include "ui/icons.h"
+#include "ui/artwork_quad.h"
 #include "support/test_check.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -109,6 +111,99 @@ static void golden_scissors(void)
     pixel(20,20,127,0,128,255,1); pixel(52,52,0,255,0,255,0);
 }
 
+static void golden_icons(void)
+{
+    static unsigned char original[sizeof(pixels)];
+    const float scales[4] = {1,1.25f,1.5f,2}, white[4] = {1,1,1,1};
+    for (unsigned dpi = 0; dpi < 4; ++dpi) {
+        scale = scales[dpi]; width = (uint32_t)(128*scale);
+        CHECK(ui_renderer_resize(&renderer,width,width) == UI_RENDER_OK);
+        for (UiIcon icon = UI_ICON_HOME; icon < UI_ICON_COUNT; ++icon) {
+            begin();
+            CHECK(ui_icon_draw(&frame,icon,(UiRect){8,8,24,24},white,false) == UI_RENDER_OK);
+            CHECK(frame.quad_count == 1 && frame.batches[0].texture == 0);
+            render(); memcpy(original,pixels,(size_t)width*width*4);
+            unsigned painted = 0;
+            uint32_t first = (uint32_t)(8*scale), last = (uint32_t)(32*scale);
+            for (uint32_t y = 0; y < width; ++y) {
+                for (uint32_t x = 0; x < width; ++x) {
+                    unsigned char a = pixels[((size_t)y*width+x)*4+3];
+                    if (x < first || x >= last || y < first || y >= last) { CHECK(a == 0); }
+                    else if (a) { ++painted; }
+                }
+            }
+            CHECK(painted >= 12 && painted < (last-first)*(last-first));
+            begin();
+            CHECK(ui_icon_draw(&frame,icon,(UiRect){8,8,24,24},white,true) == UI_RENDER_OK);
+            render();
+            if (icon == UI_ICON_CHEVRON_LEFT || icon == UI_ICON_CHEVRON_RIGHT) {
+                unsigned differences = 0;
+                for (uint32_t y = first; y < last; ++y) {
+                    for (uint32_t x = first; x < last; ++x) {
+                        uint32_t mirrored = first+last-1-x;
+                        int a = pixels[((size_t)y*width+x)*4+3];
+                        int b = original[((size_t)y*width+mirrored)*4+3];
+                        CHECK(abs(a-b) <= 2);
+                        if (a != original[((size_t)y*width+x)*4+3]) { ++differences; }
+                    }
+                }
+                CHECK(differences > 10);
+            } else {
+                CHECK(!memcmp(original,pixels,(size_t)width*width*4));
+            }
+        }
+        begin();
+        CHECK(ui_icon_draw(&frame,UI_ICON_PLAY,(UiRect){8,8,24,24},white,false) == UI_RENDER_OK);
+        render(); pixel(20,20,255,255,255,255,0); pixel(10,10,0,0,0,0,0);
+        begin();
+        CHECK(ui_icon_draw(&frame,UI_ICON_PAUSE,(UiRect){8,8,24,24},white,false) == UI_RENDER_OK);
+        render(); pixel(16,20,255,255,255,255,0); pixel(20,20,0,0,0,0,0);
+        begin();
+        CHECK(ui_frame_clip_push(&frame,(UiRect){20,8,12,24},true,true) == UI_RENDER_OK);
+        CHECK(ui_icon_draw(&frame,UI_ICON_PLUS,(UiRect){8,8,24,24},white,false) == UI_RENDER_OK);
+        CHECK(ui_frame_clip_pop(&frame) == UI_RENDER_OK);
+        render(); pixel(16,20,0,0,0,0,0);
+    }
+}
+
+static void golden_artwork_crop(void)
+{
+    const unsigned char colors[4][4] = {{255,0,0,255},{0,255,0,255},
+        {0,0,255,255},{255,255,0,255}};
+    unsigned char horizontal[8*4*4], vertical[4*8*4];
+    for (unsigned y = 0; y < 4; ++y) {
+        for (unsigned x = 0; x < 8; ++x) {
+            memcpy(horizontal+(y*8+x)*4,colors[x/2],4);
+        }
+    }
+    for (unsigned y = 0; y < 8; ++y) {
+        for (unsigned x = 0; x < 4; ++x) {
+            memcpy(vertical+(y*4+x)*4,colors[y/2],4);
+        }
+    }
+    UiTexture wide = 0, tall = 0;
+    CHECK(ui_renderer_texture(&renderer,8,4,horizontal,8*4,&wide) == UI_RENDER_OK);
+    CHECK(ui_renderer_texture(&renderer,4,8,vertical,4*4,&tall) == UI_RENDER_OK);
+    const float scales[4] = {1,1.25f,1.5f,2};
+    for (unsigned dpi = 0; dpi < 4; ++dpi) {
+        scale = scales[dpi]; width = (uint32_t)(128*scale);
+        CHECK(ui_renderer_resize(&renderer,width,width) == UI_RENDER_OK);
+        begin();
+        CHECK(ui_artwork_draw(&frame,wide,8,4,(UiRect){8,8,32,32},8) == UI_RENDER_OK);
+        CHECK(frame.quad_count == 1 && frame.batches[0].texture == wide);
+        render();
+        pixel(16,24,0,255,0,255,0); pixel(32,24,0,0,255,255,0);
+        pixel(8,8,0,0,0,0,0); pixel(39,39,0,0,0,0,0);
+        begin();
+        CHECK(ui_artwork_draw(&frame,tall,4,8,(UiRect){8,8,32,32},8) == UI_RENDER_OK);
+        render();
+        pixel(24,16,0,255,0,255,0); pixel(24,32,0,0,255,255,0);
+        pixel(8,8,0,0,0,0,0);
+    }
+    CHECK(ui_renderer_texture_release(&renderer,wide) == UI_RENDER_OK);
+    CHECK(ui_renderer_texture_release(&renderer,tall) == UI_RENDER_OK);
+}
+
 static void limits_and_recovery(void)
 {
     UiTexture textures[UI_MAX_TEXTURES], extra = 0; unsigned char white[4] = {255,255,255,255};
@@ -155,9 +250,9 @@ int main(void)
         CHECK(ui_renderer_resize(&renderer,width,width) == UI_RENDER_OK);
         golden_shapes(i); golden_textures(); golden_scissors();
     }
-    limits_and_recovery();
+    golden_icons(); golden_artwork_crop(); limits_and_recovery();
     CHECK(ui_renderer_debug_report(&renderer));
     CHECK(ui_renderer_stats(&renderer).resources == 0);
-    puts("WARP: golden RGBA samples at 96/144/192 DPI, textures, clips, resize and recovery passed");
+    puts("WARP: golden RGBA samples, icons and artwork crop at 96/120/144/192 DPI, textures, clips, resize and recovery passed");
     return 0;
 }
