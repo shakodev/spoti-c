@@ -108,9 +108,39 @@ int main(void)
     uint64_t waits=worker_stats(host->worker).waits;
     CHECK(WaitForSingleObject(worker_idle_handle(host->worker),0)==WAIT_OBJECT_0);
     CHECK(worker_stats(host->worker).waits==waits); /* No jobs scheduled by an idle pump. */
+    /* Reauthentication can start from an expired, still displayed session.
+     * A failed attempt closes the live account and must retire that UI state. */
+    app.model.logged_in=true; app.model.status=APP_AUTH_EXPIRED;
+    app.model.player=(PlayerSnapshot){.state=PLAYER_PLAYING,.generation=42,.volume=1};
+    strcpy_s(app.model.playing.title,sizeof(app.model.playing.title),"Previous account track");
+    ui_scheduler_playing(&scheduler,true,GetTickCount64());
     CHECK(app_enqueue(&app,(AppAction){.type=APP_SIGN_IN})==APP_OK); (void)app_update(&app,GetTickCount64());
     CHECK(app.model.auth_pending); settle(host,queue);
     CHECK(!app.model.auth_pending && !app.model.logged_in && strstr(app.model.notice,"OAuth"));
+    CHECK(app.model.player.state==PLAYER_STOPPED && !app.model.playing.title[0] && !scheduler.playing);
+    /* A replacement account's player starts its own generation sequence.
+     * Publish a synthetic completed login in the reserved auth slot; no OAuth,
+     * account, network or audio setup is needed to verify UI delivery. */
+    CHECK(WaitForSingleObject(worker_idle_handle(host->worker),10000)==WAIT_OBJECT_0);
+    app.model.logged_in=true; app.model.status=APP_AUTH_EXPIRED;
+    app.model.player=(PlayerSnapshot){.state=PLAYER_PLAYING,.generation=42,.volume=1};
+    strcpy_s(app.model.playing.title,sizeof(app.model.playing.title),"Previous account track");
+    LiveSlot *delivery=&host->slots[LIVE_SLOTS-1];
+    CHECK(atomic_load_explicit(&delivery->phase,memory_order_acquire)==0);
+    delivery->auth=true; delivery->logout=false; delivery->success=true;
+    delivery->request=(AppRequest){.serial=app.model.auth_serial}; delivery->message[0]=0;
+    atomic_store_explicit(&delivery->phase,2,memory_order_release);
+    app_live_pump(host);
+    CHECK(app.model.logged_in && !app.model.playing.title[0] && app.model.player.generation==0);
+    CHECK(app_publish_player(&app,(PlayerSnapshot){.state=PLAYER_PAUSED,.generation=1,.volume=1},
+        GetTickCount64())==APP_OK);
+    settle(host,queue);
+    /* A superseded auth failure must not retire a newer session. */
+    delivery->success=false; delivery->request.serial=app.model.auth_serial-1;
+    atomic_store_explicit(&delivery->phase,2,memory_order_release);
+    app_live_pump(host);
+    CHECK(app.model.logged_in && app.model.player.generation==1);
+    (void)app_session(&app,false,false,GetTickCount64()); settle(host,queue);
     /* Queue login behind a blocked owner, then cancel it before it can open a browser. */
     bool completed=false; WorkerJob job={.run=blocker,.complete=blocked_done,.context=&completed,
         .deadline=CORE_CLOCK_NEVER,.priority=WORKER_DISK}; uint64_t ticket;

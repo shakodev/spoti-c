@@ -177,10 +177,17 @@ void app_live_pump(AppLive *h)
         if (phase!=2) { continue; }
         if (slot->auth && slot->request.serial==h->app->model.auth_serial) {
             h->app->model.auth_pending=false;
+            bool had_session=h->app->model.logged_in;
+            if (had_session) {
+                /* Reauthentication replaces the live account/player. Retire
+                 * its pages and snapshot generation before accepting either
+                 * a replacement session or a failed login. */
+                (void)app_session(h->app,false,h->app->model.online,GetTickCount64());
+            }
             if (slot->success) {
                 (void)app_session(h->app,!slot->logout,true,GetTickCount64());
                 h->app->model.last_result=APP_OK;
-            }
+            } else if (had_session) { h->app->model.last_result=APP_FAILED; }
             strcpy_s(h->app->model.notice,sizeof(h->app->model.notice),slot->message);
         } else if (!slot->auth && !slot->retirement) {
             if (slot->request.screen==APP_LYRICS) {

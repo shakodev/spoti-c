@@ -8,6 +8,11 @@ all deliveries, including stale generations. Cancellation must retire HTTP
 before reusing response buffers. Logout cancels pending login and requests,
 stops playback, deletes DPAPI credentials and clears account pages.
 
+An accepted reauthentication completion retires any previous UI session before
+publishing its result. Failure leaves the UI signed out; success installs a
+fresh session whose player snapshots may restart their generation sequence.
+Superseded auth serials must not clear a newer session.
+
 Protocol authorities are the existing `oauth-credentials.md`, `auth-tokens.md`,
 `pathfinder.md`, `home-library-playlist.md`, `native-library-playlist.md` and
 `playback-resolution.md`. No Web API replacement or guessed GraphQL hash is used.
