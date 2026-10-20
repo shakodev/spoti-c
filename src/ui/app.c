@@ -25,10 +25,10 @@ AppResult app_geometry(float width, float height, float dpi, bool detail, AppGeo
         width <= 0 || height <= 0) { return APP_INVALID; }
     float w = width * 96 / dpi, h = height * 96 / dpi;
     if (w < 400 || h < 320 || w > 16384 || h > 16384) { return APP_FULL; }
-    float sidebar = w < 760 ? 64.0f : 184.0f, panel = detail && w >= 1180 ? 240.0f : 0.0f;
+    float sidebar = w < 760 ? 64.0f : 280.0f, panel = detail && w >= 1180 ? 240.0f : 0.0f;
     float extra = w < 760 ? 32.0f : 0;
-    *out = (AppGeometry){.width=w,.height=h,.sidebar=sidebar,.detail=panel,.bar=88+extra,
-        .main=w-24-sidebar-panel-(panel ? 8 : 0),.viewport=fmaxf(0,h-248-extra),.compact=w<760};
+    *out = (AppGeometry){.width=w,.height=h,.sidebar=sidebar,.detail=panel,.bar=88+extra,.scale=dpi/96,
+        .main=w-24-sidebar-panel-(panel ? 8 : 0),.viewport=fmaxf(0,h-272-extra),.compact=w<760};
     return APP_OK;
 }
 void app_label(Clay_String text, uint16_t size, Clay_Color color)
@@ -88,14 +88,14 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
         return (Clay_RenderCommandArray){0};
     }
     AppGeometry *g = &a->geometry;
+    if (a->browse.collapsed && g->sidebar>64) { g->main+=g->sidebar-64; g->sidebar=64; }
     if (ui_widgets_begin(&a->widgets,g->width,g->height,input) != UI_WIDGET_OK) { return (Clay_RenderCommandArray){0}; }
     a->control_count = a->label_count = 0;
+    app_browse_begin(a);
     a->messages.length=0; a->messages.text[0]=0; a->messages.full=false;
     CLAY(CLAY_ID("AppRoot"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
         .padding=CLAY_PADDING_ALL(8),.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},.backgroundColor={8,8,8,255}}) {
-        CLAY(CLAY_ID("AppTitle"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(32)},.padding={28,0,0,0}}}) {
-            app_label(a->services.demo ? CLAY_STRING("spoti-c | Offline demo") : CLAY_STRING("spoti-c"),18,(Clay_Color){225,225,225,255});
-        }
+        app_header(a);
         CLAY(CLAY_ID("AppBody"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},.childGap=8}}) {
             app_sidebar(a);
             CLAY(CLAY_ID("AppMain"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
@@ -131,9 +131,8 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                 else if (a->model.location.screen == APP_PLAYLIST && a->model.logged_in) { app_playlist(a); }
                 else if (a->model.page && a->model.logged_in) {
                     if (a->model.status == APP_ERROR || !a->model.page->count) { status(a); }
-                    if (a->model.page->count) {
-                        if (a->model.location.screen == APP_HOME) { app_home(a); } else { app_library(a); }
-                    }
+                    if (a->model.location.screen!=APP_HOME) { app_library(a); }
+                    else if (a->model.page->count) { app_home(a); }
                 } else { status(a); }
             }
             if (g->detail) {
@@ -148,6 +147,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
         app_now_playing(a);
     }
     a->commands = ui_widgets_end(&a->widgets); ++a->frames;
+    app_browse_end(a);
     bool found = false;
     for (uint32_t i = 0; i < a->control_count; ++i) { if (a->controls[i].id.id == a->widgets.focus) { found = true; } }
     if (!found && a->control_count) { a->widgets.focus = a->controls[0].id.id; }
@@ -164,9 +164,10 @@ AppResult app_image(App *a, uint64_t gen, const AppEntity *entity, ArtworkId id,
     if (slot==APP_IMAGES) { return APP_FULL; }
     id.generation = gen;
     ArtResult r = artwork_request(a->services.artwork,id,sources,count);
+    a->images[slot] = (AppImage){.entity=*entity,.id=id,.result=r};
+    if (slot==a->image_count) { ++a->image_count; }
     if (r != ART_OK && r != ART_PENDING) { return r == ART_FULL ? APP_FULL : APP_FAILED; }
-    a->images[slot] = (AppImage){.entity=*entity,.id=id};
-    if (slot==a->image_count) { ++a->image_count; } return APP_PENDING;
+    return APP_PENDING;
 }
 UiRenderResult app_render_custom(void *context, UiRenderFrame *frame, const Clay_RenderCommand *c)
 {
@@ -180,8 +181,8 @@ UiRenderResult app_render_custom(void *context, UiRenderFrame *frame, const Clay
     }
     if (c->commandType == CLAY_RENDER_COMMAND_TYPE_CUSTOM && c->renderData.custom.customData) {
         AppImage *image = c->renderData.custom.customData;
-        if (a->services.artwork) { return artwork_draw(a->services.artwork,image->id,frame,
-            (UiRect){c->boundingBox.x,c->boundingBox.y,c->boundingBox.width,c->boundingBox.height}); }
+        if (a->services.artwork) { return artwork_draw_rounded(a->services.artwork,image->id,frame,
+            (UiRect){c->boundingBox.x,c->boundingBox.y,c->boundingBox.width,c->boundingBox.height},4); }
     }
     return UI_RENDER_UNSUPPORTED;
 }

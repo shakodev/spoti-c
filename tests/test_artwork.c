@@ -20,7 +20,7 @@ typedef struct FakeTexture { UiTexture id; uint32_t bytes; bool invalid; } FakeT
 typedef struct FakeGpu {
     FakeTexture textures[ART_CACHE_SLOTS];
     DWORD owner;
-    uint32_t serial, bytes, peak, live;
+    uint32_t serial, bytes, peak, live, limit;
     uint64_t uploads, releases;
     ArtResult fail;
 } FakeGpu;
@@ -32,6 +32,7 @@ static ArtResult upload(void *context, uint32_t width, uint32_t height,
     CHECK(GetCurrentThreadId() == gpu->owner && rgba != NULL);
     CHECK(width && height && width <= ART_MAX_EDGE && height <= ART_MAX_EDGE);
     if (gpu->fail != ART_OK) { return gpu->fail; }
+    if (gpu->limit && gpu->live == gpu->limit) { return ART_FULL; }
     for (size_t i = 0; i < ART_CACHE_SLOTS; ++i) {
         FakeTexture *entry = &gpu->textures[i];
         if (!entry->id) {
@@ -177,6 +178,24 @@ static void cache_slots_and_failures(void)
     texture_cache_clear(&cache);
     CHECK(gpu.bytes == 0 && gpu.live == 0 && gpu.uploads == gpu.releases);
 }
+static void shared_renderer_slots(void)
+{
+    FakeGpu gpu = {.limit=2}; TextureCache cache;
+    ArtworkHandle first, second, third; UiTexture texture;
+    texture_cache_init(&cache,callbacks(&gpu));
+    CHECK(texture_cache_insert(&cache,identity(1,1),4,2,rgba,&first) == ART_OK);
+    CHECK(texture_cache_insert(&cache,identity(2,1),4,2,rgba,&second) == ART_OK);
+    texture_cache_prepare(&cache);
+    CHECK(texture_cache_resolve(&cache,second,&texture));
+    CHECK(texture_cache_insert(&cache,identity(3,1),4,2,rgba,&third) == ART_FULL);
+    CHECK(cache.bytes == 64 && gpu.releases == 0 && !texture_cache_resolve(&cache,first,&texture));
+    CHECK(texture_cache_resolve(&cache,second,&texture));
+    texture_cache_prepare(&cache);
+    CHECK(gpu.releases == 1 && texture_cache_resolve(&cache,second,&texture));
+    CHECK(texture_cache_insert(&cache,identity(3,1),4,2,rgba,&third) == ART_OK);
+    CHECK(gpu.live == 2 && cache.bytes == 64);
+    texture_cache_clear(&cache); CHECK(gpu.uploads == gpu.releases);
+}
 
 typedef struct FetchFixture {
     HANDLE started, release;
@@ -305,7 +324,7 @@ static void invalid_sources(void)
     CHECK(artwork_request(f->art, id, &image, 1) == ART_INVALID);
     image = source(); image.width = 0;
     CHECK(artwork_request(f->art, id, &image, 1) == ART_UNSUPPORTED);
-    image.width = 512;
+    image.width = ART_ORIGINAL_EDGE + 1;
     CHECK(artwork_request(f->art, id, &image, 1) == ART_UNSUPPORTED);
     wchar_t long_url[ART_URL_CHARS + 1];
     for (size_t i = 0; i < ART_URL_CHARS; ++i) { long_url[i] = L'a'; }
@@ -406,6 +425,7 @@ static void pipeline_pressure(void)
     CHECK(atomic_load(&f->fetch.calls) == 17);
     CHECK(artwork_begin_visible(f->art) == ART_OK);
     for (uint32_t i = 1; i <= 15; ++i) CHECK(artwork_lookup(f->art, identity(i, 1), &handle));
+    CHECK(artwork_request(f->art, identity(17, 1), &image, 1) == ART_PENDING);
     CHECK(artwork_prepare(f->art) == ART_FULL); /* Retire only the now-hidden sixteenth entry. */
     CHECK(f->gpu.releases == 0);
     CHECK(artwork_prepare(f->art) == ART_OK);
@@ -444,13 +464,15 @@ static void http_preflight(void)
 }
 
 void test_artwork_decode(void);
+void test_artwork_visibility(void);
 int main(void)
 {
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CRT_ALLOC_HOOK previous = _CrtSetAllocHook(allocation_hook);
 #endif
-    test_artwork_decode(); cache_pressure(); cache_churn(); cache_slots_and_failures(); http_preflight();
+    test_artwork_decode(); cache_pressure(); cache_churn(); cache_slots_and_failures(); shared_renderer_slots(); http_preflight();
     async_upload(); invalid_sources(); stale_upload(); admission_and_navigation(); shutdown_busy(); pipeline_pressure();
+    test_artwork_visibility();
 #if defined(_MSC_VER) && defined(_DEBUG)
     CHECK(heap_calls == 0); _CrtSetAllocHook(previous);
 #endif

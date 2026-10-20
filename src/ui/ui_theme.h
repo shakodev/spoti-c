@@ -11,7 +11,7 @@ typedef struct UiTheme {
     Clay_Color negative, warning, information, outline, decorative;
     Clay_Color tinted, tinted_hover, tinted_pressed, focus;
     uint16_t space[12], radius[5], control[3], icon[8], duration_ms[6];
-    uint16_t body, small, marginal, title, large_title, headline, focus_width;
+    uint16_t body, small_text, marginal, title, large_title, headline, focus_width;
     float disabled_opacity, active_opacity, hover_scale;
 } UiTheme;
 const UiTheme *ui_theme(void);

@@ -135,6 +135,11 @@ static void typography_roles(void)
         CHECK(key.dpi == 120 && key.text_generation == 41 && key.max_width == 220 && key.ellipsis);
         FontMetrics metrics = measure(label,key);
         CHECK(metrics.width > 0 && metrics.height == 24 && metrics.rtl_runs > 0);
+        /* #40 keeps Clay word advances separate from atlas-backed draw runs.
+         * Warm both keys before asserting allocation-free measurement/render. */
+        key.measure_only=true;
+        FontMetrics advance=measure(label,key);
+        CHECK(advance.width==metrics.width && advance.height==metrics.height);
     }
     FontConfig invalid = font_config_for_clay(base,255,16,0,0); FontHandle handle;
     CHECK(font_prepare_text(&cache,text(label),&invalid,&handle) == FONT_INVALID);

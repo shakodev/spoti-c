@@ -3,6 +3,7 @@
 #include "app_desktop.h"
 #include "app_fixture.h"
 #include "benchmark.h"
+#include "app_artwork_host.h"
 #include <windowsx.h>
 #include <wchar.h>
 #include <stdio.h>
@@ -23,6 +24,7 @@ static EventQueue *queue;
 static bool demo, wasapi, probe;
 static StartupTimes *probe_times;
 static BenchProbe benchmark;
+static AppArtworkHost artwork_host;
 
 static bool input(void *context,UiWindow *window,UINT message,WPARAM wp,LPARAM lp,LRESULT *out)
 {
@@ -75,6 +77,10 @@ static void deferred(UiWindow *window)
                 }
             }
             desktop.app.services=services; (void)app_session(&desktop.app,true,true,GetTickCount64());
+        }
+        if (!probe && !benchmark.shared && app_artwork_open(&artwork_host,&arena,&desktop.surface.renderer,queue,NULL)) {
+            desktop.app.services.artwork=app_artwork_service(&artwork_host);
+            (void)artwork_navigate(desktop.app.services.artwork,desktop.app.model.generation);
         }
         if (!probe) { (void)app_desktop_media_open(&desktop,window); }
         startup_mark(&startup.times,STARTUP_SERVICES);
@@ -152,6 +158,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
         if (startup_writer_close(&startup,10000)!=STATE_CACHE_OK && !probe) { clean=false; }
     }
     if (!app_desktop_media_close(&desktop)) { return 1; }
+    if (!app_artwork_close(&artwork_host,10000)) { return 1; }
+    desktop.app.services.artwork=NULL;
     /* Font binding borrows the Clay arena: unbind before disposing App. */
     ui_surface_destroy(&desktop.surface); app_dispose(&desktop.app);
     if (desktop.fixture && !app_fixture_stop(desktop.fixture)) { return 1; }

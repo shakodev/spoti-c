@@ -2,16 +2,6 @@
 #include "screens/playlist.h"
 #include <math.h>
 
-static uint64_t key_at(void *context, uint32_t index)
-{
-    App *a = context; return (uint64_t)a->model.page->offset + index + 1;
-}
-static bool index_of(void *context, uint64_t key, uint32_t *index)
-{
-    App *a = context; uint32_t offset = a->model.page->offset;
-    if (key <= offset || key - offset > a->model.page->count) { return false; }
-    *index = (uint32_t)(key-offset-1); return true;
-}
 AppResult app_pointer(App *a, UiWidgetInput input)
 {
     if (!a || !a->alive || !isfinite(input.x) || !isfinite(input.y)) { return APP_INVALID; }
@@ -106,30 +96,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
         else { return APP_CANCELLED; }
         return app_enqueue(a,(AppAction){.type=APP_SEEK,.value=fmin(1,fmax(0,value))});
     }
-    if (a->model.page && a->model.location.screen != APP_HOME && a->model.location.screen != APP_SETTINGS &&
-        control->action.type == APP_SELECT) {
-        if (control->action.value >= 0) { a->widgets.lists[0].focus = key_at(a,(uint32_t)control->action.value); }
-        UiNav nav;
-        switch (key) {
-        case APP_KEY_UP: nav = UI_NAV_UP; break;
-        case APP_KEY_DOWN: nav = UI_NAV_DOWN; break;
-        case APP_KEY_HOME: nav = UI_NAV_HOME; break;
-        case APP_KEY_END: nav = UI_NAV_END; break;
-        case APP_KEY_PAGE_UP: nav = UI_NAV_PAGE_UP; break;
-        case APP_KEY_PAGE_DOWN: nav = UI_NAV_PAGE_DOWN; break;
-        default: nav = (UiNav)-1; break;
-        }
-        if ((int)nav >= 0) {
-            UiWidgetResult r = ui_virtual_navigate(&a->widgets.lists[0],a->model.page->count,48,
-                fmin(384,a->geometry.viewport),nav,true,key_at,index_of,a);
-            a->widgets.focus = CLAY_ID("AppList").id; return r == UI_WIDGET_OK ? APP_OK : APP_CANCELLED;
-        }
-        if (key == APP_KEY_ENTER && control->id.id == CLAY_ID("AppList").id) {
-            uint32_t index; AppEntity entity;
-            if (!index_of(a,a->widgets.lists[0].focus,&index) || !a->model.page->items[index].available ||
-                app_entity(&a->model.page->items[index],&entity) != APP_OK) { return APP_CANCELLED; }
-            return app_enqueue(a,(AppAction){.type=APP_SELECT,.entity=entity});
-        }
-    }
+    if (a->model.page && (a->model.location.screen==APP_LIBRARY || a->model.location.screen==APP_SHELF) &&
+        control->action.type==APP_SELECT) { return app_browse_key(a,key,control); }
     return key == APP_KEY_ENTER ? app_enqueue(a,control->action) : APP_CANCELLED;
 }

@@ -28,7 +28,7 @@ static void tokens(void)
     CHECK(t->panel.r==18 && t->hover.r==42 && t->accent.g==215 && t->subdued.b==179);
     CHECK(t->space[0]==2 && t->space[6]==24 && t->space[11]==128);
     CHECK(t->control[0]==32 && t->control[1]==48 && t->control[2]==56 && t->focus_width==2);
-    CHECK(t->body==16 && t->small==14 && t->title==24 && t->large_title==32);
+    CHECK(t->body==16 && t->small_text==14 && t->title==24 && t->large_title==32);
     UiComponentStyle normal=ui_component_style(UI_COMPONENT_PRIMARY,0);
     UiComponentStyle hover=ui_component_style(UI_COMPONENT_PRIMARY,UI_CONTROL_HOVER);
     UiComponentStyle pressed=ui_component_style(UI_COMPONENT_PRIMARY,UI_CONTROL_PRESSED);

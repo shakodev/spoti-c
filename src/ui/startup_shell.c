@@ -79,6 +79,10 @@ void startup_place(HWND hwnd,const StateCache *s)
     HMONITOR monitor=MonitorFromRect(&r,MONITOR_DEFAULTTONEAREST); MONITORINFO info={.cbSize=sizeof(info)};
     if (!GetMonitorInfoW(monitor,&info)) { return; }
     int width=(int)s->width,height=(int)s->height;
+    MINMAXINFO limits={0};
+    (void)SendMessageW(hwnd,WM_GETMINMAXINFO,0,(LPARAM)&limits);
+    if (width<limits.ptMinTrackSize.x) { width=limits.ptMinTrackSize.x; }
+    if (height<limits.ptMinTrackSize.y) { height=limits.ptMinTrackSize.y; }
     if (width>info.rcWork.right-info.rcWork.left) { width=info.rcWork.right-info.rcWork.left; }
     if (height>info.rcWork.bottom-info.rcWork.top) { height=info.rcWork.bottom-info.rcWork.top; }
     int x=s->x,y=s->y;

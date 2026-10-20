@@ -17,12 +17,13 @@ struct PlaylistQueue;
 #include "app_result.h"
 #include "app_notice.h"
 #include "screens/catalog_view.h"
+#include "app_browse.h"
 typedef enum AppScreen { APP_HOME, APP_LIBRARY, APP_SETTINGS, APP_SHELF, APP_PLAYLIST,
     APP_SEARCH, APP_ALBUM, APP_ARTIST, APP_LYRICS } AppScreen;
 typedef enum AppStatus { APP_LOADING, APP_CONTENT, APP_EMPTY, APP_ERROR,
     APP_AUTH_EXPIRED, APP_OFFLINE, APP_SIGNED_OUT } AppStatus;
 typedef struct AppEntity { CollectionItemKind kind; char uri[192], title[192]; uint8_t id[16]; bool playable; } AppEntity;
-typedef struct AppLocation { AppScreen screen; AppEntity entity; double scroll; uint32_t selector; char query[APP_QUERY_BYTES]; } AppLocation;
+typedef struct AppLocation { AppScreen screen; AppEntity entity; double scroll; uint32_t selector; char query[APP_QUERY_BYTES]; bool grid; } AppLocation;
 typedef struct AppRequest { uint64_t generation, serial; uint32_t cursor; CollectionKind kind; char uri[192];
     AppScreen screen; uint32_t selector; char query[APP_QUERY_BYTES]; } AppRequest;
 typedef enum AppAuth { APP_LOGIN, APP_LOGOUT } AppAuth;
@@ -54,12 +55,14 @@ typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_B
     APP_PREVIOUS, APP_NEXT, APP_SEEK, APP_VOLUME, APP_DETAIL,
     APP_TRACK_QUERY, APP_TRACK_SORT, APP_TRACK_PLAY, APP_TRACK_WINDOW,
     APP_GO_SEARCH, APP_GO_LYRICS, APP_CATALOG_QUERY, APP_CATALOG_SECTION,
-    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES } AppActionType;
+    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES,
+    APP_LIBRARY_GRID, APP_LIBRARY_FILTER, APP_LIBRARY_QUERY, APP_SIDEBAR_TOGGLE,
+    APP_LIBRARY_FOCUS } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
-typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
+typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; ArtResult result; } AppImage;
 typedef struct AppMeasure { FontConfig config; Clay_Dimensions dimensions; char text[128]; uint32_t length; } AppMeasure;
-typedef struct AppGeometry { float width, height, sidebar, main, viewport, detail, bar; bool compact; } AppGeometry;
+typedef struct AppGeometry { float width, height, sidebar, main, viewport, detail, bar, scale; bool compact; } AppGeometry;
 
 typedef struct AppVolume {
     float value, nonzero, observed;
@@ -88,6 +91,7 @@ typedef struct AppModel {
 typedef struct App {
     const struct StateCache *cached; /* Borrowed startup snapshot; never authorizes playback. */
     AppModel model;
+    AppBrowse browse;
     CatalogView catalog;
     /* Fixed route-controller storage charged to UI state, used exclusively by
      * the bound serialized network owner; it outlives its cancellation ack. */
@@ -145,6 +149,7 @@ UiRenderResult app_render_custom(void *, UiRenderFrame *, const Clay_RenderComma
 typedef enum AppKey { APP_KEY_TAB, APP_KEY_ENTER, APP_KEY_BACK, APP_KEY_UP, APP_KEY_DOWN,
     APP_KEY_HOME, APP_KEY_END, APP_KEY_LEFT, APP_KEY_RIGHT, APP_KEY_PAGE_UP, APP_KEY_PAGE_DOWN } AppKey;
 AppResult app_key(App *, AppKey, bool shift);
+AppResult app_browse_key(App *, AppKey, const AppControl *);
 AppResult app_pointer(App *, UiWidgetInput);
 void app_scroll(App *, double dips);
 /* Screen composition entry points, invoked within app_layout only. */

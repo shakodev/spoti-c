@@ -21,6 +21,8 @@ static AppResult generation(App *a)
     if (a->services.retire) { a->services.retire(a->services.context,a->model.generation); }
     if (a->services.playlist) { playlist_close(a->services.playlist); }
     (void)ui_text_set(&a->widgets.texts[0],"",0);
+    (void)ui_text_set(&a->widgets.texts[1],"",0);
+    bool collapsed=a->browse.collapsed; memset(&a->browse,0,sizeof(a->browse)); a->browse.collapsed=collapsed;
     memset(a->images,0,sizeof(a->images)); a->image_count = 0;
     for (uint32_t i=0;i<UI_WIDGET_SEEKS;++i) {
         if (a->widgets.seeks[i].dragging) { (void)ui_seek_cancel(&a->widgets.seeks[i]); }
@@ -61,6 +63,7 @@ static AppResult navigate(App *a, AppLocation location, bool back)
     (void)generation(a); a->model.location = location;
     a->widgets.lists[0].scroll = location.scroll; a->widgets.focus = 0;
     if (location.screen==APP_SEARCH) { (void)ui_text_set(&a->widgets.texts[0],location.query,(uint32_t)strlen(location.query)); }
+    if (location.screen==APP_LIBRARY || location.screen==APP_SHELF) { app_browse_restore(a); }
     a->model.selected = location.entity;
     return request(a,0);
 }
@@ -70,14 +73,22 @@ AppResult app_refresh(App *a)
     if (a->model.location.screen==APP_SEARCH) {
         (void)ui_text_set(&a->widgets.texts[0],a->model.location.query,(uint32_t)strlen(a->model.location.query));
     }
+    if (a->model.location.screen==APP_LIBRARY || a->model.location.screen==APP_SHELF) { app_browse_restore(a); }
     return request(a,0);
 }
 AppResult app_entity(const CollectionItem *item, AppEntity *out)
 {
     if (!item || !out) { return APP_INVALID; }
     *out = (AppEntity){.kind=item->kind};
-    if (json_base_string_copy(item->uri,out->uri,sizeof(out->uri)) != JSON_OK ||
-        json_base_string_copy(item->name,out->title,sizeof(out->title)) != JSON_OK) { return APP_FULL; }
+    if (json_base_string_copy(item->uri,out->uri,sizeof(out->uri)) != JSON_OK) { return APP_FULL; }
+    JsonString name=item->name;
+    if (name.bytes>=sizeof(out->title)) {
+        if (!name.data) { return APP_INVALID; }
+        name.bytes=sizeof(out->title)-4;
+        while (name.bytes && ((unsigned char)name.data[name.bytes]&0xc0u)==0x80u) { --name.bytes; }
+        if (json_base_string_copy(name,out->title,sizeof(out->title))!=JSON_OK) { return APP_INVALID; }
+        memcpy(out->title+name.bytes,"...",4);
+    } else if (json_base_string_copy(name,out->title,sizeof(out->title))!=JSON_OK) { return APP_INVALID; }
     if (!out->title[0]) { memcpy(out->title,"Untitled",9); }
     out->playable = item->available && item->kind == COLLECTION_TRACK && item->has_compact_id;
     memcpy(out->id,item->compact_id,16); return APP_OK;
@@ -149,6 +160,9 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
         if (a->fonts) { (void)font_cache_reset(a->fonts->cache); }
         if (a->scheduler) { ui_scheduler_playing(a->scheduler,false,now); }
     }
+    if (logged_in && (a->model.location.screen==APP_LIBRARY || a->model.location.screen==APP_SHELF)) {
+        app_browse_restore(a);
+    }
     r = request(a,0); a->model.last_result=r; dirty(a); return r;
 }
 AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, const CollectionPage *page)
@@ -163,6 +177,7 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
             page->json.generation == delivery.generation && page->kind == delivery.kind && page->offset == delivery.cursor &&
             page->count <= COLLECTION_ROW_CAP && (page->next == COLLECTION_END || page->next > delivery.cursor)) {
             release_page(a); a->model.page = page; page = NULL;
+            a->browse.previous_count=a->browse.visible_count=0; a->image_count=0;
             a->model.status = a->model.page->loading ? APP_LOADING : a->model.page->count ? APP_CONTENT : APP_EMPTY;
             a->model.last_result=APP_OK;
             a->widgets.lists[0].scroll = a->model.location.scroll;
@@ -180,7 +195,7 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_READ_MESSAGES ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_LIBRARY_FOCUS ||
         (action.type==APP_VOLUME && !isfinite(action.value)) ||
         (action.type==APP_SELECT && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
@@ -195,6 +210,19 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
     AppModel *m = &a->model;
     switch (action.type) {
     case APP_READ_MESSAGES: return app_messages_request(a);
+    case APP_SIDEBAR_TOGGLE: a->browse.collapsed=!a->browse.collapsed; return APP_OK;
+    case APP_LIBRARY_FOCUS: a->widgets.focus=CLAY_ID("LibraryQuery").id; return APP_OK;
+    case APP_LIBRARY_GRID: case APP_LIBRARY_FILTER: case APP_LIBRARY_QUERY:
+        if (m->location.screen!=APP_LIBRARY && m->location.screen!=APP_SHELF) { return APP_INVALID; }
+        if (action.type==APP_LIBRARY_GRID) { m->location.grid=!m->location.grid; }
+        else if (action.type==APP_LIBRARY_FILTER) {
+            if (!isfinite(action.value) || action.value<0 || action.value>3 || floor(action.value)!=action.value) { return APP_INVALID; }
+            m->location.selector=(uint32_t)action.value;
+        } else {
+            if (a->widgets.texts[1].length>=APP_QUERY_BYTES) { return APP_FULL; }
+            memcpy(m->location.query,a->widgets.texts[1].text,a->widgets.texts[1].length+1);
+        }
+        a->widgets.lists[0]=(UiVirtualList){0}; m->location.scroll=0; app_browse_project(a); return APP_OK;
     case APP_GO_HOME: return navigate(a,(AppLocation){.screen=APP_HOME},false);
     case APP_GO_LIBRARY: return navigate(a,(AppLocation){.screen=APP_LIBRARY},false);
     case APP_GO_SETTINGS: return navigate(a,(AppLocation){.screen=APP_SETTINGS},false);
@@ -300,10 +328,14 @@ AppResult app_update(App *a, uint64_t now)
     }
     if (a->services.artwork) { (void)artwork_begin_visible(a->services.artwork); }
     app_catalog_prepare(a,now);
+    app_browse_prepare(a);
     if (a->services.artwork) {
         for (uint32_t i = 0; i < a->image_count; ++i) {
             (void)artwork_lookup(a->services.artwork,a->images[i].id,&a->images[i].handle);
         }
+        (void)artwork_prepare(a->services.artwork);
+        /* Pruning can release queued capacity without a worker completion. */
+        app_browse_prepare(a);
         (void)artwork_prepare(a->services.artwork);
     }
     return a->model.last_result;

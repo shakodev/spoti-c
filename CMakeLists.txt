@@ -239,12 +239,13 @@ target_include_directories(spotic_widgets PUBLIC src vendor)
 target_link_libraries(spotic_widgets PUBLIC spotic_clay spotic_renderer PRIVATE user32 imm32)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_font)
 add_library(spotic_artwork STATIC src/ui/artwork.c src/ui/image_decode.c
-    src/ui/image_wic.c src/ui/texture_cache.c src/ui/artwork_http.c)
+    src/ui/image_wic.c src/ui/texture_cache.c src/ui/artwork_http.c src/ui/app_artwork_host.c)
 target_include_directories(spotic_artwork PUBLIC src PRIVATE vendor)
 target_link_libraries(spotic_artwork PUBLIC spotic_core spotic_renderer
     PRIVATE windowscodecs ole32 uuid psapi winhttp)
 add_library(spotic_app STATIC src/ui/app.c src/ui/startup.c src/ui/startup_shell.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
-    src/ui/app_notice.c src/ui/notice_dialog.c
+    src/ui/app_notice.c src/ui/notice_dialog.c src/ui/app_browse.c src/ui/app_browse_input.c
+    src/ui/app_header.c src/ui/collection_artwork.c
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
     src/ui/sidebar.c src/ui/now_playing.c src/ui/app_volume.c src/ui/screens/home.c src/ui/screens/library.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
@@ -382,7 +383,7 @@ if(BUILD_TESTING)
         set_tests_properties(bench_tracklist PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
     add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_support.c tests/app_shell_window.c
-        tests/app_shell_resources.c tests/player_test_support.c)
+        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/player_test_support.c)
     target_include_directories(test_app_shell PRIVATE tests)
     target_compile_definitions(test_app_shell PRIVATE
         APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
@@ -428,11 +429,20 @@ if(BUILD_TESTING)
         add_test(NAME bench_ui_virtual_list COMMAND test_virtual_list --bench)
         set_tests_properties(bench_ui_virtual_list PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
-    add_executable(test_artwork tests/test_artwork.c tests/test_artwork_decode.c)
+    add_executable(test_artwork tests/test_artwork.c tests/test_artwork_decode.c tests/test_artwork_visibility.c)
     target_include_directories(test_artwork PRIVATE tests)
     target_link_libraries(test_artwork PRIVATE spotic_artwork)
     add_test(NAME ui_artwork COMMAND test_artwork)
     set_tests_properties(ui_artwork PROPERTIES TIMEOUT 60)
+    add_executable(test_collection_artwork tests/test_collection_artwork.c)
+    target_include_directories(test_collection_artwork PRIVATE tests)
+    target_link_libraries(test_collection_artwork PRIVATE spotic_app)
+    add_test(NAME ui_collection_artwork COMMAND test_collection_artwork)
+    add_executable(test_artwork_host tests/test_artwork_host.c)
+    target_include_directories(test_artwork_host PRIVATE tests)
+    target_link_libraries(test_artwork_host PRIVATE spotic_artwork)
+    add_test(NAME ui_artwork_host COMMAND test_artwork_host)
+    set_tests_properties(ui_artwork_host PROPERTIES TIMEOUT 30)
     if(ENABLE_LIVE_ARTWORK_TEST)
         add_executable(test_artwork_live tests/test_artwork_live.c)
         target_include_directories(test_artwork_live PRIVATE tests)

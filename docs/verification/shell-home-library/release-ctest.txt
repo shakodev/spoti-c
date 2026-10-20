@@ -1,0 +1,313 @@
+Start testing: Oct 20 14:33 W. Europe Daylight Time
+----------------------------------------------------------
+1/65 Testing: ui_parity_tools
+1/65 Test: ui_parity_tools
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/proto-tools/Scripts/python.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tests/test_parity_tools.py"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_parity_tools" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.188s
+
+OK
+{"sha256": "d43ecebc08bf25b2b079b793fafc650f1a6fa55a02d86ab1304a450a28e76e54", "files": 1, "rules": 1, "report": "C:\\Users\\Daan\\AppData\\Local\\Temp\\tmptrndoxbn\\report.json", "extracted": "C:\\Users\\Daan\\AppData\\Local\\Temp\\tmptrndoxbn\\extracted"}
+<end of output>
+Test time =   0.39 sec
+----------------------------------------------------------
+Test Passed.
+"ui_parity_tools" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_parity_tools" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/65 Testing: ui_icons
+2/65 Test: ui_icons
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_icons.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_icons" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_icons: aspect fit, DPI invariance, RTL, shader validation, Clay dispatch, budgets and warm allocation checks passed
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"ui_icons" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_icons" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/65 Testing: ui_components
+3/65 Test: ui_components
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_components.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_components" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+components: tokens, capture, state matrix, RTL/focus, menus and bounded warm frames passed
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"ui_components" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_components" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/65 Testing: core_release_metrics
+4/65 Test: core_release_metrics
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_release_metrics.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"core_release_metrics" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+process counters, CPU normalization, strict thresholds and missing evidence passed
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"core_release_metrics" end time: Oct 20 14:33 W. Europe Daylight Time
+"core_release_metrics" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/65 Testing: bench_dependency_audit
+6/65 Test: bench_dependency_audit
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/proto-tools/Scripts/python.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tools/release_audit.py" "--build" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"bench_dependency_audit" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Release audit: 390 C units, 6 artifacts, 0 failures
+<end of output>
+Test time =   0.47 sec
+----------------------------------------------------------
+Test Passed.
+"bench_dependency_audit" end time: Oct 20 14:33 W. Europe Daylight Time
+"bench_dependency_audit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/65 Testing: core_state_cache
+9/65 Test: core_state_cache
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_state_cache.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"core_state_cache" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+state cache: codec fuzz, bounds, migration, atomic interruption, concurrent saves, offline shell and worker lifetime passed
+<end of output>
+Test time =   0.22 sec
+----------------------------------------------------------
+Test Passed.
+"core_state_cache" end time: Oct 20 14:33 W. Europe Daylight Time
+"core_state_cache" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/65 Testing: app_media_controls
+10/65 Test: app_media_controls
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_media_controls.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"app_media_controls" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+app_media_controls: publication, audible timeline, media keys, bounded MPSC, duplicates and COM callback lifetimes passed
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"app_media_controls" end time: Oct 20 14:33 W. Europe Daylight Time
+"app_media_controls" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/65 Testing: app_catalog_screens
+11/65 Test: app_catalog_screens
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_catalog_screens.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"app_catalog_screens" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+catalog: App=245224 host-model=519104; 600 route transitions, 1000 allocation-free layouts
+app_catalog_screens: fixture routes, stable IDs, debounce, pages, lyrics, keyboard and ownership passed
+<end of output>
+Test time =   0.23 sec
+----------------------------------------------------------
+Test Passed.
+"app_catalog_screens" end time: Oct 20 14:33 W. Europe Daylight Time
+"app_catalog_screens" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/65 Testing: app_playlist
+12/65 Test: app_playlist
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_playlist_screen.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"app_playlist" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+playlist: 1000 real DirectWrite/Clay/render warm frames without allocations, pending text or new shaping
+app_playlist: 10k index, <=16 rendered rows, 2000 warm layouts without heap calls; shared models=511416 bytes
+<end of output>
+Test time =   0.58 sec
+----------------------------------------------------------
+Test Passed.
+"app_playlist" end time: Oct 20 14:33 W. Europe Daylight Time
+"app_playlist" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/65 Testing: app_shell
+14/65 Test: app_shell
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_app_shell.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"app_shell" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+app state=245224 bytes; 2000 warm layouts: zero Debug heap calls; 600 route transitions bounded
+account owner: existing PKCE begin/cancel and credential logout passed without browser/account
+artwork navigation: request coalescing, generation cancellation, stale rejection and handle balance passed
+volume: continuous input, mute, snapshot ordering/backpressure, Settings, compact layouts, restart and real player passed
+browse: UTF-8 projection, filtered original keys, history, page replacement and idle visibility passed
+1000 DirectWrite/Clay/renderer warm frames: no heap calls, no pending text, no new shaping
+native shell: real HWND keyboard/pointer/capture routing passed
+app_shell: routes, immutable pages, stale delivery, auth/offline, keyboard, playback and bounds passed
+<end of output>
+Test time =   0.54 sec
+----------------------------------------------------------
+Test Passed.
+"app_shell" end time: Oct 20 14:33 W. Europe Daylight Time
+"app_shell" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/65 Testing: app_messages
+15/65 Test: app_messages
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_app_messages.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"app_messages" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+messages: exact fallback, UTF-8/RTL/tokens, bounds, DPI, keyboard details, overflow and idle passed
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"app_messages" end time: Oct 20 14:33 W. Europe Daylight Time
+"app_messages" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/65 Testing: ui_artwork
+19/65 Test: ui_artwork
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_artwork.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_artwork" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+artwork visibility: cancellation, retry retention, crop, source admission and notifier retirement passed
+artwork: bounded decode/cache/worker ownership checks passed
+<end of output>
+Test time =   0.11 sec
+----------------------------------------------------------
+Test Passed.
+"ui_artwork" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_artwork" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/65 Testing: ui_collection_artwork
+20/65 Test: ui_collection_artwork
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_collection_artwork.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_collection_artwork" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+collection artwork: typed paths, copied Unicode URLs, limits, malformed data and source identities passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"ui_collection_artwork" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_collection_artwork" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/65 Testing: ui_artwork_host
+21/65 Test: ui_artwork_host
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_artwork_host.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_artwork_host" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+artwork host: deferred storage, arena budgets, partial failure, cancellation and joined ownership passed without network/GPU
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"ui_artwork_host" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_artwork_host" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/65 Testing: ui_font
+22/65 Test: ui_font
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_font.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_font" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+advances: Hello=36.852 Arabic=44.086 emoji=21.969 ellipsis=75.656
+1000 warm Clay layout/render frames: 0 CRT allocations, 0 new preparation requests
+ui_font: Unicode, DirectWrite metrics, pending coalescing, warm cache, LRU and lifetime passed
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"ui_font" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_font" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/65 Testing: ui_renderer
+23/65 Test: ui_renderer
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_renderer.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_renderer" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_renderer: fixed budgets, painter order, clipping, fake dispatch and Clay passed
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"ui_renderer" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_renderer" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/65 Testing: ui_scheduler
+24/65 Test: ui_scheduler
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_ui_scheduler.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_scheduler" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_scheduler: fake-clock coalescing, playback, visibility, animation and lyrics passed
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"ui_scheduler" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_scheduler" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/65 Testing: ui_window
+25/65 Test: ui_window
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/test_ui_window.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"ui_window" start time: Oct 20 14:33 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+native captions: buttons outside client, hit targets, states, DPI notifications and system commands passed
+idle trace: 100 ms, 1 blocking wait, 0 frames, 0 periodic timers
+ui_window: geometry, DPI, idle wait, worker/reset race and balanced shutdown passed
+<end of output>
+Test time =   0.50 sec
+----------------------------------------------------------
+Test Passed.
+"ui_window" end time: Oct 20 14:33 W. Europe Daylight Time
+"ui_window" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 20 14:33 W. Europe Daylight Time
+
+performance =   0.47 sec*proc
+

@@ -64,12 +64,14 @@ void ui_component_label(Clay_String label, uint16_t font, uint16_t size, Clay_Co
         .fontSize=size,.textColor=color,.wrapMode=CLAY_TEXT_WRAP_NONE}));
 }
 static void content(UiWidgets *ui, Clay_ElementId id, Clay_String label, UiIcon icon,
-    UiComponentStyle s, UiControl c)
+    UiComponentStyle s, UiControl c, UiComponentKind kind)
 {
     if (!c.rtl && icon!=UI_ICON_NONE) { ui_icon(ui,child(id,1),icon,20,s.foreground,c.rtl); }
-    ui_component_label(label,FONT_ROLE_BOLD,ui_theme()->small,s.foreground,c.rtl);
+    ui_component_label(label,FONT_ROLE_BOLD,ui_theme()->small_text,s.foreground,c.rtl);
     if (c.rtl && icon!=UI_ICON_NONE) { ui_icon(ui,child(id,1),icon,20,s.foreground,c.rtl); }
-    if (s.selected) { ui_icon(ui,child(id,2),UI_ICON_CHECK,16,s.foreground,c.rtl); }
+    if (s.selected && kind!=UI_COMPONENT_TAB && kind!=UI_COMPONENT_ICON && kind!=UI_COMPONENT_TERTIARY) {
+        ui_icon(ui,child(id,2),UI_ICON_CHECK,16,s.foreground,c.rtl);
+    }
 }
 bool ui_component_button(UiWidgets *ui, Clay_ElementId id, Clay_String label,
     UiIcon icon, UiComponentKind kind, UiControl c)
@@ -83,7 +85,7 @@ bool ui_component_button(UiWidgets *ui, Clay_ElementId id, Clay_String label,
         .backgroundColor=s.background,.cornerRadius=CLAY_CORNER_RADIUS(s.radius),
         .border={.color=s.outline,.width=CLAY_BORDER_ALL(s.border)},
         .clip={.horizontal=true,.vertical=true}}) {
-        content(ui,id,label,icon,s,c);
+        content(ui,id,label,icon,s,c,kind);
     }
     return activated;
 }
@@ -104,7 +106,7 @@ bool ui_component_row(UiWidgets *ui, Clay_ElementId id, Clay_String label,
         CLAY_AUTO_ID({.layout={.sizing={.width=CLAY_SIZING_GROW(0)},.childGap=4,
             .layoutDirection=CLAY_TOP_TO_BOTTOM,.childAlignment={.x=c.rtl ? CLAY_ALIGN_X_RIGHT : CLAY_ALIGN_X_LEFT}},
             .clip={.horizontal=true}}) {
-            ui_component_label(label,FONT_ROLE_BODY,ui_theme()->small,s.foreground,c.rtl);
+            ui_component_label(label,FONT_ROLE_BODY,ui_theme()->small_text,s.foreground,c.rtl);
             ui_component_label(detail,FONT_ROLE_BODY,ui_theme()->marginal,
                 ui_theme_opacity(ui_theme()->subdued,(state&UI_CONTROL_DISABLED) ? 0.3f : 1),c.rtl);
         }

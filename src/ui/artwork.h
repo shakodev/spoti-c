@@ -4,6 +4,7 @@
 #include "renderer.h"
 #define ART_REQUESTS 8u
 #define ART_CACHE_SLOTS 32u
+#define ART_FAILURES 64u
 #define ART_GPU_BYTES (4u * 1024u * 1024u)
 #define ART_URL_CHARS 1024u
 typedef struct ArtworkId { uint8_t content[20]; uint32_t size; uint64_t generation; } ArtworkId;
@@ -18,7 +19,7 @@ typedef struct ArtworkGpu {
 typedef struct TextureEntry {
     ArtworkId id;
     UiTexture texture;
-    uint32_t bytes;
+    uint32_t bytes, width, height;
     uint64_t serial, touched;
     bool pinned, retired;
 } TextureEntry;
@@ -53,6 +54,11 @@ typedef struct ArtworkConfig {
     void *decode_workspace; /* >=512 KiB, 16-byte aligned, setup-owned. */
     unsigned char *upload; /* >=256 KiB, setup-owned. */
     Metrics *metrics;
+    /* Notification outside locks: worker completion, or UI preparation after
+     * newly retiring a GPU entry. Enqueue UI work; never reenter artwork APIs.
+     * Context outlives successful stop. No notification while all slots pinned. */
+    void (*wake)(void *context);
+    void *wake_context;
 } ArtworkConfig;
 typedef struct ArtworkStats {
     uint64_t submitted, completed, uploaded, stale, cancelled;
@@ -68,10 +74,18 @@ ArtResult artwork_init(void *storage, size_t bytes, const ArtworkConfig *config,
 /* Navigation generations increase monotonically; zero/decreasing values fail. */
 ArtResult artwork_navigate(Artwork *art, uint64_t generation);
 /* Safe boundary after prior frame consumption: start a new visible set, then
- * lookup/request every visible image BEFORE prepare. Pins otherwise persist.
- * This prevents async uploads from evicting the currently visible textures. */
+ * lookup/request every desired image BEFORE prepare. Lookup also marks pending
+ * identities. Prepare cancels unseen work and drops unseen deferred uploads.
+ * Without begin_visible, admitted work remains desired for compatibility. */
 ArtResult artwork_begin_visible(Artwork *art);
+/* Known source edges may be <=512; 0/0 dimensions are a fallback when no
+ * admissible known source exists. Requested decode edge remains <=256. */
 ArtResult artwork_request(Artwork *art, ArtworkId id, const ArtworkSource *sources, size_t count);
+/* Terminal failures are remembered by exact identity, with no timed retries.
+ * retry clears only that record; request subsequently admits one new attempt.
+ * error returns ART_OK when no terminal failure is remembered. Neither does I/O. */
+ArtResult artwork_retry(Artwork *art, ArtworkId id);
+ArtResult artwork_error(Artwork *art, ArtworkId id);
 /* Safe preparation boundary BEFORE frame construction. Processes at most one
  * upload and starts at most one worker job. Never fetches/decodes synchronously. */
 ArtResult artwork_prepare(Artwork *art);
@@ -80,6 +94,8 @@ bool artwork_resolve(Artwork *art, ArtworkHandle handle, UiTexture *out);
 /* Frame-only: pins a ready image or emits a solid gray placeholder. No network,
  * decoder, allocator, GPU creation or release can run through this function. */
 UiRenderResult artwork_draw(Artwork *art, ArtworkId id, UiRenderFrame *frame, UiRect box);
+UiRenderResult artwork_draw_rounded(Artwork *art, ArtworkId id, UiRenderFrame *frame,
+    UiRect box, float radius);
 HANDLE artwork_wait_handle(const Artwork *art); /* borrowed, never reset externally */
 ArtworkStats artwork_stats(Artwork *art);
 /* Cancel admission/work then return PENDING until callback has retired. Keep

@@ -11,7 +11,7 @@ static const UiTheme dark = {
     .focus={255,255,255,255},
     .space={2,4,6,8,12,16,24,32,48,64,96,128},.radius={2,4,6,8,16},
     .control={32,48,56},.icon={12,16,24,32,40,48,64,88},
-    .duration_ms={50,100,150,200,250,300},.body=16,.small=14,.marginal=12,
+    .duration_ms={50,100,150,200,250,300},.body=16,.small_text=14,.marginal=12,
     .title=24,.large_title=32,.headline=64,.focus_width=2,
     .disabled_opacity=0.3f,.active_opacity=0.7f,.hover_scale=1.04f
 };
