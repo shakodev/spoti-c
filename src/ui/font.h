@@ -9,6 +9,7 @@
 #define FONT_ATLAS_ENTRIES 128u
 #define FONT_ATLAS_SIDE 1024u
 #define FONT_SCRATCH_BYTES (256u * 1024u)
+#define FONT_FACE_NOTICE 2u /* Clay semantic role; shaped with Segoe UI, without trimming. */
 
 typedef enum FontResult { FONT_OK, FONT_PENDING_WORK, FONT_FULL, FONT_INVALID,
     FONT_STALE, FONT_OS_ERROR, FONT_UNSUPPORTED } FontResult;
@@ -16,7 +17,7 @@ typedef struct FontConfig {
     uint64_t text_generation;
     uint16_t face, size, dpi, weight;
     float letter_spacing, line_height, max_width;
-    bool italic, rtl, ellipsis;
+    bool italic, rtl, ellipsis, measure_only;
 } FontConfig;
 typedef struct FontHandle { uint32_t slot; uint64_t generation; } FontHandle;
 typedef struct FontMetrics {
@@ -92,6 +93,7 @@ FontResult font_cache_reset(FontCache *cache);
 FontResult font_render_text(FontCache *cache, FontHandle handle, UiRenderFrame *frame,
     float x, float y, const float color[4]);
 Clay_Dimensions font_measure(Clay_StringSlice text, Clay_TextElementConfig *config, void *user_data);
+FontConfig font_clay_config(const FontMeasureContext *, uint16_t face, uint16_t size, uint16_t spacing, uint16_t height);
 /* Call after Clay_Initialize on its owning UI thread. */
 void font_bind_clay(FontMeasureContext *context);
 UiRenderResult font_render_clay(void *context, UiRenderFrame *frame, const Clay_RenderCommand *command);

@@ -72,12 +72,12 @@ void app_lyrics(App *a)
     const LyricsDocument *doc=a->catalog.timeline.document;
     app_catalog_status(a);
     if (!doc) {
-        if (a->model.status==APP_EMPTY) { app_label(CLAY_STRING("Lyrics unavailable for this track"),16,(Clay_Color){190,190,190,255}); }
+        if (a->model.status==APP_EMPTY) { app_message(a,CLAY_STRING("Lyrics unavailable for this track"),APP_INFORMATION); }
         return;
     }
     const char *s=doc->availability==LYRICS_MISSING || doc->availability==LYRICS_EMPTY ? "Lyrics unavailable" :
         doc->availability==LYRICS_CAPPED ? "Lyrics restricted / preview only" : doc->sync==LYRICS_PLAIN ? "Unsynchronized lyrics" : "Synchronized lyrics";
-    app_label((Clay_String){true,(int32_t)strlen(s),s},14,(Clay_Color){190,190,190,255});
+    app_message(a,(Clay_String){true,(int32_t)strlen(s),s},doc->availability==LYRICS_CAPPED ? APP_WARNING : APP_INFORMATION);
     (void)app_button(a,CLAY_ID("LyricsFollow"),a->catalog.hold==CORE_CLOCK_NEVER ? CLAY_STRING("Following") : CLAY_STRING("Resume follow"),120,
         (AppAction){.type=APP_LYRICS_FOLLOW},a->catalog.hold==CORE_CLOCK_NEVER);
     UiListRange range; double scroll=a->widgets.lists[0].scroll;

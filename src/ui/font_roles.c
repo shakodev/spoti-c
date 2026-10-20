@@ -5,6 +5,9 @@ FontConfig font_config_for_clay(FontConfig base, uint16_t font_id,
 {
     base.size = size; base.letter_spacing = spacing; base.line_height = line_height;
     if (font_id <= 1) { base.face = font_id; return base; }
+    if (font_id == FONT_FACE_NOTICE) {
+        base.face = 0; base.max_width = 0; base.ellipsis = false; return base;
+    }
     uint16_t role = (uint16_t)(font_id & (UINT16_MAX ^ FONT_ROLE_RTL));
     base.face = 0; base.rtl = (font_id & FONT_ROLE_RTL) != 0;
     switch (role) {

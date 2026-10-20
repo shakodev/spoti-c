@@ -65,7 +65,7 @@ void app_tracklist(App *a)
 void app_playlist(App *a)
 {
     Playlist *p=a->services.playlist;
-    if (!p || !p->active) { app_label(CLAY_STRING("Playlist source unavailable"),16,(Clay_Color){240,165,130,255}); return; }
+    if (!p || !p->active) { app_message(a,CLAY_STRING("Playlist source unavailable"),APP_FAILURE); return; }
     CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(28)},.childGap=6}}) {
         app_label(CLAY_STRING("Filter"),14,(Clay_Color){205,205,205,255});
         ui_text_input(&a->widgets,CLAY_ID("PlaylistFilter"),&a->widgets.texts[0],fmaxf(60,a->geometry.main-258));
@@ -80,7 +80,7 @@ void app_playlist(App *a)
     }
     app_label((Clay_String){false,(int32_t)strlen(p->summary),p->summary},12,(Clay_Color){190,190,190,255});
     if (p->result!=TRACK_OK && p->result!=TRACK_PENDING) {
-        app_label(CLAY_STRING("Index unavailable. Retry this playlist."),14,(Clay_Color){240,165,130,255});
+        app_message(a,CLAY_STRING("Index unavailable. Retry this playlist."),APP_FAILURE);
         (void)app_button(a,CLAY_ID("PlaylistRetry"),CLAY_STRING("Retry"),64,(AppAction){.type=APP_RETRY},false);
     }
     if (p->ready && !p->count) { app_label(CLAY_STRING("No matching tracks"),16,(Clay_Color){210,210,210,255}); }

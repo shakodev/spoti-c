@@ -61,7 +61,9 @@ static void status(App *a)
         "Your session expired. Sign in again." : a->model.status == APP_OFFLINE ?
         "You are offline." : a->model.status == APP_SIGNED_OUT ? "Sign in to see your music." :
         "Couldn't load this page. Try again.";
-    app_label((Clay_String){true,(int32_t)strlen(s),s},16,(Clay_Color){190,190,190,255});
+    app_message(a,(Clay_String){true,(int32_t)strlen(s),s},
+        a->model.status==APP_ERROR || a->model.status==APP_AUTH_EXPIRED ? APP_FAILURE :
+        a->model.status==APP_OFFLINE ? APP_WARNING : APP_INFORMATION);
     if (a->model.status == APP_ERROR || a->model.status == APP_OFFLINE) {
         (void)app_button(a,CLAY_ID("AppRetry"),CLAY_STRING("Try again"),108,(AppAction){.type=APP_RETRY},a->model.pending);
     }
@@ -88,6 +90,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
     AppGeometry *g = &a->geometry;
     if (ui_widgets_begin(&a->widgets,g->width,g->height,input) != UI_WIDGET_OK) { return (Clay_RenderCommandArray){0}; }
     a->control_count = a->label_count = 0;
+    a->messages.length=0; a->messages.text[0]=0; a->messages.full=false;
     CLAY(CLAY_ID("AppRoot"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
         .padding=CLAY_PADDING_ALL(8),.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},.backgroundColor={8,8,8,255}}) {
         CLAY(CLAY_ID("AppTitle"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(32)},.padding={28,0,0,0}}}) {
@@ -100,6 +103,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                 .backgroundColor={20,20,20,255},.cornerRadius=CLAY_CORNER_RADIUS(8),.clip={.horizontal=true,.vertical=true}}) {
                 CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(28)},.childGap=8}}) {
                     (void)app_button(a,CLAY_ID("AppBack"),CLAY_STRING("Back"),56,(AppAction){.type=APP_BACK},!a->model.history_count);
+                    CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(fmaxf(0,g->main-224)),CLAY_SIZING_FIXED(28)}},.clip={.horizontal=true,.vertical=true}}) {
                     app_label(a->model.location.screen == APP_LIBRARY ? CLAY_STRING("Your Library") :
                         a->model.location.screen == APP_SETTINGS ? CLAY_STRING("Settings") :
                         a->model.location.screen == APP_PLAYLIST ? CLAY_STRING("Playlist") :
@@ -109,9 +113,14 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
                         a->model.location.screen == APP_LYRICS ? CLAY_STRING("Lyrics") :
                         a->model.location.screen == APP_SHELF ? CLAY_STRING("More for you") : CLAY_STRING("Home"),20,
                         (Clay_Color){245,245,245,255});
+                    }
+                    (void)app_button(a,CLAY_ID("AppReadMessages"),CLAY_STRING("Read messages"),128,
+                        (AppAction){.type=APP_READ_MESSAGES},false);
                 }
-                if (a->model.last_result == APP_FULL || a->model.last_result == APP_FAILED || a->model.last_result == APP_UNAVAILABLE) {
-                    app_label(CLAY_STRING("Action unavailable. Please try again."),14,(Clay_Color){240,165,130,255});
+                if (a->model.notice[0]) {
+                    app_message(a,(Clay_String){false,(int32_t)strnlen_s(a->model.notice,APP_NOTICE_BYTES),a->model.notice},a->model.notice_severity);
+                } else if (a->model.last_result == APP_FULL || a->model.last_result == APP_FAILED || a->model.last_result == APP_UNAVAILABLE) {
+                    app_message(a,CLAY_STRING("Action unavailable. Please try again."),APP_FAILURE);
                 }
                 if (a->cached && !a->model.logged_in && a->model.location.screen!=APP_SETTINGS) { startup_cached_view(a); }
                 else if (a->model.location.screen == APP_SETTINGS) { settings(a); }

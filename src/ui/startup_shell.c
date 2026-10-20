@@ -34,7 +34,7 @@ void startup_restore(App *a,const StateCache *s)
 void startup_cached_view(App *a)
 {
     app_label(CLAY_STRING("Offline — recent library"),18,(Clay_Color){235,235,235,255});
-    app_label(CLAY_STRING("Sign in to refresh or play. Saved items may be unavailable."),14,(Clay_Color){185,185,185,255});
+    app_message(a,CLAY_STRING("Sign in to refresh or play. Saved items may be unavailable."),APP_INFORMATION);
     const StateCache *s=a->cached;
     if (!s || !s->count) { app_label(CLAY_STRING("No saved library items"),16,(Clay_Color){185,185,185,255}); return; }
     uint32_t rows=(uint32_t)fmax(1,floor(a->geometry.viewport/32)); if (rows>12) { rows=12; }

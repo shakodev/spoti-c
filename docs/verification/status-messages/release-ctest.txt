@@ -1,0 +1,156 @@
+Test project C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-40/build-rel
+      Start  1: core_release_metrics
+ 1/67 Test  #1: core_release_metrics .............   Passed    0.04 sec
+      Start  2: bench_navigation
+ 2/67 Test  #2: bench_navigation .................   Passed    1.04 sec
+      Start  3: core_state_cache
+ 3/67 Test  #3: core_state_cache .................   Passed    0.23 sec
+      Start  4: app_media_controls
+ 4/67 Test  #4: app_media_controls ...............   Passed    0.13 sec
+      Start  5: app_catalog_screens
+ 5/67 Test  #5: app_catalog_screens ..............   Passed    0.23 sec
+      Start  6: app_catalog_visual
+ 6/67 Test  #6: app_catalog_visual ...............   Passed    4.75 sec
+      Start  7: app_playlist
+ 7/67 Test  #7: app_playlist .....................   Passed    0.52 sec
+      Start  8: app_playlist_visual
+ 8/67 Test  #8: app_playlist_visual ..............   Passed    1.48 sec
+      Start  9: bench_tracklist
+ 9/67 Test  #9: bench_tracklist ..................   Passed    1.02 sec
+      Start 10: app_shell
+10/67 Test #10: app_shell ........................   Passed    0.50 sec
+      Start 11: app_shell_visual
+11/67 Test #11: app_shell_visual .................   Passed    0.77 sec
+      Start 12: app_messages
+12/67 Test #12: app_messages .....................   Passed    0.12 sec
+      Start 13: app_message_pixels
+13/67 Test #13: app_message_pixels ...............   Passed    0.64 sec
+      Start 14: app_message_dialog
+14/67 Test #14: app_message_dialog ...............   Passed    0.38 sec
+      Start 15: ui_widgets
+15/67 Test #15: ui_widgets .......................   Passed    0.05 sec
+      Start 16: ui_virtual_list
+16/67 Test #16: ui_virtual_list ..................   Passed    0.08 sec
+      Start 17: bench_ui_virtual_list
+17/67 Test #17: bench_ui_virtual_list ............   Passed    0.35 sec
+      Start 18: ui_artwork
+18/67 Test #18: ui_artwork .......................   Passed    0.14 sec
+      Start 19: ui_font
+19/67 Test #19: ui_font ..........................   Passed    0.12 sec
+      Start 20: ui_renderer
+20/67 Test #20: ui_renderer ......................   Passed    0.03 sec
+      Start 21: ui_artwork_warp
+21/67 Test #21: ui_artwork_warp ..................   Passed    0.13 sec
+      Start 22: ui_font_warp
+22/67 Test #22: ui_font_warp .....................   Passed    0.09 sec
+      Start 23: ui_renderer_warp
+23/67 Test #23: ui_renderer_warp .................   Passed    0.08 sec
+      Start 24: ui_renderer_window
+24/67 Test #24: ui_renderer_window ...............   Passed    0.31 sec
+      Start 25: bench_ui_dx11
+25/67 Test #25: bench_ui_dx11 ....................   Passed    3.56 sec
+      Start 26: ui_scheduler
+26/67 Test #26: ui_scheduler .....................   Passed    0.04 sec
+      Start 27: ui_window
+27/67 Test #27: ui_window ........................   Passed    0.52 sec
+      Start 28: bench_ui_artwork_wic
+28/67 Test #28: bench_ui_artwork_wic .............   Passed    0.34 sec
+      Start 29: bench_ui_idle
+29/67 Test #29: bench_ui_idle ....................   Passed    3.86 sec
+      Start 30: api_lyrics
+30/67 Test #30: api_lyrics .......................   Passed    0.10 sec
+      Start 31: api_catalog
+31/67 Test #31: api_catalog ......................   Passed    0.05 sec
+      Start 32: api_collections
+32/67 Test #32: api_collections ..................   Passed    0.06 sec
+      Start 33: api_contract
+33/67 Test #33: api_contract .....................   Passed    0.06 sec
+      Start 34: audio_cdn_transport
+34/67 Test #34: audio_cdn_transport ..............   Passed    0.39 sec
+      Start 35: audio_headless_smoke
+35/67 Test #35: audio_headless_smoke .............   Passed   12.41 sec
+      Start 36: bench_headless
+36/67 Test #36: bench_headless ...................***Failed  600.06 sec
+600-second headless benchmark: peak resident working set=8142848 limit=8000000 healthy=1
+
+      Start 37: audio_player
+37/67 Test #37: audio_player .....................   Passed    0.21 sec
+      Start 38: audio_gapless
+38/67 Test #38: audio_gapless ....................   Passed    0.08 sec
+      Start 39: protocol_dealer
+39/67 Test #39: protocol_dealer ..................   Passed    0.07 sec
+      Start 40: protocol_connect
+40/67 Test #40: protocol_connect .................   Passed    0.14 sec
+      Start 41: audio_sink
+41/67 Test #41: audio_sink .......................   Passed    0.18 sec
+      Start 42: audio_vorbis_stream
+42/67 Test #42: audio_vorbis_stream ..............   Passed    0.15 sec
+      Start 43: audio_seek
+43/67 Test #43: audio_seek .......................   Passed    0.21 sec
+      Start 44: audio_ctr_stream
+44/67 Test #44: audio_ctr_stream .................   Passed    0.06 sec
+      Start 45: audio_spotify_header
+45/67 Test #45: audio_spotify_header .............   Passed    0.03 sec
+      Start 46: audio_range_cache
+46/67 Test #46: audio_range_cache ................   Passed    0.41 sec
+      Start 47: protocol_media_source
+47/67 Test #47: protocol_media_source ............   Passed    0.24 sec
+      Start 48: protocol_audio_key
+48/67 Test #48: protocol_audio_key ...............   Passed    0.04 sec
+      Start 49: protocol_mercury
+49/67 Test #49: protocol_mercury .................   Passed    0.05 sec
+      Start 50: api_tokens
+50/67 Test #50: api_tokens .......................   Passed    0.11 sec
+      Start 51: api_json_base
+51/67 Test #51: api_json_base ....................   Passed    0.04 sec
+      Start 52: api_http
+52/67 Test #52: api_http .........................   Passed    4.43 sec
+      Start 53: protocol_crypto
+53/67 Test #53: protocol_crypto ..................   Passed    0.09 sec
+      Start 54: protocol_shannon
+54/67 Test #54: protocol_shannon .................   Passed    0.27 sec
+      Start 55: protocol_ap_packet
+55/67 Test #55: protocol_ap_packet ...............   Passed    0.07 sec
+      Start 56: api_oauth
+56/67 Test #56: api_oauth ........................   Passed    0.10 sec
+      Start 57: protocol_credentials
+57/67 Test #57: protocol_credentials .............   Passed    0.16 sec
+      Start 58: protocol_ap_handshake
+58/67 Test #58: protocol_ap_handshake ............   Passed    2.13 sec
+      Start 59: protocol_proto
+59/67 Test #59: protocol_proto ...................   Passed    0.29 sec
+      Start 60: protocol_proto_codegen
+60/67 Test #60: protocol_proto_codegen ...........   Passed    3.35 sec
+      Start 61: smoke
+61/67 Test #61: smoke ............................   Passed    0.03 sec
+      Start 62: core_arena
+62/67 Test #62: core_arena .......................   Passed    0.04 sec
+      Start 63: core_spsc
+63/67 Test #63: core_spsc ........................   Passed    0.21 sec
+      Start 64: core_event_queue
+64/67 Test #64: core_event_queue .................   Passed    0.61 sec
+      Start 65: core_log
+65/67 Test #65: core_log .........................   Passed    0.05 sec
+      Start 66: core_metrics
+66/67 Test #66: core_metrics .....................   Passed    0.13 sec
+      Start 67: fixture_http
+67/67 Test #67: fixture_http .....................   Passed    0.05 sec
+
+99% tests passed, 1 tests failed out of 67
+
+Label Time Summary:
+desktop        =   0.38 sec*proc (1 test)
+gpu            =  11.80 sec*proc (9 tests)
+optional       =   8.62 sec*proc (9 tests)
+performance    = 610.23 sec*proc (7 tests)
+
+Total Test time (real) = 650.96 sec
+
+The following tests FAILED:
+	 36 - bench_headless (Failed)                           performance
+ctest : Errors while running CTest
+At line:3 char:1
++ ctest --test-dir build-rel --output-on-failure *> build-rel/release-c ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Errors while running CTest:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError

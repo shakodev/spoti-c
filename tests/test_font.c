@@ -68,10 +68,11 @@ static void unicode(void)
     CHECK(long_metrics.trimmed && long_metrics.width <= 80 && long_metrics.glyphs < 100);
     CHECK(font_stats(&cache).com_objects == 1);
     k = config(); k.size = 96; k.dpi = 384; FontHandle full;
-    CHECK(font_prepare_text(&cache,text("WW"),&k,&full) == FONT_FULL);
+    CHECK(font_prepare_text(&cache,text("WW"),&k,&full) == FONT_OK); /* Tiled within existing budgets. */
+    CHECK(font_prepare_text(&cache,text(long_name),&k,&full) == FONT_FULL);
     CHECK(font_stats(&cache).com_objects == 1);
     uint32_t old_wakes = wakes;
-    for (unsigned i = 0; i < 1000; ++i) { CHECK(font_request_text(&cache,text("WW"),&k) == FONT_FULL); }
+    for (unsigned i = 0; i < 1000; ++i) { CHECK(font_request_text(&cache,text(long_name),&k) == FONT_FULL); }
     CHECK(wakes == old_wakes && font_stats(&cache).pending == 0);
     printf("advances: Hello=%.3f Arabic=%.3f emoji=%.3f ellipsis=%.3f\n",
         (double)ascii.width,(double)arabic.width,(double)emoji.width,(double)trimmed.width);
@@ -86,7 +87,8 @@ static void misses(void)
     CHECK(font_prepare_pending(&cache) == FONT_OK);
     CHECK(font_atlas_commit(&cache,257) == FONT_OK);
     Clay_Dimensions dims = font_measure(text("cached"),&clay,&ctx); CHECK(dims.width > 0 && ctx.last_result == FONT_OK);
-    FontHandle h; CHECK(font_lookup(&cache,text("cached"),&k,&h) == FONT_OK);
+    FontHandle h; CHECK(font_prepare_text(&cache,text("cached"),&k,&h) == FONT_OK);
+    CHECK(font_atlas_commit(&cache,257) == FONT_OK);
     const float white[4] = {1,1,1,1}; uint64_t prepared = font_stats(&cache).prepared;
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CrtSetAllocHook(allocation_hook); heap_calls = 0; watch_heap = true;
@@ -120,6 +122,11 @@ static void typography_roles(void)
     FontConfig legacy = font_config_for_clay(base,1,14,2,24);
     CHECK(legacy.face == 1 && legacy.weight == 900 && legacy.rtl);
     CHECK(legacy.size == 14 && legacy.letter_spacing == 2 && legacy.line_height == 24);
+    FontMeasureContext notice_context = {&cache,base,FONT_OK};
+    FontConfig notice = font_clay_config(&notice_context,FONT_FACE_NOTICE,14,0,20);
+    CHECK(notice.face == 0 && notice.weight == base.weight && notice.rtl);
+    CHECK(notice.max_width == 0 && !notice.ellipsis && !notice.measure_only);
+    CHECK(notice.size == 14 && notice.line_height == 20 && notice.dpi == base.dpi);
     const uint16_t ids[] = {FONT_ROLE_BODY,FONT_ROLE_BOLD,FONT_ROLE_TITLE,
         FONT_ROLE_HEADLINE,FONT_ROLE_BODY | FONT_ROLE_RTL};
     const uint16_t weights[] = {400,700,700,800,400};
@@ -133,6 +140,10 @@ static void typography_roles(void)
         CHECK(key.dpi == 120 && key.text_generation == 41 && key.max_width == 220 && key.ellipsis);
         FontMetrics metrics = measure(label,key);
         CHECK(metrics.width > 0 && metrics.height == 24 && metrics.rtl_runs > 0);
+        key.measure_only = true;
+        FontMetrics dimensions = measure(label,key);
+        CHECK(dimensions.width == metrics.width && dimensions.height == metrics.height);
+        CHECK(dimensions.glyphs == 0 && dimensions.visual_runs == 0);
     }
     FontConfig invalid = font_config_for_clay(base,255,16,0,0); FontHandle handle;
     CHECK(font_prepare_text(&cache,text(label),&invalid,&handle) == FONT_INVALID);
@@ -190,6 +201,9 @@ static void clay_binding(void)
     (void)Clay_EndLayout(0);
     CHECK(font_stats(&cache).pending > 0);
     CHECK(font_prepare_pending(&cache) == FONT_OK); CHECK(font_atlas_commit(&cache,257) == FONT_OK);
+    FontConfig drawing=config(); FontHandle glyphs;
+    CHECK(font_prepare_text(&cache,text("cached"),&drawing,&glyphs)==FONT_OK);
+    CHECK(font_atlas_commit(&cache,257)==FONT_OK);
     UiClayBridge bridge = {.custom=font_render_clay,.context=&ctx};
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CrtSetAllocHook(allocation_hook); heap_calls = 0; watch_heap = true;

@@ -113,9 +113,12 @@ FontResult font_shape(FontCache *c, FontRun *run)
         run->metrics.width = metrics.trailing_width; run->metrics.height = metrics.height;
         for (UINT32 i = 0; i < count; ++i) { if (lines[i].trimmed) { run->metrics.trimmed = true; } }
         if (key->ellipsis) { run->metrics.width = fminf(run->metrics.width,key->max_width); }
-        FontDraw renderer = {{&font_draw_vtable},c,run,metrics,1,FONT_OK};
-        hr = layout->lpVtbl->Draw(layout,NULL,&renderer.iface,0,0);
-        result = renderer.result != FONT_OK ? renderer.result : SUCCEEDED(hr) ? FONT_OK : FONT_OS_ERROR;
+        result=FONT_OK;
+        if (!key->measure_only) {
+            FontDraw renderer = {{&font_draw_vtable},c,run,metrics,1,FONT_OK};
+            hr = layout->lpVtbl->Draw(layout,NULL,&renderer.iface,0,0);
+            result = renderer.result != FONT_OK ? renderer.result : SUCCEEDED(hr) ? FONT_OK : FONT_OS_ERROR;
+        }
         for (uint32_t i = 0; i < run->patch_count; ++i) {
             run->patches[i].x -= metrics.left; run->patches[i].y -= metrics.top;
         }

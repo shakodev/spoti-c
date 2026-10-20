@@ -1,18 +1,17 @@
 #include "app.h"
-#include "font_roles.h"
 #include <string.h>
 
 static bool same(FontConfig a, FontConfig b)
 {
     return a.text_generation==b.text_generation && a.face==b.face && a.size==b.size && a.dpi==b.dpi &&
         a.weight==b.weight && a.letter_spacing==b.letter_spacing && a.line_height==b.line_height &&
-        a.max_width==b.max_width && a.italic==b.italic && a.rtl==b.rtl && a.ellipsis==b.ellipsis;
+        a.max_width==b.max_width && a.italic==b.italic && a.rtl==b.rtl && a.ellipsis==b.ellipsis && a.measure_only==b.measure_only;
 }
 static Clay_Dimensions measure(Clay_StringSlice text, Clay_TextElementConfig *style, void *context)
 {
     App *a=context; FontMeasureContext *font=a->fonts;
-    FontConfig key=font_config_for_clay(font->config,style->fontId,style->fontSize,
-        style->letterSpacing,style->lineHeight);
+    FontConfig key=font_clay_config(font,style->fontId,style->fontSize,style->letterSpacing,style->lineHeight);
+    key.measure_only=true;
     if (a->measure_generation!=a->model.generation || a->measure_dpi!=key.dpi) {
         a->measure_generation=a->model.generation; a->measure_dpi=key.dpi; a->measure_count=a->measure_next=0;
     }
@@ -26,6 +25,11 @@ static Clay_Dimensions measure(Clay_StringSlice text, Clay_TextElementConfig *st
     if (result==FONT_OK && font_metrics(font->cache,handle,&metrics)==FONT_OK) {
         if (text.length<0 || text.length>=192) {
             ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); return (Clay_Dimensions){0};
+        }
+        /* Cache frequent word probes and timestamps. Longer complete labels
+         * stay in Clay's cache; retaining their bytes here wastes the UI budget. */
+        if ((size_t)text.length>=sizeof(a->measures[0].text)) {
+            return (Clay_Dimensions){metrics.width,metrics.height};
         }
         /* Progress timestamps change throughout a route's lifetime. Scalar
          * measurements are unpinned cache entries, so replace them in place. */

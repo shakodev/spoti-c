@@ -26,7 +26,8 @@ static bool same_config(FontConfig a,FontConfig b)
 {
     return a.text_generation==b.text_generation && a.face==b.face && a.size==b.size && a.dpi==b.dpi &&
         a.weight==b.weight && a.letter_spacing==b.letter_spacing && a.line_height==b.line_height &&
-        a.max_width==b.max_width && a.italic==b.italic && a.rtl==b.rtl && a.ellipsis==b.ellipsis;
+        a.max_width==b.max_width && a.italic==b.italic && a.rtl==b.rtl && a.ellipsis==b.ellipsis &&
+        a.measure_only==b.measure_only;
 }
 static Clay_Dimensions measure(Clay_StringSlice slice,Clay_TextElementConfig *style,void *context)
 {
@@ -34,6 +35,7 @@ static Clay_Dimensions measure(Clay_StringSlice slice,Clay_TextElementConfig *st
     CHECK(slice.length>=0 && slice.length<(int32_t)sizeof(measurements[0].text));
     FontConfig key=font_config_for_clay(font->config,style->fontId,style->fontSize,
         style->letterSpacing,style->lineHeight);
+    key.measure_only=true;
     for (uint32_t i=0;i<measure_count;++i) {
         Measure *m=&measurements[i];
         if (m->length==(uint32_t)slice.length && same_config(m->config,key) &&

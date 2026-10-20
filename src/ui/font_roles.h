@@ -11,7 +11,9 @@ typedef enum FontRole {
 } FontRole;
 #define FONT_ROLE_RTL 0x100u
 
-/* Same resolver for word measurement, app measurement caching and rendering.
+/* FONT_FACE_NOTICE preserves the context's weight/direction but disables
+ * compact-label trimming, as required by the status-message layout.
+ * Same resolver for word measurement, app measurement caching and rendering.
  * Unknown IDs produce an invalid face, rejected by the normal font API. */
 FontConfig font_config_for_clay(FontConfig base, uint16_t font_id,
     uint16_t size, uint16_t spacing, uint16_t line_height);

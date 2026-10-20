@@ -192,7 +192,7 @@ void app_catalog_rows(App *a)
     if (a->control_count<APP_CONTROLS) { a->controls[a->control_count++]=(AppControl){.id=CLAY_ID("CatalogList"),
         .action={.type=APP_CATALOG_SELECT,.value=-1},.disabled=a->model.pending}; }
     if (p->partial || p->truncated || p->boundary) {
-        app_label(CLAY_STRING("Partial results / service boundary"),12,(Clay_Color){240,165,130,255});
+        app_message(a,CLAY_STRING("Partial results / service boundary"),APP_WARNING);
     }
     if (p->next!=CATALOG_END) {
         (void)app_button(a,CLAY_ID("CatalogMore"),CLAY_STRING("Next page"),100,(AppAction){.type=APP_MORE},a->model.pending);
@@ -209,9 +209,10 @@ void app_catalog_status(App *a)
     const char *s=status==APP_LOADING ? "Loading..." : status==APP_EMPTY ? "No results" :
         status==APP_SIGNED_OUT ? "Sign in to browse music" : status==APP_AUTH_EXPIRED ? "Session expired. Sign in again" :
         status==APP_OFFLINE ? "You are offline" : status==APP_ERROR ? "Unable to load. Retry this page" : NULL;
-    if (s) { app_label((Clay_String){true,(int32_t)strlen(s),s},14,(Clay_Color){210,210,210,255}); }
+    if (s) { app_message(a,(Clay_String){true,(int32_t)strlen(s),s},
+        status==APP_ERROR || status==APP_AUTH_EXPIRED ? APP_FAILURE : status==APP_OFFLINE ? APP_WARNING : APP_INFORMATION); }
     if (status==APP_ERROR || status==APP_OFFLINE) {
         (void)app_button(a,CLAY_ID("CatalogRetry"),CLAY_STRING("Retry"),64,(AppAction){.type=APP_RETRY},a->model.pending);
     }
-    if (a->catalog.result==CATALOG_RESTRICTED) { app_label(CLAY_STRING("Unavailable for this account"),14,(Clay_Color){240,165,130,255}); }
+    if (a->catalog.result==CATALOG_RESTRICTED) { app_message(a,CLAY_STRING("Unavailable for this account"),APP_WARNING); }
 }
