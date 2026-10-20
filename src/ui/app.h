@@ -135,7 +135,7 @@ AppResult app_publish_player(App *, PlayerSnapshot, uint64_t now);
 void app_refresh_clock(App *, uint32_t dirty);
 Clay_RenderCommandArray app_layout(App *, float physical_width, float physical_height, float dpi, UiWidgetInput);
 bool app_button(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled);
-bool app_track_control(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled);
+bool app_track_control(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled, bool current);
 void app_label(Clay_String, uint16_t size, Clay_Color);
 Clay_String app_text(App *, Clay_String); /* Frame-owned stable text copy. */
 AppResult app_entity(const CollectionItem *, AppEntity *);

@@ -91,10 +91,22 @@ AppResult app_catalog_deliver(App *a, AppRequest r, CatalogResult result, const 
             (page->next==CATALOG_END || page->next>r.cursor)) {
             if (a->catalog.page) { (void)page_release((JsonPage *)&a->catalog.page->json); }
             a->catalog.page=page; page=NULL; outcome=APP_OK;
-            if (a->catalog.page->detail.name.bytes) { title(a->catalog.page->detail.name,a->catalog.title); }
+            const CatalogItem *detail=&a->catalog.page->detail;
+            if (detail->name.bytes) {
+                title(detail->name,a->catalog.title);
+                if (detail->kind==CATALOG_ALBUM) { title(detail->as.album.artist_name,a->catalog.subtitle); }
+                else if (detail->kind==CATALOG_ARTIST && detail->as.artist.followers) {
+                    (void)snprintf(a->catalog.subtitle,sizeof(a->catalog.subtitle),"%llu followers",
+                        (unsigned long long)detail->as.artist.followers);
+                } else { a->catalog.subtitle[0]=0; }
+                a->catalog.artwork[0]=0;
+                (void)json_base_string_copy(detail->image.url,a->catalog.artwork,sizeof(a->catalog.artwork));
+                a->catalog.artwork_width=detail->image.width; a->catalog.artwork_height=detail->image.height;
+            }
             a->model.status=a->catalog.page->count ? APP_CONTENT : APP_EMPTY;
             a->widgets.lists[0].scroll=r.cursor ? 0 : a->model.location.scroll;
-            a->widgets.lists[0].focus=a->widgets.lists[0].selection=0;
+            a->widgets.lists[0].selection=0;
+            a->widgets.lists[0].focus=a->catalog.page->count ? app_catalog_key(a,0) : 0;
             a->image_count=0;
         } else {
             a->model.status=result==CATALOG_AUTH ? APP_AUTH_EXPIRED : APP_ERROR;
@@ -153,6 +165,15 @@ AppResult app_catalog_activate(App *a, uint32_t index)
     }
     return app_enqueue(a,(AppAction){.type=APP_SELECT,.entity=entity});
 }
+uint32_t app_catalog_play_index(const App *a)
+{
+    if (!a || !a->model.logged_in || !a->model.online || a->model.pending || !a->catalog.page) { return CATALOG_END; }
+    for (uint32_t i=0;i<a->catalog.page->count;++i) {
+        const CatalogItem *item=&a->catalog.page->items[i]; AppEntity entity;
+        if (item->kind==CATALOG_TRACK && app_catalog_entity(item,&entity)==APP_OK && entity.playable) { return i; }
+    }
+    return CATALOG_END;
+}
 static void row(void *context, uint32_t index, uint64_t key)
 {
     App *a=context; const CatalogItem *item=&a->catalog.page->items[index];
@@ -175,7 +196,9 @@ static void row(void *context, uint32_t index, uint64_t key)
             .clip={.horizontal=true,.vertical=true}}) {
             (void)app_track_control(a,CLAY_IDI("CatalogItem",(uint32_t)(key^(key>>32))),
                 (Clay_String){false,(int32_t)strlen(entity.title),entity.title},
-                width,action,!enabled || a->model.pending);
+                width,action,!enabled || a->model.pending,item->kind==CATALOG_TRACK && entity.playable &&
+                    a->model.player.state!=PLAYER_STOPPED && a->model.player.state!=PLAYER_ERROR &&
+                    !memcmp(entity.id,a->model.player.track_id,16));
             if (subtitle[0]) { app_label(app_text(a,(Clay_String){false,(int32_t)strlen(subtitle),subtitle}),12,(Clay_Color){180,180,180,255}); }
         }
         if (item->kind==CATALOG_TRACK && !a->geometry.compact) {
@@ -188,7 +211,7 @@ void app_catalog_rows(App *a)
     const CatalogPage *p=a->catalog.page; if (!p) { return; }
     UiListRange range; a->catalog.rendered=0;
     (void)ui_virtual_list(&a->widgets,CLAY_ID("CatalogList"),&a->widgets.lists[0],p->count,
-        APP_CATALOG_ROW,fminf(336,fmaxf(48,a->geometry.viewport-120)),0,app_catalog_key,row,a,&range);
+        APP_CATALOG_ROW,app_catalog_viewport(a),0,app_catalog_key,row,a,&range);
     if (a->control_count<APP_CONTROLS) { a->controls[a->control_count++]=(AppControl){.id=CLAY_ID("CatalogList"),
         .action={.type=APP_CATALOG_SELECT,.value=-1},.disabled=a->model.pending}; }
     if (p->partial || p->truncated || p->boundary) {
@@ -198,17 +221,50 @@ void app_catalog_rows(App *a)
         (void)app_button(a,CLAY_ID("CatalogMore"),CLAY_STRING("Next page"),100,(AppAction){.type=APP_MORE},a->model.pending);
     }
 }
+float app_catalog_viewport(const App *a)
+{
+    float header=a->model.location.screen==APP_ALBUM || a->model.location.screen==APP_ARTIST ?
+        (a->geometry.compact ? 116.0f : 172.0f) : 0;
+    return fminf(336,fmaxf(48,a->geometry.viewport-120-header));
+}
 void app_catalog_header(App *a)
 {
     const char *s=a->catalog.title[0] ? a->catalog.title : a->model.location.entity.title;
-    app_label(app_text(a,(Clay_String){false,(int32_t)strlen(s),s}),22,(Clay_Color){245,245,245,255});
+    AppImage *image=NULL;
+    for (uint32_t i=0;i<a->image_count;++i) {
+        if (!strcmp(a->images[i].entity.uri,a->model.location.entity.uri)) { image=&a->images[i]; break; }
+    }
+    float cover=a->geometry.compact ? 72.0f : 128.0f;
+    CLAY(CLAY_ID("CatalogHero"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(cover)},
+        .childGap=16,.childAlignment={.y=CLAY_ALIGN_Y_BOTTOM}},.clip={.horizontal=true,.vertical=true}}) {
+        CLAY(CLAY_ID("CatalogCover"),{.layout={.sizing={CLAY_SIZING_FIXED(cover),CLAY_SIZING_FIXED(cover)}},
+            .backgroundColor={40,40,40,255},.cornerRadius=CLAY_CORNER_RADIUS(a->model.location.screen==APP_ARTIST ? cover/2 : 4.0f),
+            .custom={.customData=image}}) { }
+        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(cover)},.childGap=8,
+            .layoutDirection=CLAY_TOP_TO_BOTTOM,.childAlignment={.y=CLAY_ALIGN_Y_BOTTOM}},.clip={.horizontal=true,.vertical=true}}) {
+            app_label(a->model.location.screen==APP_ARTIST ? CLAY_STRING("Artist") : CLAY_STRING("Album"),12,(Clay_Color){220,220,220,255});
+            app_label(app_text(a,(Clay_String){false,(int32_t)strlen(s),s}),a->geometry.compact ? 24 : 32,(Clay_Color){255,255,255,255});
+            app_label((Clay_String){false,(int32_t)strlen(a->catalog.subtitle),a->catalog.subtitle},14,(Clay_Color){190,190,190,255});
+        }
+    }
+    uint32_t index=app_catalog_play_index(a);
+    (void)app_button(a,CLAY_ID("CatalogPlay"),CLAY_STRING("Play first track"),128,
+        (AppAction){.type=APP_CATALOG_SELECT,.value=index==CATALOG_END ? -1 : (double)index},index==CATALOG_END);
+    if (index==CATALOG_END && a->model.status==APP_CONTENT) {
+        app_label(CLAY_STRING("No playable tracks on this page"),12,(Clay_Color){180,180,180,255});
+    }
 }
 void app_catalog_status(App *a)
 {
     AppStatus status=a->model.status;
     const char *s=status==APP_LOADING ? "Loading..." : status==APP_EMPTY ? "No results" :
         status==APP_SIGNED_OUT ? "Sign in to browse music" : status==APP_AUTH_EXPIRED ? "Session expired. Sign in again" :
-        status==APP_OFFLINE ? "You are offline" : status==APP_ERROR ? "Unable to load. Retry this page" : NULL;
+        status==APP_OFFLINE ? "You are offline" : status==APP_ERROR ?
+        a->catalog.result==CATALOG_UNSUPPORTED ? "This route is not supported by the current service" :
+        a->catalog.result==CATALOG_RESTRICTED ? "Unavailable for this account" :
+        a->catalog.result==CATALOG_NOT_FOUND ? "This content is no longer available" :
+        a->catalog.result==CATALOG_RATE_LIMIT ? "Service is busy. Try again later" :
+        "Unable to load. Retry this page" : NULL;
     if (s) { app_message(a,(Clay_String){true,(int32_t)strlen(s),s},
         status==APP_ERROR || status==APP_AUTH_EXPIRED ? APP_FAILURE : status==APP_OFFLINE ? APP_WARNING : APP_INFORMATION); }
     if (status==APP_ERROR || status==APP_OFFLINE) {

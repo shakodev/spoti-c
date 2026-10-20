@@ -3,11 +3,11 @@
 #include <math.h>
 #include <string.h>
 
-bool app_track_control(App *a, Clay_ElementId id, Clay_String name, float width, AppAction action, bool disabled)
+bool app_track_control(App *a, Clay_ElementId id, Clay_String name, float width, AppAction action, bool disabled, bool current)
 {
     if (a->control_count==APP_CONTROLS) { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); return false; }
     a->controls[a->control_count++]=(AppControl){id,action,disabled};
-    bool hit=ui_button(&a->widgets,id,app_text(a,name),width,28,disabled);
+    bool hit=ui_track_button(&a->widgets,id,app_text(a,name),width,disabled,current);
     if (hit) { (void)app_enqueue(a,action); } return hit;
 }
 
@@ -35,7 +35,13 @@ static void row(void *context, uint32_t index, uint64_t key)
          * row/button IDs still identify original playlist occurrences. */
         CLAY(CLAY_IDI("PlaylistCellClip",slot*4),{.layout={.sizing={CLAY_SIZING_FIXED(title),CLAY_SIZING_FIXED(28)}},
             .clip={.horizontal=true,.vertical=true}}) {
-            (void)app_track_control(a,id,(Clay_String){false,(int32_t)strlen(name),name},title,action,disabled);
+            bool current=false;
+            if (p->ready && !p->pending) {
+                const TrackIdentity *identity=&p->filter->index[ordinal-p->base];
+                current=a->model.player.state!=PLAYER_STOPPED && a->model.player.state!=PLAYER_ERROR &&
+                    (identity->flags&TRACK_ID) && !memcmp(identity->id,a->model.player.track_id,16);
+            }
+            (void)app_track_control(a,id,(Clay_String){false,(int32_t)strlen(name),name},title,action,disabled,current);
         }
         cell(r ? p->strings+r->artist : "",artist,14,slot*4+1);
         cell(r ? p->strings+r->album : "",width-duration-title-artist-6,14,slot*4+2);
@@ -75,8 +81,9 @@ void app_playlist(App *a)
         (void)app_button(a,CLAY_ID("PlaylistSort"),p->sort==TRACK_SOURCE_ORDER ? CLAY_STRING("Order") :
             p->sort==TRACK_TITLE_ORDER ? CLAY_STRING("Title") : CLAY_STRING("Time"),52,
             (AppAction){.type=APP_TRACK_SORT,.value=(p->sort+1)%3},false);
+        uint64_t target=playlist_play_target(p);
         (void)app_button(a,CLAY_ID("PlaylistPlay"),CLAY_STRING("Play"),52,
-            (AppAction){.type=APP_TRACK_PLAY,.value=(double)p->selected},!p->selected_visible || !p->selected_playable || p->pending);
+            (AppAction){.type=APP_TRACK_PLAY,.value=(double)target},!target);
     }
     app_label((Clay_String){false,(int32_t)strlen(p->summary),p->summary},12,(Clay_Color){190,190,190,255});
     if (p->result!=TRACK_OK && p->result!=TRACK_PENDING) {

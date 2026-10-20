@@ -6,7 +6,7 @@ static TrackResult change(Playlist *p)
 {
     if (p->generation==UINT64_MAX) { return TRACK_FULL; }
     ++p->generation; p->pending=p->need_filter=true; p->play_key=0;
-    p->selected_visible=p->selected_playable=false;
+    p->selected_visible=p->selected_playable=false; p->first_playable=0;
     p->result=TRACK_PENDING;
     p->row_count=p->string_bytes=0; track_filter_cancel(p->filter); return TRACK_PENDING;
 }
@@ -99,6 +99,13 @@ TrackResult playlist_prepare(Playlist *p, UiVirtualList *list, float viewport)
         else {
             p->count=done->count; memcpy(p->map,p->filter->map,(size_t)p->count*sizeof(p->map[0]));
             p->coverage=done->coverage; p->missing=done->missing; p->result=TRACK_OK;
+            p->first_playable=0;
+            for (uint32_t i=0;i<p->count;++i) {
+                const TrackIdentity *id=&p->filter->index[p->map[i]-p->base];
+                if ((id->flags&(TRACK_ID|TRACK_PLAYABLE))==(TRACK_ID|TRACK_PLAYABLE)) {
+                    p->first_playable=(uint64_t)p->map[i]+1; break;
+                }
+            }
             p->pending=p->need_filter=false; p->ready=true; list->scroll=0;
             list->selection=p->selected; uint32_t at;
             p->selected_visible=playlist_index(p,p->selected,&at);
@@ -143,6 +150,11 @@ TrackResult playlist_select(Playlist *p, uint64_t key, bool play)
     p->selected_visible=true; p->selected_playable=(p->filter->index[p->map[at]-p->base].flags&TRACK_PLAYABLE)!=0;
     if (play && !p->selected_playable) { return TRACK_INVALID; }
     if (play) { p->play_key=key; p->play_generation=p->generation; } return TRACK_OK;
+}
+uint64_t playlist_play_target(const Playlist *p)
+{
+    if (!p || !p->active || !p->ready || p->pending || p->result!=TRACK_OK) { return 0; }
+    return p->selected_visible && p->selected_playable ? p->selected : p->first_playable;
 }
 TrackResult playlist_queue(const Playlist *p, uint64_t key, PlaylistQueue *out)
 {

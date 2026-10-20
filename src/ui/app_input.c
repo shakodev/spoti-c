@@ -72,7 +72,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
         default: nav=(UiNav)-1; break;
         }
         if ((int)nav>=0) {
-            (void)ui_virtual_navigate(list,a->catalog.page->count,APP_CATALOG_ROW,fmin(336,fmax(48,a->geometry.viewport-120)),nav,true,
+            (void)ui_virtual_navigate(list,a->catalog.page->count,APP_CATALOG_ROW,app_catalog_viewport(a),nav,true,
                 app_catalog_key,app_catalog_index,a);
             a->widgets.focus=CLAY_ID("CatalogList").id; return APP_OK;
         }

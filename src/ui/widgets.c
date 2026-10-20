@@ -130,6 +130,22 @@ bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width,
     }
     return activated;
 }
+bool ui_track_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, bool disabled, bool current)
+{
+    if (!declare(ui,id)) { return false; }
+    if (!isfinite(width) || width<=0) { ui_widgets_fail(ui,UI_WIDGET_INVALID); return false; }
+    bool activated=button_event(ui,id,disabled);
+    Clay_Color color=disabled ? (Clay_Color){145,145,145,255} : current ?
+        (Clay_Color){30,215,96,255} : (Clay_Color){245,245,245,255};
+    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)},
+        .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.clip={.horizontal=true,.vertical=true},
+        .backgroundColor=ui->hover==id.id ? (Clay_Color){55,55,55,255} : (Clay_Color){0},
+        .cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color={220,220,220,255},
+        .width=CLAY_BORDER_ALL(!disabled && ui->focus==id.id ? 1 : 0)}}) {
+        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor=color,.wrapMode=CLAY_TEXT_WRAP_NONE}));
+    }
+    return activated;
+}
 void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width)
 {
     if (!declare(ui,id)) { return; }

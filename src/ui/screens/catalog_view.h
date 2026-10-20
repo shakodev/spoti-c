@@ -20,7 +20,8 @@ typedef struct CatalogView {
     LyricsResult lyrics_result;
     uint32_t rendered;
     uint16_t surrogate;
-    char title[192];
+    char title[192], subtitle[192], artwork[512];
+    uint32_t artwork_width, artwork_height;
 } CatalogView;
 bool app_is_catalog(const struct App *);
 void app_catalog_clear(struct App *);
@@ -36,6 +37,8 @@ void app_catalog_status(struct App *);
 uint64_t app_catalog_key(void *, uint32_t);
 bool app_catalog_index(void *, uint64_t, uint32_t *);
 AppResult app_catalog_activate(struct App *, uint32_t);
+uint32_t app_catalog_play_index(const struct App *);
+float app_catalog_viewport(const struct App *);
 void app_search(struct App *);
 void app_album(struct App *);
 void app_artist(struct App *);

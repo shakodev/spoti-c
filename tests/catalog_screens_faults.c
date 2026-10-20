@@ -1,6 +1,7 @@
 #include "catalog_screens_test.h"
 #include "ui/screens/playlist.h"
 #include <stdio.h>
+#include <wchar.h>
 
 #define LINES "[{\"startTimeMs\":\"0\",\"words\":\"first\"},{\"startTimeMs\":\"500\",\"words\":\"second\"}]"
 #define LYRICS(mode,cap) "{\"lyrics\":{\"provider\":\"fixture\",\"providerDisplayName\":\"Fixture\",\"providerLyricsId\":\"id\",\"syncType\":\"" mode "\",\"capStatus\":\"" cap "\",\"lines\":" LINES ",\"previewLines\":[]}}"
@@ -84,4 +85,45 @@ static void editing(void)
     CHECK(cs_app.catalog.debounce==CORE_CLOCK_NEVER && cs_app.model.status==APP_EMPTY);
     cs_close();
 }
-void cs_faults(void) { responses(); partial_and_boundary(); editing(); }
+static ArtResult image_failure(void *context, const wchar_t *url, void *buffer,
+    size_t capacity, size_t *bytes, const CancelToken *cancel)
+{
+    (void)context; (void)buffer; (void)capacity; (void)cancel;
+    CHECK(!wcscmp(url,L"https://fixture.invalid/cover.png")); *bytes=0; return ART_IO_ERROR;
+}
+static ArtResult no_upload(void *context, uint32_t width, uint32_t height, const unsigned char *rgba, UiTexture *out)
+{
+    (void)context; (void)width; (void)height; (void)rgba; (void)out; CHECK(false); return ART_INVALID;
+}
+static void no_release(void *context, UiTexture texture) { (void)context; (void)texture; CHECK(false); }
+static bool no_texture(void *context, UiTexture texture) { (void)context; (void)texture; return false; }
+static void detail_artwork(void)
+{
+    static _Alignas(16) unsigned char core_memory[MEMORY_BUDGET_CORE], storage[65536], decode[ART_DECODE_BYTES];
+    static unsigned char upload[ART_UPLOAD_BYTES];
+    Arena arena; Worker *worker; Artwork *art;
+    cs_open(false);
+    CHECK(arena_init(&arena,core_memory,sizeof(core_memory)));
+    CHECK(worker_start(&arena,ART_REQUESTS,(CoreClock){0},&worker)==CORE_OK);
+    ArtworkConfig config={.worker=worker,.fetch=image_failure,.gpu={no_upload,no_release,no_texture,NULL},
+        .decode_workspace=decode,.upload=upload};
+    CHECK(artwork_init(storage,sizeof(storage),&config,&art)==ART_OK); cs_app.services.artwork=art;
+    CHECK(artwork_navigate(art,cs_app.model.generation)==ART_OK);
+    query(); cs_fixture("search"); cs_action(APP_CATALOG_SELECT,1); cs_fixture("album");
+    CHECK(cs_app.image_count>=1 && cs_app.images[0].id.size==160);
+    CHECK(!strcmp(cs_app.images[0].entity.uri,cs_app.model.location.entity.uri));
+    ArtworkId previous=cs_app.images[0].id;
+    CHECK(previous.generation==cs_app.model.generation);
+    cs_action(APP_MORE,0); cs_fixture("album-next");
+    CHECK(cs_app.image_count>=1 && artwork_id_equal(cs_app.images[0].id,previous));
+    cs_action(APP_GO_SETTINGS,0);
+    CHECK(!cs_app.catalog.artwork[0] && !cs_app.image_count);
+    ArtworkHandle handle; CHECK(!artwork_lookup(art,previous,&handle));
+    ArtResult result=artwork_stop(art);
+    for (unsigned i=0;result==ART_PENDING && i<50;++i) {
+        (void)WaitForSingleObject(artwork_wait_handle(art),100); result=artwork_stop(art);
+    }
+    CHECK(result==ART_OK && worker_stop(worker)==CORE_OK && worker_join(worker,5000)==CORE_OK);
+    arena_dispose(&arena); cs_app.services.artwork=NULL; cs_close();
+}
+void cs_faults(void) { responses(); partial_and_boundary(); editing(); detail_artwork(); }
