@@ -1,0 +1,36 @@
+Test project C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-41/build-rel
+      Start  1: ui_parity_tools
+ 1/14 Test  #1: ui_parity_tools ..................   Passed    0.41 sec
+      Start  2: ui_icons
+ 2/14 Test  #2: ui_icons .........................   Passed    0.02 sec
+      Start  3: ui_components
+ 3/14 Test  #3: ui_components ....................   Passed    0.04 sec
+      Start  5: core_release_metrics
+ 4/14 Test  #5: core_release_metrics .............   Passed    0.01 sec
+      Start  7: bench_dependency_audit
+ 5/14 Test  #7: bench_dependency_audit ...........   Passed    0.63 sec
+      Start 11: app_media_controls
+ 6/14 Test #11: app_media_controls ...............   Passed    0.12 sec
+      Start 12: app_catalog_screens
+ 7/14 Test #12: app_catalog_screens ..............   Passed    0.23 sec
+      Start 14: app_playlist
+ 8/14 Test #14: app_playlist .....................   Passed    0.56 sec
+      Start 17: app_shell
+ 9/14 Test #17: app_shell ........................   Passed    0.58 sec
+      Start 19: ui_widgets
+10/14 Test #19: ui_widgets .......................   Passed    0.02 sec
+      Start 23: ui_font
+11/14 Test #23: ui_font ..........................   Passed    0.12 sec
+      Start 24: ui_renderer
+12/14 Test #24: ui_renderer ......................   Passed    0.02 sec
+      Start 30: ui_scheduler
+13/14 Test #30: ui_scheduler .....................   Passed    0.02 sec
+      Start 31: ui_window
+14/14 Test #31: ui_window ........................   Passed    0.63 sec
+
+100% tests passed, 0 tests failed out of 14
+
+Label Time Summary:
+performance    =   0.63 sec*proc (1 test)
+
+Total Test time (real) =   3.62 sec

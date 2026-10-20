@@ -1,0 +1,200 @@
+{
+  "evidence_id": "ev_515f2699b036d1552fbd622e37de676b26b19e3144e911c2b2bb24d6d505db79",
+  "subject": {
+    "name": "xpui-current",
+    "digest": {
+      "sha256": "e28bb0925187d3eb08606ebd8369d1c5b0a7259229e019526c6e5a52426ceef8"
+    },
+    "local_path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\issue-41\\.cache\\xpui-current",
+    "format": "directory",
+    "architecture": null
+  },
+  "provider": {
+    "id": "rea-analysis-view",
+    "name": "REA analysis view projection",
+    "version": "1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis-view",
+  "operation": "inspect_analysis_view",
+  "parameters": {
+    "parent_evidence_id": "ev_591ff2bc2f44e77aeb27efdf4c6d23eca9c048aa0a27f332ecffbc9cbc1c05ed",
+    "view": {
+      "kind": "item",
+      "collection": "modules",
+      "selector": {
+        "node_id": "jag_node_32d047b48cf525d4f3afe90bbea3f1cc8780affe79947c36472eec1375d41477"
+      }
+    }
+  },
+  "raw_result": null,
+  "normalized_result": {
+    "kind": "item",
+    "view": {
+      "kind": "item",
+      "collection": "modules",
+      "selector": {
+        "node_id": "jag_node_32d047b48cf525d4f3afe90bbea3f1cc8780affe79947c36472eec1375d41477"
+      }
+    },
+    "item": {
+      "node_id": "jag_node_32d047b48cf525d4f3afe90bbea3f1cc8780affe79947c36472eec1375d41477",
+      "kind": "javascript-asset",
+      "path": "dwp-top-bar.js",
+      "identity": {
+        "strategy": "content-digest",
+        "stability": "global-exact",
+        "sha256": "780e732beadbfb9c5c982822589a32b38a3edccb63d0a777f914577a28fc9f5c"
+      },
+      "hashes": [
+        "780e732beadbfb9c5c982822589a32b38a3edccb63d0a777f914577a28fc9f5c"
+      ],
+      "exports": [],
+      "source_ranges": [],
+      "observations": [
+        {
+          "observation_id": "jag_observation_65e96a19e85b2435f36215df95c1be9eab3e139f15cc9a30b19e48df6c0859e8",
+          "label": "dwp-top-bar.js",
+          "properties": {
+            "path": "dwp-top-bar.js",
+            "bytes": 6811,
+            "inventory_artifact_id": "art_13ebbaab2f53756c766d5343840101b9f4016bb423ca0dcef476d78d32a0d25e",
+            "unpacked": false,
+            "file_kind": "javascript",
+            "text_status": "included",
+            "parse_status": "complete",
+            "json_parse_status": null,
+            "json_top_level_keys": [],
+            "omitted_json_top_level_keys": 0,
+            "vendor_markers": [
+              "Rspack"
+            ]
+          },
+          "evidence": {
+            "authority": "artifact-bytes",
+            "state": "observed",
+            "confidence": "exact",
+            "artifact": {
+              "available": true,
+              "artifact_id": "art_780e732beadbfb9c5c982822589a32b38a3edccb63d0a777f914577a28fc9f5c",
+              "sha256": "780e732beadbfb9c5c982822589a32b38a3edccb63d0a777f914577a28fc9f5c"
+            },
+            "location": {
+              "available": true,
+              "value": {
+                "kind": "artifact-path",
+                "path": "dwp-top-bar.js"
+              }
+            },
+            "extractor": {
+              "name": "rea-javascript-artifact-reconstruction",
+              "version": "1",
+              "operation": "inventory-relevant-file",
+              "executable_sha256": null
+            },
+            "coverage": {
+              "status": "complete",
+              "truncated": false,
+              "omitted_count": 0,
+              "limits": []
+            },
+            "limitations": [],
+            "evidence_ids": []
+          }
+        }
+      ]
+    },
+    "parent_evidence_id": "ev_591ff2bc2f44e77aeb27efdf4c6d23eca9c048aa0a27f332ecffbc9cbc1c05ed",
+    "parent_operation": "analyze_javascript_application",
+    "parent_digest": "591ff2bc2f44e77aeb27efdf4c6d23eca9c048aa0a27f332ecffbc9cbc1c05ed",
+    "view_digest": "13889d7f38082c6ea5ee25324d46f1d000b74bcb06d332f8dac7733eca1121f5",
+    "artifact": {
+      "path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\issue-41\\.cache\\xpui-current",
+      "sha256": "e28bb0925187d3eb08606ebd8369d1c5b0a7259229e019526c6e5a52426ceef8"
+    },
+    "coverage": {
+      "status": "complete-within-view",
+      "examined": 1,
+      "total": 874,
+      "next_offset": null,
+      "exhausted": true
+    },
+    "limitations": [
+      "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+      "Caller-selected source analysis leaves 264 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+      "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+      "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+      "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+      "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+      "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+      "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+      "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ],
+    "unknowns": [
+      "18575 semantic graph unknowns remain in the parent Evidence.",
+      "264 application graph unknowns remain in the parent Evidence.",
+      "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+      "Caller-selected source analysis leaves 264 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+      "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+      "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+      "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+      "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+      "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+      "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+      "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code.",
+      "graph.coverage.status is partial",
+      "semantic_graph.coverage.status is partial"
+    ]
+  },
+  "confidence": "derived",
+  "authority": "shipped-artifact",
+  "environment": null,
+  "limitations": [
+    "Boundary extraction covers unshadowed JSON/global coercions plus parse and validation method candidates.",
+    "Caller-selected source analysis leaves 264 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+    "Child-process extraction covers asynchronous node:child_process creation, literal argv/env/stdio options, exit/error listeners, and kill signals.",
+    "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+    "Configuration extraction covers process.env, process.argv, node:fs reads, and direct logical defaults.",
+    "Event extraction covers EventEmitter-style literal registrations, removals, and dispatch candidates; dynamic names remain unknown.",
+    "Function fingerprints are static candidates; equal digests can remain ambiguous and do not prove behavioral equivalence.",
+    "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+    "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+    "Local data flow does not claim control-flow-sensitive reaching definitions or arbitrary dynamic property resolution.",
+    "Promise ownership covers explicit unshadowed Promise construction, static factories, aggregation, chaining, and await syntax only.",
+    "Request extraction covers fetch, WebSocket, node:http/node:https construction, direct option fields, and exact local response consumers.",
+    "Resource extraction covers built-in filesystem/network acquisition and exact local close/destroy/end handles.",
+    "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+    "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+    "The semantic graph contains static syntax observations and conservative relationship candidates; it does not claim runtime execution.",
+    "Timer extraction covers global or node:timers scheduling and exact local-handle cancellation.",
+    "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+  ],
+  "relationship_coverage": null,
+  "locations": [
+    {
+      "kind": "artifact-path",
+      "path": "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\issue-41\\.cache\\xpui-current"
+    }
+  ],
+  "evidence_links": [
+    "ev_591ff2bc2f44e77aeb27efdf4c6d23eca9c048aa0a27f332ecffbc9cbc1c05ed"
+  ]
+}

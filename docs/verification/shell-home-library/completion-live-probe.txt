@@ -1,0 +1,141 @@
+Internal-service authorization accepted.
+Client token present: 1; service bearer present: 1; result: 0.
+Retained live sidebar: accepted 1; loaded playlist rows 14; finite source-row cap 16.
+Home result: 0; rows: 1; public diagnostic: Personalized Home is unavailable. Showing your playlists.
+HTTP status: 200; response bytes: 7294.
+Artwork metadata: 4 usable rows; 0 rejected rows.
+Artwork sample: fetch 0; bytes 10623; decode 0; dimensions 64 x 64; balanced 1.
+Native live capture home-400-96: 400 x 900 pixels; 96 DPI; settled 1; visible 1; ready 0; failed 0; pending 0; missing 1; sidebar ready 1/10; pixels SHA256 817c9cef9de7ad5861de99d0197d9c98b187484d26b61fb376a1b70c196f4994.
+Native live capture cleanup: balanced 1.
+Native live capture home-400-120: 500 x 1125 pixels; 120 DPI; settled 1; visible 1; ready 0; failed 0; pending 0; missing 1; sidebar ready 1/10; pixels SHA256 7856640ba0dda4d241d21b1c6fbbc828ed3d79a704afa87a2c83dfcb4cd9a45c.
+Native live capture cleanup: balanced 1.
+Native live capture home-400-144: 600 x 1350 pixels; 144 DPI; settled 1; visible 1; ready 0; failed 0; pending 0; missing 1; sidebar ready 1/10; pixels SHA256 8857a4567e8e3497c9fdc5517d32050cf8c96fb9b052dd8af0caba05638b87d4.
+Native live capture cleanup: balanced 1.
+Native live capture home-400-192: 800 x 1800 pixels; 192 DPI; settled 1; visible 1; ready 0; failed 0; pending 0; missing 1; sidebar ready 1/10; pixels SHA256 2e3fe357f8f0023da62f846d9cd9cd37e4159652dd04d625a1ae6eb2111e07eb.
+Native live capture cleanup: balanced 1.
+Native live capture home-1100-96: 1100 x 900 pixels; 96 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/9; pixels SHA256 a882a75d614e6a8ee883643ee0181903706bd1e40553ec7d3b4d90df93ead81b.
+Native live capture cleanup: balanced 1.
+Native live capture home-1100-120: 1375 x 1125 pixels; 120 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/9; pixels SHA256 99bfc6a52bd5f9faa9110591ef687a8c90ce76efb95d927efa90742af4be3a57.
+Native live capture cleanup: balanced 1.
+Native live capture home-1100-144: 1650 x 1350 pixels; 144 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/9; pixels SHA256 fc97572ed6a15f980bbb8b2a033fabe7307642a6a4e4648e3cc01990c4c3eba5.
+Native live capture cleanup: balanced 1.
+Native live capture home-1100-192: 2200 x 1800 pixels; 192 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/9; pixels SHA256 20e047a69671cdea79c310fe148bebd36654271439bdcf964e70452866c58b0a.
+Native live capture cleanup: balanced 1.
+Native live capture home-1800-96: 1800 x 900 pixels; 96 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/9; pixels SHA256 0a10253d3dd21d1e8bf7e9c24201eed37473517d85311bb7597e9ac5d9fa7e0e.
+Native live capture cleanup: balanced 1.
+Native live capture home-1800-120: 2250 x 1125 pixels; 120 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/9; pixels SHA256 2b2998d86259a4d59a6b220c38c793082dfff84523337a0e6a53f8dbc64c115e.
+Native live capture cleanup: balanced 1.
+Native live capture home-1800-144: 2700 x 1350 pixels; 144 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/9; pixels SHA256 e95a1fcc5cabefcd27fe34336244bec4404fb18e228d78e5742c559807eafe4d.
+Native live capture cleanup: balanced 1.
+Native live capture home-1800-192: 3600 x 1800 pixels; 192 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/9; pixels SHA256 d62132d7eef7c5d2ffca274fd140172114ede44dc54ed6da69122eefc2d190a2.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-narrow-96: 1100 x 900 pixels; 96 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/9; pixels SHA256 a882a75d614e6a8ee883643ee0181903706bd1e40553ec7d3b4d90df93ead81b.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-default-96: 1600 x 900 pixels; 96 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/9; pixels SHA256 a8b87ec48f67a45795a13292520243f558d8ede8e9b011fd67e97e1d4379fa36.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-wide-96: 1920 x 1033 pixels; 96 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/10; pixels SHA256 7a7817d7ae08052e8d7019e7bce75e31d932da0bac8b9da7b8b275347e07e7b8.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-narrow-120: 1000 x 1020 pixels; 120 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/8; pixels SHA256 658a657991a6ea7555692aeb8ad7b8c04ada89e83587e45b2755ee667bdb5050.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-default-120: 1375 x 1020 pixels; 120 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/8; pixels SHA256 75ef525426e988689263f4d3d5a9ddde8b91c7dc9e92d755d5db40a35cc31c27.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-wide-120: 1920 x 1021 pixels; 120 DPI; settled 1; visible 6; ready 1; failed 0; pending 0; missing 5; sidebar ready 1/8; pixels SHA256 566b79b874c8c7147e1487590d2ada0a8bd5112b77e34afc298170279c263d3e.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-narrow-144: 1200 x 1008 pixels; 144 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/6; pixels SHA256 d4a2cf14950a9958f52ac9821126274d25009ae6752e9c098be546d959824925.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-default-144: 1475 x 1008 pixels; 144 DPI; settled 1; visible 3; ready 0; failed 0; pending 0; missing 3; sidebar ready 1/6; pixels SHA256 606be54af5a0143c58caee205adb5d96620fb7e65232df26d62f9077fa67c6db.
+Native live capture cleanup: balanced 1.
+Native live capture home-reference-wide-144: 1920 x 1010 pixels; 144 DPI; settled 1; visible 5; ready 0; failed 0; pending 0; missing 5; sidebar ready 1/6; pixels SHA256 3b827a4371eb36b1be2c62a3e1a76de53014a65fbf7065b95caf86da40826813.
+Native live capture cleanup: balanced 1.
+Library result: 0; rows: 16; public diagnostic: Your playlists. Saved albums, artists and folders are not included in this view.
+HTTP status: 200; response bytes: 7299.
+Rootlist image fields: HTTPS 4; opaque 0; missing 12.
+Artwork metadata: 4 usable rows; 0 rejected rows.
+Artwork sample: fetch 0; bytes 10623; decode 0; dimensions 64 x 64; balanced 1.
+Native live capture library-list-400-96: 400 x 900 pixels; 96 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/10; pixels SHA256 8722543bd1d2f5a511b4d26bf691ff9bc9892bd5327b5933ec724d3a14eb7299.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-400-120: 500 x 1125 pixels; 120 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/10; pixels SHA256 69c5a1dad30a59bdc0e6e076ebb9a77b8ab7f024ca23104962a5c9324b3a591d.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-400-144: 600 x 1350 pixels; 144 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/10; pixels SHA256 78fc5a900f48c446cc6b6e61878c02ba5731e0dab1ec9b1d3daea1f45a4d39f6.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-400-192: 800 x 1800 pixels; 192 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/10; pixels SHA256 81f991cf88f140fcb3c804827ec4207eefd55a6b58f5645db61f3cd7db903d54.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1100-96: 1100 x 900 pixels; 96 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 41c914985ae377bef7b50c1ad414a40b98d516e98ac77670d79554dd7bbe6346.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1100-120: 1375 x 1125 pixels; 120 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 067c0217ca5123399f5d35a1f83d5529f9e2e4fbd0ca0c94e223016b4be79bcd.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1100-144: 1650 x 1350 pixels; 144 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 b8329d2410022683527645c5c37898da50842b63bbaea77ac7a40e6f017d91c3.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1100-192: 2200 x 1800 pixels; 192 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 b6f421ed69254067a6fb3544d9f9e8a400969a1f37118de76d9fbc2a72dea64c.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1800-96: 1800 x 900 pixels; 96 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 612435d67127408df84ef4e36a8d1a1393b69ec84e77a295bce77c0c578652dd.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1800-120: 2250 x 1125 pixels; 120 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 70184fbe076129e1fa2b202716790ffa05aeacfdda07bf9cb8a660225917ffd6.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1800-144: 2700 x 1350 pixels; 144 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 93bc315b1378c110398a816720caad1cd83d7f995963e11039719800a141b522.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-1800-192: 3600 x 1800 pixels; 192 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 73625a367d3e471a629507fb2545d658b8ba9a08bb692d93c173ef315fdd13f6.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-400-96: 400 x 900 pixels; 96 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/10; pixels SHA256 bf021e8faaecb59939b0d8e1719e59a06addf8779ae4413cfabc391f3a127607.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-400-120: 500 x 1125 pixels; 120 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/10; pixels SHA256 6be73ae5f46d2b6146908e9085551cdcd51a58235cd44ed8ce906f9329857ed5.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-400-144: 600 x 1350 pixels; 144 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/10; pixels SHA256 218bc3ef220b523405ab08e250132d341a03aff46dd944b00c3e9d85025ff405.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-400-192: 800 x 1800 pixels; 192 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/10; pixels SHA256 1e58128717053339eb51982fec0fd12ba2a3295ad87eb4221fcbcac699209d93.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1100-96: 1100 x 900 pixels; 96 DPI; settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; sidebar ready 1/9; pixels SHA256 5d14a80c2c0d6c58e8c1bba3a3910fa25ab5203f9701cda30399b2ea65ce2f44.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1100-120: 1375 x 1125 pixels; 120 DPI; settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; sidebar ready 1/9; pixels SHA256 1ec9a0fb1481ce2d2811d91dc3eac59a832990a7015b6c9f881023212a3c55a0.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1100-144: 1650 x 1350 pixels; 144 DPI; settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; sidebar ready 1/9; pixels SHA256 5ff224305e9d96f500cb2c1aaeb4b1597590f7456fadb589c75717f9f7187c10.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1100-192: 2200 x 1800 pixels; 192 DPI; settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; sidebar ready 1/9; pixels SHA256 9e6cf20b2d0d9d435435f47ce2dfaa871ac2198e1a68bfb4c2c6500f9807f331.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1800-96: 1800 x 900 pixels; 96 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/9; pixels SHA256 1204d6dc1d1c8536e5f5d68d9087bcbafaf1ef24c781919bf5eccdd7b6ae5902.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1800-120: 2250 x 1125 pixels; 120 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/9; pixels SHA256 e32e2f6cd3f5de75660b6de039c6a978339ddef9ce52139cf76a1fee6fc78c49.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1800-144: 2700 x 1350 pixels; 144 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/9; pixels SHA256 c5be165b54a80a3b8d44f78ab73cf795caeec40bad65d608aaefe451557ef903.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-1800-192: 3600 x 1800 pixels; 192 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/9; pixels SHA256 a620ed6e4ea4eb13f9f47b5ddfa5347d24dbf55f5eaa17cb3c0c6dfc2f2ef2e0.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-narrow-96: 1100 x 900 pixels; 96 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 41c914985ae377bef7b50c1ad414a40b98d516e98ac77670d79554dd7bbe6346.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-default-96: 1600 x 900 pixels; 96 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/9; pixels SHA256 593eebc0d42aef54670e612c442d00161172666ea67c1f471c926f76ffc8b460.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-wide-96: 1920 x 1033 pixels; 96 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/10; pixels SHA256 224177ad47def81bffbc4a7375fada61e5755b8a121b3371dfda5970e4f4f0c2.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-narrow-120: 1000 x 1020 pixels; 120 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/8; pixels SHA256 6d97f28a4583d7da45083d7d06833af8dd822cf10c462f78004dc4ee77cbe9c0.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-default-120: 1375 x 1020 pixels; 120 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/8; pixels SHA256 53e57e7b13fd6c5fbc8d58ed4d5cca01092fa2fe51ac2b3326adac534a701100.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-wide-120: 1920 x 1021 pixels; 120 DPI; settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; sidebar ready 1/8; pixels SHA256 225f954702390edff871ebe6c014741a15f9efcd8d30a9e935aed9a3a90c799f.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-narrow-144: 1200 x 1008 pixels; 144 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/6; pixels SHA256 23ec548e39ce0c35ce40fd32ad1d4dce53b7dd8c43c393219839d71db649ee26.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-default-144: 1475 x 1008 pixels; 144 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/6; pixels SHA256 25a2e09f6d8016dae6211900e2234ba32a617e5687142c99cdce3fd8223f0605.
+Native live capture cleanup: balanced 1.
+Native live capture library-list-reference-wide-144: 1920 x 1010 pixels; 144 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/6; pixels SHA256 983e6aa2d74241b640a1d4cb14b9e2fab68c7672e10435282d5257dba3706332.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-narrow-96: 1100 x 900 pixels; 96 DPI; settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; sidebar ready 1/9; pixels SHA256 5d14a80c2c0d6c58e8c1bba3a3910fa25ab5203f9701cda30399b2ea65ce2f44.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-default-96: 1600 x 900 pixels; 96 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/9; pixels SHA256 7dbf12eaed8f66cc12ddff56c5dd119a040959362037d7b2c8e7c4cc81cbd3d5.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-wide-96: 1920 x 1033 pixels; 96 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/10; pixels SHA256 4f4de16614479495139b02a9f41465b54c10e15fabc64d1cdf35bda50e2c794f.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-narrow-120: 1000 x 1020 pixels; 120 DPI; settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; sidebar ready 1/8; pixels SHA256 029f0372b2c435de63fbb0c40552ca282b210d5f78eb37feaa54ed15fa342056.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-default-120: 1375 x 1020 pixels; 120 DPI; settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; sidebar ready 1/8; pixels SHA256 385abcdd59ab3dd74ba80025bc2cdfd338feeccb7a06175223ed3be938589f3c.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-wide-120: 1920 x 1021 pixels; 120 DPI; settled 1; visible 12; ready 1; failed 2; pending 0; missing 9; sidebar ready 1/8; pixels SHA256 878af3228a885438b9b4e3b1acf5e77d9a958fd1ab2bbb0ef5023fd19e1304a7.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-narrow-144: 1200 x 1008 pixels; 144 DPI; settled 1; visible 2; ready 0; failed 0; pending 0; missing 2; sidebar ready 1/6; pixels SHA256 30bc778cdcf92c9699c3103ebbdf214ba4f663e3da945031f8f2541115ca1260.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-default-144: 1464 x 1008 pixels; 144 DPI; settled 1; visible 3; ready 0; failed 0; pending 0; missing 3; sidebar ready 1/6; pixels SHA256 e931b296af854558d0354a889fc2a7067a663a7deb3ea8e66045de8f37d9353c.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid-reference-wide-144: 1920 x 1010 pixels; 144 DPI; settled 1; visible 5; ready 0; failed 0; pending 0; missing 5; sidebar ready 1/6; pixels SHA256 410f4a6df201b336f5ac5609a59d28860aa3a4ea4c4531b30b494e04ac05bbb6.
+Native live capture cleanup: balanced 1.
+Playlist page accepted: 1; HTTP 200; rows 64; total 101.
+Playlist metadata accepted: 1; hydrated rows 64; diagnostic:
+Playlist disk index accepted: 1; records 101; diagnostic:

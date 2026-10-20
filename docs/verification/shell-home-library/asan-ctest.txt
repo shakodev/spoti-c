@@ -1,0 +1,1349 @@
+Start testing: Oct 20 15:16 W. Europe Daylight Time
+----------------------------------------------------------
+1/74 Testing: app_live_wire
+1/74 Test: app_live_wire
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_live_wire.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_live_wire" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Live native wire bounds, metadata and typed model projection passed.
+<end of output>
+Test time =   0.21 sec
+----------------------------------------------------------
+Test Passed.
+"app_live_wire" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_live_wire" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/74 Testing: app_live_artwork
+2/74 Test: app_live_artwork
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_live_artwork.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_live_artwork" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Live supplied artwork: bounded wire fields, candidate policy, typed projections and owned page lifetime passed.
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"app_live_artwork" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_live_artwork" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/74 Testing: app_live_host
+3/74 Test: app_live_host
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_app_live.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_live_host" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Live host + state/art workers: core high-water 26744/131072 bytes; cancellation and teardown balanced.
+Live host restore, login failure, cancelled login, logout and teardown passed.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"app_live_host" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_live_host" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/74 Testing: app_live_http
+4/74 Test: app_live_http
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_live_http.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_live_http" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Live transport completion, body limits, cancellation and retirement passed.
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"app_live_http" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_live_http" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/74 Testing: ui_parity_tools
+5/74 Test: ui_parity_tools
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/proto-tools/Scripts/python.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tests/test_parity_tools.py"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_parity_tools" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.190s
+
+OK
+{"sha256": "a6207bbc4100a977f9c263f3884570886f89e710d3acfd2e7069ff4fb6ef9518", "files": 1, "rules": 1, "report": "C:\\Users\\Daan\\AppData\\Local\\Temp\\tmprd97k3fr\\report.json", "extracted": "C:\\Users\\Daan\\AppData\\Local\\Temp\\tmprd97k3fr\\extracted"}
+<end of output>
+Test time =   0.39 sec
+----------------------------------------------------------
+Test Passed.
+"ui_parity_tools" end time: Oct 20 15:16 W. Europe Daylight Time
+"ui_parity_tools" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/74 Testing: ui_icons
+6/74 Test: ui_icons
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_icons.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_icons" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_icons: aspect fit, DPI invariance, RTL, shader validation, Clay dispatch, budgets and warm allocation checks passed
+<end of output>
+Test time =   0.17 sec
+----------------------------------------------------------
+Test Passed.
+"ui_icons" end time: Oct 20 15:16 W. Europe Daylight Time
+"ui_icons" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/74 Testing: ui_components
+7/74 Test: ui_components
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_components.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_components" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+components: tokens, capture, state matrix, RTL/focus, menus and bounded warm frames passed
+<end of output>
+Test time =   0.35 sec
+----------------------------------------------------------
+Test Passed.
+"ui_components" end time: Oct 20 15:16 W. Europe Daylight Time
+"ui_components" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/74 Testing: ui_components_visual
+8/74 Test: ui_components_visual
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_components_gpu.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/parity-captures"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_components_visual" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Component pixels: all states, LTR/RTL, 96/120/144/192 DPI, warm allocation and resource checks passed
+<end of output>
+Test time =   1.99 sec
+----------------------------------------------------------
+Test Passed.
+"ui_components_visual" end time: Oct 20 15:16 W. Europe Daylight Time
+"ui_components_visual" time elapsed: 00:00:01
+----------------------------------------------------------
+
+9/74 Testing: core_release_metrics
+9/74 Test: core_release_metrics
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_release_metrics.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_release_metrics" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+process counters, CPU normalization, strict thresholds and missing evidence passed
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"core_release_metrics" end time: Oct 20 15:16 W. Europe Daylight Time
+"core_release_metrics" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/74 Testing: core_state_cache
+10/74 Test: core_state_cache
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_state_cache.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_state_cache" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+state cache: codec fuzz, bounds, migration, atomic interruption, concurrent saves, offline shell and worker lifetime passed
+<end of output>
+Test time =   0.44 sec
+----------------------------------------------------------
+Test Passed.
+"core_state_cache" end time: Oct 20 15:16 W. Europe Daylight Time
+"core_state_cache" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/74 Testing: app_media_controls
+11/74 Test: app_media_controls
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_media_controls.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_media_controls" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+app_media_controls: publication, audible timeline, media keys, bounded MPSC, duplicates and COM callback lifetimes passed
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"app_media_controls" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_media_controls" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/74 Testing: app_catalog_screens
+12/74 Test: app_catalog_screens
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_catalog_screens.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_catalog_screens" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+catalog: App=245224 host-model=519104; 600 route transitions, 1000 allocation-free layouts
+app_catalog_screens: fixture routes, stable IDs, debounce, pages, lyrics, keyboard and ownership passed
+<end of output>
+Test time =   1.58 sec
+----------------------------------------------------------
+Test Passed.
+"app_catalog_screens" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_catalog_screens" time elapsed: 00:00:01
+----------------------------------------------------------
+
+13/74 Testing: app_catalog_visual
+13/74 Test: app_catalog_visual
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_catalog_screens.exe" "--visual"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_catalog_visual" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+catalog: App=245224 host-model=519104; 600 route transitions, 1000 allocation-free layouts
+<end of output>
+Test time =   8.09 sec
+----------------------------------------------------------
+Test Passed.
+"app_catalog_visual" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_catalog_visual" time elapsed: 00:00:08
+----------------------------------------------------------
+
+14/74 Testing: app_playlist
+14/74 Test: app_playlist
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_playlist_screen.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_playlist" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+playlist: 1000 real DirectWrite/Clay/render warm frames without allocations, pending text or new shaping
+app_playlist: 10k index, <=16 rendered rows, 2000 warm layouts without heap calls; shared models=511416 bytes
+<end of output>
+Test time =   5.75 sec
+----------------------------------------------------------
+Test Passed.
+"app_playlist" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_playlist" time elapsed: 00:00:05
+----------------------------------------------------------
+
+15/74 Testing: app_playlist_visual
+15/74 Test: app_playlist_visual
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_playlist_screen.exe" "--visual"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_playlist_visual" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+playlist: 1000 real DirectWrite/Clay/render warm frames without allocations, pending text or new shaping
+playlist visual: narrow 500x800
+playlist visual: default 1375x900
+playlist visual: wide 1800x1125
+app_playlist: 10k index, <=16 rendered rows, 2000 warm layouts without heap calls; shared models=511416 bytes
+<end of output>
+Test time =   7.45 sec
+----------------------------------------------------------
+Test Passed.
+"app_playlist_visual" end time: Oct 20 15:16 W. Europe Daylight Time
+"app_playlist_visual" time elapsed: 00:00:07
+----------------------------------------------------------
+
+16/74 Testing: app_shell
+16/74 Test: app_shell
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_app_shell.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_shell" start time: Oct 20 15:16 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+app state=245224 bytes; 2000 warm layouts: zero Debug heap calls; 600 route transitions bounded
+account owner: existing PKCE begin/cancel and credential logout passed without browser/account
+artwork navigation: request coalescing, generation cancellation, stale rejection and handle balance passed
+volume: continuous input, mute, snapshot ordering/backpressure, Settings, compact layouts, restart and real player passed
+browse: UTF-8 projection, filtered original keys, history, page replacement and idle visibility passed
+1000 DirectWrite/Clay/renderer warm frames: no heap calls, no pending text, no new shaping
+native shell: real HWND keyboard/pointer/capture routing passed
+app_shell: routes, immutable pages, stale delivery, auth/offline, keyboard, playback and bounds passed
+<end of output>
+Test time =   6.41 sec
+----------------------------------------------------------
+Test Passed.
+"app_shell" end time: Oct 20 15:17 W. Europe Daylight Time
+"app_shell" time elapsed: 00:00:06
+----------------------------------------------------------
+
+17/74 Testing: app_shell_visual
+17/74 Test: app_shell_visual
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_app_shell.exe" "--visual"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_shell_visual" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+pixel coverage home/narrow/96: artwork=69664 ink=2924
+pixel coverage home/default/96: artwork=192668 ink=3435
+pixel coverage home/wide/96: artwork=453456 ink=3012
+pixel coverage home/narrow/120: artwork=108860 ink=4697
+pixel coverage home/default/120: artwork=299754 ink=5100
+pixel coverage home/wide/120: artwork=712536 ink=5174
+pixel coverage home/narrow/144: artwork=156760 ink=7274
+pixel coverage home/default/144: artwork=433615 ink=8334
+pixel coverage home/wide/144: artwork=1022625 ink=7769
+pixel coverage home/narrow/192: artwork=278700 ink=13137
+pixel coverage home/default/192: artwork=770980 ink=15379
+pixel coverage home/wide/192: artwork=1819253 ink=14161
+pixel coverage library-list/narrow/96: artwork=8936 ink=4686
+pixel coverage library-list/default/96: artwork=8936 ink=5006
+pixel coverage library-list/wide/96: artwork=8936 ink=5006
+pixel coverage library-list/narrow/120: artwork=14048 ink=7814
+pixel coverage library-list/default/120: artwork=14048 ink=8115
+pixel coverage library-list/wide/120: artwork=14048 ink=8232
+pixel coverage library-list/narrow/144: artwork=20280 ink=11465
+pixel coverage library-list/default/144: artwork=20280 ink=12036
+pixel coverage library-list/wide/144: artwork=20280 ink=12036
+pixel coverage library-list/narrow/192: artwork=36216 ink=20795
+pixel coverage library-list/default/192: artwork=36216 ink=22030
+pixel coverage library-list/wide/192: artwork=36216 ink=22030
+pixel coverage library-grid/narrow/96: artwork=113220 ink=4223
+pixel coverage library-grid/default/96: artwork=164208 ink=5161
+pixel coverage library-grid/wide/96: artwork=439092 ink=4691
+pixel coverage library-grid/narrow/120: artwork=177164 ink=7041
+pixel coverage library-grid/default/120: artwork=256536 ink=8003
+pixel coverage library-grid/wide/120: artwork=689210 ink=8065
+pixel coverage library-grid/narrow/144: artwork=254956 ink=10440
+pixel coverage library-grid/default/144: artwork=370260 ink=12408
+pixel coverage library-grid/wide/144: artwork=990231 ink=11713
+pixel coverage library-grid/narrow/192: artwork=453446 ink=18649
+app state=245224 bytes; 2000 warm layouts: zero Debug heap calls; 600 route transitions bounded
+account owner: existing PKCE begin/cancel and credential logout passed without browser/account
+artwork navigation: request coalescing, generation cancellation, stale rejection and handle balance passed
+volume: continuous input, mute, snapshot ordering/backpressure, Settings, compact layouts, restart and real player passed
+browse: UTF-8 projection, filtered original keys, history, page replacement and idle visibility passed
+1000 DirectWrite/Clay/renderer warm frames: no heap calls, no pending text, no new shaping
+native shell: real HWND keyboard/pointer/capture routing passed
+native fixture capture: home/narrow 400 DIP at 96 DPI -> 400x900, artwork ready=1 failed=1
+native fixture capture: home/default 1100 DIP at 96 DPI -> 1100x900, artwork ready=7 failed=1
+native fixture capture: home/wide 1800 DIP at 96 DPI -> 1800x900, artwork ready=7 failed=1
+native fixture capture: home/narrow 400 DIP at 120 DPI -> 500x1125, artwork ready=1 failed=1
+native fixture capture: home/default 1100 DIP at 120 DPI -> 1375x1125, artwork ready=7 failed=1
+native fixture capture: home/wide 1800 DIP at 120 DPI -> 2250x1125, artwork ready=7 failed=1
+native fixture capture: home/narrow 400 DIP at 144 DPI -> 600x1350, artwork ready=1 failed=1
+native fixture capture: home/default 1100 DIP at 144 DPI -> 1650x1350, artwork ready=7 failed=1
+native fixture capture: home/wide 1800 DIP at 144 DPI -> 2700x1350, artwork ready=7 failed=1
+native fixture capture: home/narrow 400 DIP at 192 DPI -> 800x1800, artwork ready=1 failed=1
+native fixture capture: home/default 1100 DIP at 192 DPI -> 2200x1800, artwork ready=7 failed=1
+native fixture capture: home/wide 1800 DIP at 192 DPI -> 3600x1800, artwork ready=7 failed=1
+native fixture capture: library-list/narrow 400 DIP at 96 DPI -> 400x900, artwork ready=4 failed=1
+native fixture capture: library-list/default 1100 DIP at 96 DPI -> 1100x900, artwork ready=4 failed=1
+native fixture capture: library-list/wide 1800 DIP at 96 DPI -> 1800x900, artwork ready=4 failed=1
+native fixture capture: library-list/narrow 400 DIP at 120 DPI -> 500x1125, artwork ready=4 failed=1
+native fixture capture: library-list/default 1100 DIP at 120 DPI -> 1375x1125, artwork ready=4 failed=1
+native fixture capture: library-list/wide 1800 DIP at 120 DPI -> 2250x1125, artwork ready=4 failed=1
+native fixture capture: library-list/narrow 400 DIP at 144 DPI -> 600x1350, artwork ready=4 failed=1
+native fixture capture: library-list/default 1100 DIP at 144 DPI -> 1650x1350, artwork ready=4 failed=1
+native fixture capture: library-list/wide 1800 DIP at 144 DPI -> 2700x1350, artwork ready=4 failed=1
+native fixture capture: library-list/narrow 400 DIP at 192 DPI -> 800x1800, artwork ready=4 failed=1
+native fixture capture: library-list/default 1100 DIP at 192 DPI -> 2200x1800, artwork ready=4 failed=1
+native fixture capture: library-list/wide 1800 DIP at 192 DPI -> 3600x1800, artwork ready=4 failed=1
+native fixture capture: library-grid/narrow 400 DIP at 96 DPI -> 400x900, artwork ready=2 failed=0
+native fixture capture: library-grid/default 1100 DIP at 96 DPI -> 1100x900, artwork ready=6 failed=1
+native fixture capture: library-grid/wide 1800 DIP at 96 DPI -> 1800x900, artwork ready=7 failed=1
+native fixture capture: library-grid/narrow 400 DIP at 120 DPI -> 500x1125, artwork ready=2 failed=0
+native fixture capture: library-grid/default 1100 DIP at 120 DPI -> 1375x1125, artwork ready=6 failed=1
+native fixture capture: library-grid/wide 1800 DIP at 120 DPI -> 2250x1125, artwork ready=7 failed=1
+native fixture capture: library-grid/narrow 400 DIP at 144 DPI -> 600x1350, artwork ready=2 failed=0
+native fixture capture: library-grid/default 1100 DIP at 144 DPI -> 1650x1350, artwork ready=6 failed=1
+native fixture capture: library-grid/wide 1800 DIP at 144 DPI -> 2700x1350, artwork ready=7 failed=1
+native fixture capture: library-grid/narrow 400 DIP at 192 DPI -> 800x1800, artwork ready=2 failed=0
+native fixture capture: library-grid/default 1100 DIP at 192 DPI pixel coverage library-grid/default/192: artwork=658956 ink=22784
+pixel coverage library-grid/wide/192: artwork=1761661 ink=21349
+-> 2200x1800, artwork ready=6 failed=1
+native fixture capture: library-grid/wide 1800 DIP at 192 DPI -> 3600x1800, artwork ready=7 failed=1
+36 native shell fixtures: Home/Library list/grid, three sizes, four DPI scales, injected artwork, no network
+app_shell: routes, immutable pages, stale delivery, auth/offline, keyboard, playback and bounds passed
+<end of output>
+Test time =  14.29 sec
+----------------------------------------------------------
+Test Passed.
+"app_shell_visual" end time: Oct 20 15:17 W. Europe Daylight Time
+"app_shell_visual" time elapsed: 00:00:14
+----------------------------------------------------------
+
+18/74 Testing: app_messages
+18/74 Test: app_messages
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_app_messages.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_messages" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+messages: exact fallback, UTF-8/RTL/tokens, bounds, DPI, keyboard details, overflow and idle passed
+<end of output>
+Test time =   1.12 sec
+----------------------------------------------------------
+Test Passed.
+"app_messages" end time: Oct 20 15:17 W. Europe Daylight Time
+"app_messages" time elapsed: 00:00:01
+----------------------------------------------------------
+
+19/74 Testing: app_message_pixels
+19/74 Test: app_message_pixels
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_message_pixels.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_message_pixels" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+capture message-after-default.bmp 1100x720
+notice glyph pixels match untrimmed reference: 1909 pixels
+capture message-before-reproduction.bmp 1100x720
+capture message-after-narrow.bmp 400x720
+notice glyph pixels match untrimmed reference: 1906 pixels
+capture message-after-wide-192.bmp 2880x1440
+notice glyph pixels match untrimmed reference: 5764 pixels
+capture message-rtl-144.bmp 600x1080
+notice glyph pixels match untrimmed reference: 1107 pixels
+capture message-multiline-120.bmp 500x900
+notice glyph pixels match untrimmed reference: 1655 pixels
+actual DX11/DirectWrite notice glyphs and resource teardown passed
+<end of output>
+Test time =   2.28 sec
+----------------------------------------------------------
+Test Passed.
+"app_message_pixels" end time: Oct 20 15:17 W. Europe Daylight Time
+"app_message_pixels" time elapsed: 00:00:02
+----------------------------------------------------------
+
+20/74 Testing: app_message_dialog
+20/74 Test: app_message_dialog
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_message_dialog.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"app_message_dialog" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+native close bounds: 476,317 572,349 client 584,361
+native details: exact UTF-16, RTL, unbroken wrapping, scroll, resize/DPI handler, Tab/Enter and cleanup passed
+<end of output>
+Test time =   0.52 sec
+----------------------------------------------------------
+Test Passed.
+"app_message_dialog" end time: Oct 20 15:17 W. Europe Daylight Time
+"app_message_dialog" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/74 Testing: ui_widgets
+21/74 Test: ui_widgets
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_widgets.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_widgets" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+widget state=22432 bytes, Clay minimum=441024 bytes, scratch=65536 bytes
+2000 widget layout/measurement/render frames; Debug allocation hooks and bounded visible failures passed
+ui_widgets: Unicode selection, IME, clipboard, seeks, focus/capture, arenas and allocation checks passed
+<end of output>
+Test time =   0.18 sec
+----------------------------------------------------------
+Test Passed.
+"ui_widgets" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_widgets" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/74 Testing: ui_virtual_list
+22/74 Test: ui_virtual_list
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_virtual_list.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_virtual_list" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+3000 scroll/hover frames: Debug allocation hooks passed; <=29 materialized rows for 10k/1 billion models
+ui_virtual_list: boundary/property checks, navigation, key stability, clipping and bounded layouts passed
+<end of output>
+Test time =   1.05 sec
+----------------------------------------------------------
+Test Passed.
+"ui_virtual_list" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_virtual_list" time elapsed: 00:00:01
+----------------------------------------------------------
+
+23/74 Testing: ui_artwork
+23/74 Test: ui_artwork
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_artwork.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_artwork" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+artwork visibility: cancellation, retry retention, crop, source admission and notifier retirement passed
+artwork: bounded decode/cache/worker ownership checks passed
+<end of output>
+Test time =   0.37 sec
+----------------------------------------------------------
+Test Passed.
+"ui_artwork" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_artwork" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/74 Testing: ui_collection_artwork
+24/74 Test: ui_collection_artwork
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_collection_artwork.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_collection_artwork" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+collection artwork: typed paths, copied Unicode URLs, limits, malformed data and source identities passed
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"ui_collection_artwork" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_collection_artwork" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/74 Testing: ui_artwork_host
+25/74 Test: ui_artwork_host
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_artwork_host.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_artwork_host" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+artwork host: deferred storage, arena budgets, partial failure, cancellation and joined ownership passed without network/GPU
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"ui_artwork_host" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_artwork_host" time elapsed: 00:00:00
+----------------------------------------------------------
+
+26/74 Testing: ui_font
+26/74 Test: ui_font
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_font.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_font" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+advances: Hello=36.852 Arabic=44.086 emoji=21.969 ellipsis=75.656
+1000 warm Clay layout/render frames: 0 CRT allocations, 0 new preparation requests
+ui_font: Unicode, DirectWrite metrics, pending coalescing, warm cache, LRU and lifetime passed
+<end of output>
+Test time =   0.37 sec
+----------------------------------------------------------
+Test Passed.
+"ui_font" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_font" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/74 Testing: ui_renderer
+27/74 Test: ui_renderer
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_renderer.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_renderer" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_renderer: fixed budgets, painter order, clipping, fake dispatch and Clay passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"ui_renderer" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_renderer" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/74 Testing: ui_artwork_warp
+28/74 Test: ui_artwork_warp
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_artwork_gpu.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_artwork_warp" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+artwork WARP: 400 navigation evictions, 4 MiB cap, pins, deferred release, stale handles and DXGI teardown passed
+<end of output>
+Test time =   0.36 sec
+----------------------------------------------------------
+Test Passed.
+"ui_artwork_warp" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_artwork_warp" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/74 Testing: ui_font_warp
+29/74 Test: ui_font_warp
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_font_gpu.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_font_warp" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+font-visual-96.ppm
+font-visual-120.ppm
+font-visual-144.ppm
+font-visual-192.ppm
+font GPU: multilingual R8 coverage, clipping, DPI, reuse, recovery and resource teardown passed
+<end of output>
+Test time =   0.26 sec
+----------------------------------------------------------
+Test Passed.
+"ui_font_warp" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_font_warp" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/74 Testing: ui_renderer_warp
+30/74 Test: ui_renderer_warp
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_renderer_gpu.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_renderer_warp" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+WARP debug layer: enabled
+WARP: golden RGBA samples, icons and artwork crop at 96/120/144/192 DPI, textures, clips, resize and recovery passed
+<end of output>
+Test time =   0.34 sec
+----------------------------------------------------------
+Test Passed.
+"ui_renderer_warp" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_renderer_warp" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/74 Testing: ui_renderer_window
+31/74 Test: ui_renderer_window
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_renderer_window.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_renderer_window" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+DX11 idle trace: 100 ms, 1 blocking wait, 0 Present, 0 Map, 0 Draw
+DX11 window: present, resize, notification, recovery, fallback and shutdown passed
+<end of output>
+Test time =   0.39 sec
+----------------------------------------------------------
+Test Passed.
+"ui_renderer_window" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_renderer_window" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/74 Testing: ui_caption_visual
+32/74 Test: ui_caption_visual
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_caption_visual.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/caption-captures"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_caption_visual" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+capture narrow: actual DPI 96, 406x713
+capture narrow-maximized: actual DPI 96, 1920x1032
+capture default: actual DPI 96, 1086x713
+capture default-maximized: actual DPI 96, 1920x1032
+capture wide: actual DPI 96, 1426x713
+capture wide-maximized: actual DPI 96, 1920x1032
+capture maximized: actual DPI 96, 1920x1032
+capture inactive: actual DPI 96, 1426x713
+capture maximize-hover: actual DPI 96, 1426x713
+capture maximize-pressed: actual DPI 96, 1426x713
+capture restore-hover: actual DPI 96, 1920x1032
+capture restore-pressed: actual DPI 96, 1920x1032
+capture minimize-hover: actual DPI 96, 1426x713
+capture minimize-pressed: actual DPI 96, 1426x713
+capture close-hover: actual DPI 96, 1426x713
+capture close-pressed: actual DPI 96, 1426x713
+<end of output>
+Test time =   6.64 sec
+----------------------------------------------------------
+Test Passed.
+"ui_caption_visual" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_caption_visual" time elapsed: 00:00:06
+----------------------------------------------------------
+
+33/74 Testing: ui_scheduler
+33/74 Test: ui_scheduler
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_ui_scheduler.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_scheduler" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_scheduler: fake-clock coalescing, playback, visibility, animation and lyrics passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"ui_scheduler" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_scheduler" time elapsed: 00:00:00
+----------------------------------------------------------
+
+34/74 Testing: ui_window
+34/74 Test: ui_window
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_ui_window.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"ui_window" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+native captions: buttons outside client, hit targets, states, DPI notifications and system commands passed
+idle trace: 100 ms, 1 blocking wait, 0 frames, 0 periodic timers
+ui_window: geometry, DPI, idle wait, worker/reset race and balanced shutdown passed
+<end of output>
+Test time =   0.54 sec
+----------------------------------------------------------
+Test Passed.
+"ui_window" end time: Oct 20 15:17 W. Europe Daylight Time
+"ui_window" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/74 Testing: api_lyrics
+35/74 Test: api_lyrics
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_lyrics.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_lyrics" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Lyrics: compact document 49304 bytes; controls 17408 bytes; shared pool 1040416 bytes
+<end of output>
+Test time =   0.44 sec
+----------------------------------------------------------
+Test Passed.
+"api_lyrics" end time: Oct 20 15:17 W. Europe Daylight Time
+"api_lyrics" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/74 Testing: api_catalog
+36/74 Test: api_catalog
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_catalog_api.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_catalog" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+search fixture: 2 rows, 12807 DOM values
+search_tracks fixture: 2 rows, 655 DOM values
+search_list fixture: 50 rows, 19127 DOM values
+Catalog passed: shared pool 1040416 bytes; catalog/collection models 79888/27224 bytes
+<end of output>
+Test time =   0.15 sec
+----------------------------------------------------------
+Test Passed.
+"api_catalog" end time: Oct 20 15:17 W. Europe Daylight Time
+"api_catalog" time elapsed: 00:00:00
+----------------------------------------------------------
+
+37/74 Testing: api_collections
+37/74 Test: api_collections
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_collection_api.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_collections" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Home fixture DOM: 7951 values, 127216 value bytes
+Collection fixtures, bounded DOM pools, generation and lifetime tests passed (27224 bytes)
+<end of output>
+Test time =   0.24 sec
+----------------------------------------------------------
+Test Passed.
+"api_collections" end time: Oct 20 15:17 W. Europe Daylight Time
+"api_collections" time elapsed: 00:00:00
+----------------------------------------------------------
+
+38/74 Testing: api_contract
+38/74 Test: api_contract
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_api_contract.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_contract" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+API contract catalog, fail-closed proof gate and sanitized fixture manifest passed
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"api_contract" end time: Oct 20 15:17 W. Europe Daylight Time
+"api_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+39/74 Testing: audio_cdn_transport
+39/74 Test: audio_cdn_transport
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_cdn.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_cdn_transport" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Native CDN URL/framing, exact ciphertext, cancellation and resource lifetime passed.
+<end of output>
+Test time =   0.36 sec
+----------------------------------------------------------
+Test Passed.
+"audio_cdn_transport" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_cdn_transport" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/74 Testing: audio_headless_smoke
+40/74 Test: audio_headless_smoke
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_headless.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_headless_smoke" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+headless source failed ready=0 phase=0
+headless source failed ready=0 phase=0
+headless decrypt result=9 offset=0 cap=28672
+volume receipts notify the UI even when the level is unchanged; no polling
+Encrypted HTTP/cache/CTR/header/Vorbis/gapless duration, commands and cancellation passed.
+<end of output>
+Test time =  15.90 sec
+----------------------------------------------------------
+Test Passed.
+"audio_headless_smoke" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_headless_smoke" time elapsed: 00:00:15
+----------------------------------------------------------
+
+41/74 Testing: audio_player
+41/74 Test: audio_player
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_player.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_player" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+player: passed
+<end of output>
+Test time =   1.94 sec
+----------------------------------------------------------
+Test Passed.
+"audio_player" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_player" time elapsed: 00:00:01
+----------------------------------------------------------
+
+42/74 Testing: audio_gapless
+42/74 Test: audio_gapless
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_gapless.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_gapless" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+gapless player: passed
+<end of output>
+Test time =   0.55 sec
+----------------------------------------------------------
+Test Passed.
+"audio_gapless" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_gapless" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/74 Testing: protocol_dealer
+43/74 Test: protocol_dealer
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_dealer.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_dealer" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Dealer bounded payload and transport lifecycle tests passed
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_dealer" end time: Oct 20 15:17 W. Europe Daylight Time
+"protocol_dealer" time elapsed: 00:00:00
+----------------------------------------------------------
+
+44/74 Testing: protocol_connect
+44/74 Test: protocol_connect
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_connect.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_connect" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Connect command, transfer, deduplication, capability and cleanup tests passed
+<end of output>
+Test time =   0.33 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_connect" end time: Oct 20 15:17 W. Europe Daylight Time
+"protocol_connect" time elapsed: 00:00:00
+----------------------------------------------------------
+
+45/74 Testing: audio_sink
+45/74 Test: audio_sink
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_audio_sink.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_sink" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+audio sink: passed
+<end of output>
+Test time =   0.24 sec
+----------------------------------------------------------
+Test Passed.
+"audio_sink" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_sink" time elapsed: 00:00:00
+----------------------------------------------------------
+
+46/74 Testing: audio_vorbis_stream
+46/74 Test: audio_vorbis_stream
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_vorbis_stream.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_vorbis_stream" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+mono22: codec peak 127680, work 63904
+mono22: codec peak 127680, work 63904
+stereo44: codec peak 139289, work 63904
+stereo44: codec peak 139289, work 63904
+stereo48: codec peak 123873, work 63904
+stereo48: codec peak 123873, work 63904
+audio_vorbis_stream passed
+<end of output>
+Test time =   1.35 sec
+----------------------------------------------------------
+Test Passed.
+"audio_vorbis_stream" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_vorbis_stream" time elapsed: 00:00:01
+----------------------------------------------------------
+
+47/74 Testing: audio_seek
+47/74 Test: audio_seek
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_audio_seek.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_seek" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+audio_seek passed (range refinement, pre-roll, page boundaries, stale epochs)
+<end of output>
+Test time =   2.65 sec
+----------------------------------------------------------
+Test Passed.
+"audio_seek" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_seek" time elapsed: 00:00:02
+----------------------------------------------------------
+
+48/74 Testing: audio_ctr_stream
+48/74 Test: audio_ctr_stream
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_decrypt_stream.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_ctr_stream" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+audio_ctr_stream passed (independent fixtures, immutable ciphertext, lease quiescence)
+<end of output>
+Test time =   0.14 sec
+----------------------------------------------------------
+Test Passed.
+"audio_ctr_stream" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_ctr_stream" time elapsed: 00:00:00
+----------------------------------------------------------
+
+49/74 Testing: audio_spotify_header
+49/74 Test: audio_spotify_header
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_spotify_header.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_spotify_header" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+audio_spotify_header passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"audio_spotify_header" end time: Oct 20 15:17 W. Europe Daylight Time
+"audio_spotify_header" time elapsed: 00:00:00
+----------------------------------------------------------
+
+50/74 Testing: audio_range_cache
+50/74 Test: audio_range_cache
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_range_cache.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"audio_range_cache" start time: Oct 20 15:17 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+audio range/cache tests passed: pool=524288, range state=36696, cache state=230992, index=229376 bytes
+<end of output>
+Test time =   0.56 sec
+----------------------------------------------------------
+Test Passed.
+"audio_range_cache" end time: Oct 20 15:18 W. Europe Daylight Time
+"audio_range_cache" time elapsed: 00:00:00
+----------------------------------------------------------
+
+51/74 Testing: protocol_media_source
+51/74 Test: protocol_media_source
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_media_source.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_media_source" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Media source: bounded metadata, storage, AudioKey leases and cleanup passed
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_media_source" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_media_source" time elapsed: 00:00:00
+----------------------------------------------------------
+
+52/74 Testing: protocol_audio_key
+52/74 Test: protocol_audio_key
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_audio_key.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_audio_key" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+AudioKey: golden wire, authenticated dispatch, bounded lifecycle and cleanup passed
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_audio_key" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_audio_key" time elapsed: 00:00:00
+----------------------------------------------------------
+
+53/74 Testing: protocol_mercury
+53/74 Test: protocol_mercury
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_mercury.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_mercury" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Mercury: golden framing, bounded multipart, lifecycle and verified dispatch passed
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_mercury" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_mercury" time elapsed: 00:00:00
+----------------------------------------------------------
+
+54/74 Testing: api_tokens
+54/74 Test: api_tokens
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_token_manager.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_tokens" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Tokens: 26928 arena bytes + 4096 validator scratch bytes; scoped refresh, hashcash and cleanup passed
+<end of output>
+Test time =   0.19 sec
+----------------------------------------------------------
+Test Passed.
+"api_tokens" end time: Oct 20 15:18 W. Europe Daylight Time
+"api_tokens" time elapsed: 00:00:00
+----------------------------------------------------------
+
+55/74 Testing: api_json_base
+55/74 Test: api_json_base
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_json_base.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_json_base" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Bounded in-situ JSON: UTF-8, types, numbers, ownership and pool exhaustion passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"api_json_base" end time: Oct 20 15:18 W. Europe Daylight Time
+"api_json_base" time elapsed: 00:00:00
+----------------------------------------------------------
+
+56/74 Testing: api_http
+56/74 Test: api_http
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_http_client.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_http" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+WinHTTP bounded bodies/headers, blocks, redirects, retries and callback lifetimes passed
+<end of output>
+Test time =   4.49 sec
+----------------------------------------------------------
+Test Passed.
+"api_http" end time: Oct 20 15:18 W. Europe Daylight Time
+"api_http" time elapsed: 00:00:04
+----------------------------------------------------------
+
+57/74 Testing: protocol_crypto
+57/74 Test: protocol_crypto
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_crypto.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_crypto" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+protocol_crypto passed (CNG custom DH, signed AP, hashes/HMAC, CTR, provider faults; no owned leaks)
+<end of output>
+Test time =   0.14 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_crypto" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_crypto" time elapsed: 00:00:00
+----------------------------------------------------------
+
+58/74 Testing: protocol_shannon
+58/74 Test: protocol_shannon
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_shannon.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_shannon" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+protocol_shannon passed (reference vectors, fragmentation, tamper; no heap allocations)
+<end of output>
+Test time =   0.44 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_shannon" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_shannon" time elapsed: 00:00:00
+----------------------------------------------------------
+
+59/74 Testing: protocol_ap_packet
+59/74 Test: protocol_ap_packet
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_ap_packet.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_ap_packet" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+AP frames: independent vectors, every-byte fragments, MAC quarantine, partial TX and nonce limits passed
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_ap_packet" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_ap_packet" time elapsed: 00:00:00
+----------------------------------------------------------
+
+60/74 Testing: api_oauth
+60/74 Test: api_oauth
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_oauth.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"api_oauth" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+OAuth PKCE, state/redirect/loopback deadlines, token exchange and rotation passed
+<end of output>
+Test time =   0.17 sec
+----------------------------------------------------------
+Test Passed.
+"api_oauth" end time: Oct 20 15:18 W. Europe Daylight Time
+"api_oauth" time elapsed: 00:00:00
+----------------------------------------------------------
+
+61/74 Testing: protocol_credentials
+61/74 Test: protocol_credentials
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_credential_store.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_credentials" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+DPAPI records, bounds, corruption, atomic replacement/logout and encrypted AP authentication passed
+<end of output>
+Test time =   0.17 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_credentials" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_credentials" time elapsed: 00:00:00
+----------------------------------------------------------
+
+62/74 Testing: protocol_ap_handshake
+62/74 Test: protocol_ap_handshake
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_ap_handshake.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_ap_handshake" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+AP handshake: exact independent hello/transcript/HMAC, signed reply, fragments and invalid lengths passed
+<end of output>
+Test time =   2.17 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_ap_handshake" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_ap_handshake" time elapsed: 00:00:02
+----------------------------------------------------------
+
+63/74 Testing: protocol_proto
+63/74 Test: protocol_proto
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_proto_codec.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_proto" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+protocol_proto passed (no heap allocations)
+<end of output>
+Test time =   0.22 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_proto" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_proto" time elapsed: 00:00:00
+----------------------------------------------------------
+
+64/74 Testing: protocol_proto_codegen
+64/74 Test: protocol_proto_codegen
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/proto-tools/Scripts/python.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tools/check_proto.py" "--build" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"protocol_proto_codegen" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Reproducibility: 38 schemas, 76 C/header files and descriptor are byte-identical
+<end of output>
+Test time =   3.35 sec
+----------------------------------------------------------
+Test Passed.
+"protocol_proto_codegen" end time: Oct 20 15:18 W. Europe Daylight Time
+"protocol_proto_codegen" time elapsed: 00:00:03
+----------------------------------------------------------
+
+65/74 Testing: smoke
+65/74 Test: smoke
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_smoke.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"smoke" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+spoti-c C17 smoke test passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"smoke" end time: Oct 20 15:18 W. Europe Daylight Time
+"smoke" time elapsed: 00:00:00
+----------------------------------------------------------
+
+66/74 Testing: core_arena
+66/74 Test: core_arena
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_arena.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_arena" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Arena boundaries, generations, accounting and VM ownership passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"core_arena" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_arena" time elapsed: 00:00:00
+----------------------------------------------------------
+
+67/74 Testing: core_spsc
+67/74 Test: core_spsc
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_spsc_ring.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_spsc" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+SPSC boundaries, PCM frames and 6 million ordered concurrent records passed
+<end of output>
+Test time =   0.76 sec
+----------------------------------------------------------
+Test Passed.
+"core_spsc" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_spsc" time elapsed: 00:00:00
+----------------------------------------------------------
+
+68/74 Testing: core_event_queue
+68/74 Test: core_event_queue
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_event_queue.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_event_queue" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+MPSC reset races, worker cancellation, clock deadlines and handle balance passed
+<end of output>
+Test time =   0.71 sec
+----------------------------------------------------------
+Test Passed.
+"core_event_queue" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_event_queue" time elapsed: 00:00:00
+----------------------------------------------------------
+
+69/74 Testing: core_log
+69/74 Test: core_log
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_log.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_log" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Bounded nonblocking log flood, worker formatting, redaction and ownership passed
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"core_log" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_log" time elapsed: 00:00:00
+----------------------------------------------------------
+
+70/74 Testing: core_metrics
+70/74 Test: core_metrics
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_metrics.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_metrics" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Metrics arena/VM peaks, ownership leases, audio counters and shutdown balance passed
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"core_metrics" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_metrics" time elapsed: 00:00:00
+----------------------------------------------------------
+
+71/74 Testing: fixture_http
+71/74 Test: fixture_http
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_fixtures.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"fixture_http" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Offline clock/transport injection and bounded loopback connect/cancel/stop passed
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"fixture_http" end time: Oct 20 15:18 W. Europe Daylight Time
+"fixture_http" time elapsed: 00:00:00
+----------------------------------------------------------
+
+72/74 Testing: core_arena_asan_reset
+72/74 Test: core_arena_asan_reset
+Command: "C:/Program Files (x86)/Microsoft Visual Studio/18/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "-DTEST_PROGRAM=C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_arena.exe" "-DMODE=reset" "-P" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tests/check_arena_asan.cmake"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_arena_asan_reset" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+-- ASan caught the intentional reset fixture misuse
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"core_arena_asan_reset" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_arena_asan_reset" time elapsed: 00:00:00
+----------------------------------------------------------
+
+73/74 Testing: core_arena_asan_rewind
+73/74 Test: core_arena_asan_rewind
+Command: "C:/Program Files (x86)/Microsoft Visual Studio/18/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "-DTEST_PROGRAM=C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_arena.exe" "-DMODE=rewind" "-P" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tests/check_arena_asan.cmake"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_arena_asan_rewind" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+-- ASan caught the intentional rewind fixture misuse
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"core_arena_asan_rewind" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_arena_asan_rewind" time elapsed: 00:00:00
+----------------------------------------------------------
+
+74/74 Testing: core_arena_asan_overrun
+74/74 Test: core_arena_asan_overrun
+Command: "C:/Program Files (x86)/Microsoft Visual Studio/18/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "-DTEST_PROGRAM=C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build/test_arena.exe" "-DMODE=overrun" "-P" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tests/check_arena_asan.cmake"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build
+"core_arena_asan_overrun" start time: Oct 20 15:18 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+-- ASan caught the intentional overrun fixture misuse
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"core_arena_asan_overrun" end time: Oct 20 15:18 W. Europe Daylight Time
+"core_arena_asan_overrun" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 20 15:18 W. Europe Daylight Time
+
+desktop =   7.16 sec*proc
+
+gpu =  42.09 sec*proc
+
+optional =  42.61 sec*proc
+
+parity =   1.99 sec*proc

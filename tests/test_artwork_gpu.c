@@ -53,16 +53,18 @@ int main(void)
     for (unsigned at = 0; at < sizeof(rgba); at += 4) {
         rgba[at] = 32; rgba[at + 1] = 96; rgba[at + 2] = 160; rgba[at + 3] = 255;
     }
-    ArtworkHandle handles[UI_MAX_TEXTURES], current;
-    for (unsigned i = 0; i < UI_MAX_TEXTURES; ++i) {
+    enum { BYTE_CAP_TEXTURES=ART_GPU_BYTES/(256u*256u*4u) };
+    _Static_assert(BYTE_CAP_TEXTURES<UI_MAX_TEXTURES,"byte cap must be independent of renderer descriptors");
+    ArtworkHandle handles[BYTE_CAP_TEXTURES], current;
+    for (unsigned i = 0; i < BYTE_CAP_TEXTURES; ++i) {
         CHECK(texture_cache_insert(&cache, id(i), 256, 256, rgba, handles + i) == ART_OK);
     }
     CHECK(cache.bytes == ART_GPU_BYTES && cache.peak_bytes == ART_GPU_BYTES);
-    CHECK(ui_renderer_stats(&renderer).textures == UI_MAX_TEXTURES);
+    CHECK(ui_renderer_stats(&renderer).textures == BYTE_CAP_TEXTURES);
     uint32_t resources = ui_renderer_stats(&renderer).resources;
     CHECK(texture_cache_insert(&cache, id(100), 256, 256, rgba, &current) == ART_FULL);
     CHECK(ui_renderer_stats(&renderer).resources == resources && cache.releases == 0);
-    for (unsigned i = 0; i < UI_MAX_TEXTURES; ++i) {
+    for (unsigned i = 0; i < BYTE_CAP_TEXTURES; ++i) {
         CHECK(!cache.entries[i].retired); /* All visible textures are pinned. */
     }
     draw(handles[0], true);
@@ -82,7 +84,7 @@ int main(void)
         texture_cache_prepare(&cache);
         CHECK(texture_cache_insert(&cache, id(i), 256, 256, rgba, &current) == ART_OK);
         CHECK(cache.bytes <= ART_GPU_BYTES && cache.peak_bytes <= ART_GPU_BYTES);
-        CHECK(ui_renderer_stats(&renderer).textures == UI_MAX_TEXTURES);
+        CHECK(ui_renderer_stats(&renderer).textures == BYTE_CAP_TEXTURES);
         draw(current, i % 100 == 0);
     }
     UiTexture previous;

@@ -68,12 +68,16 @@ from the default suite. A skipped live test is not evidence of compatibility.
 
 ## Executables and source
 
-- `build/spotic.exe`: Win32/DX11 application shell; the default host is signed
-  out and has no configured live collection/account transport. Run
+- `build/spotic.exe`: Win32/DX11 application shell. After its first useful frame,
+  the default host restores a saved DPAPI session or offers browser sign-in.
+  Home reports personalized-access restrictions and can show a shelf of actual
+  saved playlists; Library currently exposes the native rootlist's playlists.
+  Supplied HTTPS artwork uses the bounded asynchronous image pipeline. Run
   `build/spotic.exe --demo` for synthetic Home/Library pages and real playback
   through the offline fake device. `--demo-wasapi` explicitly enables audible
   synthetic audio on a physical device. See [shell usage and verification](docs/verification/app-shell.md)
-  for service-host integration and current limits.
+  for historical shell verification, and
+  [the #42 report](docs/verification/shell-home-library.md) for current limits.
   Startup restores a bounded offline shell from `%LOCALAPPDATA%/spoti-c/shell.state`
   before service initialization; cached items never authorize playback. See
   [cache validation and startup measurements](docs/verification/state-cache.md).
@@ -82,6 +86,14 @@ from the default suite. A skipped live test is not evidence of compatibility.
   See [playlist verification and timings](docs/verification/playlist-screen.md).
 - `build/spotic-headless.exe`: bounded playback harness with deterministic
   offline fixtures and separate live opt-ins; see [usage and validation](docs/headless.md).
+- `spotic-live-probe` (explicit build target): opt-in, read-only account
+  diagnostic using an existing protected session. Reports status/counts and
+  bounded artwork decoding without account identities or response bodies.
+  It does not launch login, start playback, or change the account's Library.
+  `--capture` additionally renders actual Home/Library pages through DX11 WARP
+  and the production artwork worker. Run from the repository root; account
+  pixels stay in ignored `build/live-captures/`. `--image-variants` reports
+  bounded variant labels and fetch/decode results without their URLs.
 - `src/core/`, `src/protocol/`, `src/audio/`, `src/api/`, `src/ui/`: implemented
   modules with their own C headers and explicit ownership/error outcomes.
 - `proto/`: 38 pinned Spotify schemas and bounded nanopb options, described by

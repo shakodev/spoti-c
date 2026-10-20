@@ -42,19 +42,19 @@ bool app_desktop_input(void *context, UiWindow *w, UINT message, WPARAM wp, LPAR
     AppDesktop *d = context; *out = 0;
     if (message == WM_GETMINMAXINFO) {
         UINT dpi = w->dpi ? w->dpi : 96;
-        ((MINMAXINFO *)lp)->ptMinTrackSize = (POINT){MulDiv(420,(int)dpi,96),MulDiv(360,(int)dpi,96)}; return true;
+        ((MINMAXINFO *)lp)->ptMinTrackSize = (POINT){MulDiv(420,(int)dpi,96),MulDiv(560,(int)dpi,96)}; return true;
     }
     if (!d->app.alive) { return false; }
     if (d->media.alive && message==WM_APPCOMMAND &&
         media_controls_appcommand(&d->media,GET_APPCOMMAND_LPARAM(lp),GetTickCount64())!=MEDIA_UNSUPPORTED) { *out=TRUE; return true; }
     if (d->media.alive && message==WM_KEYDOWN &&
         media_controls_key(&d->media,(unsigned)wp,(lp&((LPARAM)1<<30))!=0,GetTickCount64())!=MEDIA_UNSUPPORTED) { return true; }
-    if (app_search_text_message(&d->app,w->hwnd,message,wp,lp) ||
-        (d->app.model.location.screen==APP_PLAYLIST && playlist_text_message(&d->app,w->hwnd,message,wp,lp))) { return true; }
+    if (playlist_text_message(&d->app,w->hwnd,message,wp,lp)) { return true; }
     if (message == WM_KEYDOWN || message == WM_SYSKEYDOWN) {
         AppKey key;
         switch (wp) {
         case VK_TAB: key=APP_KEY_TAB; break;
+        case VK_ESCAPE: key=APP_KEY_ESCAPE; break;
         case VK_RETURN: case VK_SPACE: key=APP_KEY_ENTER; break;
         case VK_BROWSER_BACK: key=APP_KEY_BACK; break;
         case VK_LEFT: key=GetKeyState(VK_MENU)<0 ? APP_KEY_BACK : APP_KEY_LEFT; break;

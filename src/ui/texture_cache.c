@@ -74,7 +74,7 @@ ArtResult texture_cache_insert(TextureCache *c, ArtworkId id, uint32_t w,
         if (r == ART_FULL && oldest) oldest->retired = true;
         return r;
     }
-    *free_entry = (TextureEntry){.id = id, .texture = texture, .bytes = bytes,
+    *free_entry = (TextureEntry){.id = id, .texture = texture, .bytes = bytes, .width = w, .height = h,
         .serial = ++c->serial, .touched = ++c->clock, .pinned = true};
     c->bytes += bytes; ++c->uploads;
     if (c->bytes > c->peak_bytes) c->peak_bytes = c->bytes;
@@ -88,7 +88,10 @@ void texture_cache_clear(TextureCache *c)
 static ArtResult renderer_upload(void *ctx, uint32_t w, uint32_t h, const unsigned char *rgba, UiTexture *out)
 {
     UiRenderResult r = ui_renderer_texture(ctx, w, h, rgba, w * 4u, out);
-    return r == UI_RENDER_OK ? ART_OK : r == UI_RENDER_FULL ? ART_FULL : ART_IO_ERROR;
+    /* Device recovery is scheduled by the surface owner. Keep the decoded
+     * upload pending across that boundary instead of caching a content error. */
+    return r == UI_RENDER_OK ? ART_OK :
+        r == UI_RENDER_FULL || r == UI_RENDER_DEVICE_LOST ? ART_FULL : ART_IO_ERROR;
 }
 static void renderer_release(void *ctx, UiTexture texture) { (void)ui_renderer_texture_release(ctx, texture); }
 static bool renderer_valid(void *ctx, UiTexture texture) { return ui_renderer_texture_valid(ctx, texture); }

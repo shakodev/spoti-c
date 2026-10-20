@@ -1,0 +1,20 @@
+Internal-service authorization accepted.
+Client token present: 1; service bearer present: 1; result: 0.
+Home result: 0; rows: 1; public diagnostic: Personalized Home is unavailable. Showing your playlists.
+HTTP status: 200; response bytes: 7309.
+Artwork metadata: 4 usable rows; 0 rejected rows.
+Artwork sample: fetch 0; bytes 10623; decode 0; dimensions 64 x 64; balanced 1.
+Native live capture home: settled 1; visible 4; ready 0; failed 0; pending 0; missing 4; pixels SHA256 008637d06d6310a840910b647819990dafe5887eb539497fd69df473fe70de91.
+Native live capture cleanup: balanced 1.
+Library result: 0; rows: 16; public diagnostic: Your playlists. Saved albums, artists and folders are not included in this view.
+HTTP status: 200; response bytes: 7299.
+Rootlist image fields: HTTPS 4; opaque 0; missing 12.
+Artwork metadata: 4 usable rows; 0 rejected rows.
+Artwork sample: fetch 0; bytes 10623; decode 0; dimensions 64 x 64; balanced 1.
+Native live capture library-list: settled 1; visible 6; ready 0; failed 0; pending 0; missing 6; pixels SHA256 938d0c5f72fa3f84f897a18ea0a1388b2ecdc3de8198368406eb1c73a349ea76.
+Native live capture cleanup: balanced 1.
+Native live capture library-grid: settled 1; visible 8; ready 1; failed 0; pending 0; missing 7; pixels SHA256 b5c2ce432957ebee05c18da971f7d3eca3e4e7e2ed70b83eb95454fe23e7ac30.
+Native live capture cleanup: balanced 1.
+Playlist page accepted: 1; HTTP 200; rows 64; total 101.
+Playlist metadata accepted: 1; hydrated rows 64; diagnostic:
+Playlist disk index accepted: 1; records 101; diagnostic:

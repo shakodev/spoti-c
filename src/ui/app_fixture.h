@@ -9,6 +9,7 @@
 typedef struct AppFixtureSlot {
     AppRequest request;
     const CollectionPage *page;
+    const AppRootlistPage *rootlist;
     const CatalogPage *catalog_page;
     const LyricsDocument *lyrics;
     CatalogResult catalog_result;
@@ -31,6 +32,7 @@ typedef struct AppFixture {
     _Alignas(16) unsigned char service_storage[COLLECTION_MODEL_BUDGET];
     _Alignas(16) unsigned char pool_storage[MEMORY_BUDGET_API_PAGES];
     CollectionService *service;
+    AppRootlistStore *rootlists;
     CatalogService *catalog;
     LyricsService *lyrics;
     JsonPagePool *pool;
@@ -55,6 +57,7 @@ _Static_assert(sizeof(AppFixture)-MEMORY_BUDGET_API_PAGES<=512u*1024u,"shared fi
 CollectionResult app_fixture_playlist_open(AppFixture *, AppFixtureSlot *, const CancelToken *);
 bool app_fixture_playlist_close(AppFixture *); /* Only after worker join, or on that worker. */
 void app_fixture_catalog_run(AppFixture *, AppFixtureSlot *, const CancelToken *);
+void app_fixture_sidebar_run(AppFixture *, AppFixtureSlot *, const CancelToken *);
 void app_fixture_reset(AppFixture *, uint64_t);
 void app_fixture_retire(void *, uint64_t);
 void app_fixture_retirement_pump(AppFixture *);

@@ -7,9 +7,13 @@ bool playlist_text_message(App *a, void *hwnd, uint32_t message, uintptr_t wp, i
 {
     Playlist *p=a->services.playlist;
     bool search=a->model.location.screen==APP_SEARCH && a->widgets.focus==CLAY_ID("CatalogQuery").id;
-    if (!search && (!p || !p->active || a->model.location.screen!=APP_PLAYLIST || a->widgets.focus!=CLAY_ID("PlaylistFilter").id)) { return false; }
-    uint16_t *surrogate=search ? &a->catalog.surrogate : &p->surrogate;
-    UiTextInput next=a->widgets.texts[0]; UiWidgetResult result=UI_WIDGET_OK; bool handled=true;
+    bool library=(a->model.location.screen==APP_LIBRARY || a->model.location.screen==APP_SHELF) &&
+        a->widgets.focus==CLAY_ID("LibraryQuery").id;
+    bool sidebar=a->widgets.focus==CLAY_ID("SidebarQuery").id && !a->sidebar.profile;
+    if (!search && !library && !sidebar && (!p || !p->active || a->model.location.screen!=APP_PLAYLIST || a->widgets.focus!=CLAY_ID("PlaylistFilter").id)) { return false; }
+    uint16_t *surrogate=sidebar ? &a->sidebar.surrogate : library ? &a->browse.surrogate : search ? &a->catalog.surrogate : &p->surrogate;
+    uint32_t slot=sidebar ? 2u : library ? 1u : 0u;
+    UiTextInput next=a->widgets.texts[slot]; UiWidgetResult result=UI_WIDGET_OK; bool handled=true;
     if (message==WM_CHAR) {
         uint16_t value=(uint16_t)wp, pair[2]; uint32_t n=1;
         if (value>=0xd800 && value<=0xdbff) { *surrogate=value; return true; }
@@ -37,8 +41,8 @@ bool playlist_text_message(App *a, void *hwnd, uint32_t message, uintptr_t wp, i
     if (!handled) { return false; }
     if (next.length>=TRACK_QUERY_BYTES || next.composition_length>=TRACK_QUERY_BYTES) { result=UI_WIDGET_FULL; }
     if (result==UI_WIDGET_OK) {
-        bool changed=strcmp(next.text,a->widgets.texts[0].text)!=0; a->widgets.texts[0]=next;
-        if (changed) { (void)app_enqueue(a,(AppAction){.type=search ? APP_CATALOG_QUERY : APP_TRACK_QUERY}); }
+        bool changed=strcmp(next.text,a->widgets.texts[slot].text)!=0; a->widgets.texts[slot]=next;
+        if (changed) { (void)app_enqueue(a,(AppAction){.type=sidebar ? APP_SIDEBAR_QUERY : library ? APP_LIBRARY_QUERY : search ? APP_CATALOG_QUERY : APP_TRACK_QUERY}); }
     } else { a->model.last_result=result==UI_WIDGET_FULL ? APP_FULL : APP_INVALID; }
     if (a->scheduler) { ui_scheduler_dirty(a->scheduler,UI_DIRTY_INPUT); } return message!=WM_KILLFOCUS;
 }

@@ -1,0 +1,4 @@
+2026-10-20: user approved live-host integration and read-only account/GPU acceptance.
+Computer Use sky.list_apps and sky.list_windows both returned: Computer Use native pipe is unavailable: failed to connect native pipe: The system cannot find the file specified. (os error 2).
+Read-only process inventory found no running Spotify.exe and no supplied CDP endpoint. REA binary_session reports capture_native_ui_scenario unavailable on Windows (macOS only), and capture_process_scenario unsupported on this host. Static REA and native project test harnesses remain available.
+No actual Spotify reference screenshot or interactive live-app acceptance was acquired. These are tooling/runtime gaps, not missing user approval.

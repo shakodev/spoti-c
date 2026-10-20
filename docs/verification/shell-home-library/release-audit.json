@@ -1,0 +1,402 @@
+{
+  "schema": 1,
+  "translation_units": 408,
+  "dependencies": [
+    {
+      "name": "clay",
+      "files": [
+        {
+          "path": "vendor/clay.h",
+          "valid": true,
+          "sha256": "54aef6d5f96b14e296bebb6db4a755543e98fd7e6c188411afb2f22a4b4f7728",
+          "source": "https://raw.githubusercontent.com/nicbarker/clay/e6cc36941ab2af5d81107617039d6f527a1c660b/clay.h"
+        },
+        {
+          "path": "vendor/licenses/clay/LICENSE.md",
+          "valid": true,
+          "sha256": "5dd30f9f52093076b7574458f5efb8242fe6cbbd4669d4a2914e7616810d0df8",
+          "source": "https://raw.githubusercontent.com/nicbarker/clay/e6cc36941ab2af5d81107617039d6f527a1c660b/LICENSE.md"
+        }
+      ],
+      "licenses": [
+        "vendor/licenses/clay/LICENSE.md"
+      ]
+    },
+    {
+      "name": "miniaudio",
+      "files": [
+        {
+          "path": "vendor/miniaudio.h",
+          "valid": true,
+          "sha256": "ac7af4de748b7e26b777f37e01cee313a308a7296a3eb080e2906b320cc55c89",
+          "source": "https://raw.githubusercontent.com/mackron/miniaudio/9634bedb5b5a2ca38c1ee7108a9358a4e233f14d/miniaudio.h"
+        },
+        {
+          "path": "vendor/licenses/miniaudio/LICENSE",
+          "valid": true,
+          "sha256": "457f1b500e0adf6bc059edddfa78a2f62012e7c3bb43476c20e0bd23b25ba0eb",
+          "source": "https://raw.githubusercontent.com/mackron/miniaudio/9634bedb5b5a2ca38c1ee7108a9358a4e233f14d/LICENSE"
+        }
+      ],
+      "licenses": [
+        "vendor/licenses/miniaudio/LICENSE"
+      ]
+    },
+    {
+      "name": "stb",
+      "files": [
+        {
+          "path": "vendor/stb_vorbis.c",
+          "valid": true,
+          "sha256": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636",
+          "source": "https://raw.githubusercontent.com/nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20/stb_vorbis.c"
+        },
+        {
+          "path": "vendor/stb_image.h",
+          "valid": true,
+          "sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3",
+          "source": "https://raw.githubusercontent.com/nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20/stb_image.h"
+        },
+        {
+          "path": "vendor/licenses/stb/LICENSE",
+          "valid": true,
+          "sha256": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
+          "source": "https://raw.githubusercontent.com/nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20/LICENSE"
+        }
+      ],
+      "licenses": [
+        "vendor/licenses/stb/LICENSE"
+      ]
+    },
+    {
+      "name": "yyjson",
+      "files": [
+        {
+          "path": "vendor/yyjson.h",
+          "valid": true,
+          "sha256": "2c2e541f8a99854a4252768c2d7af31f81896200818f49b8101d2b7dfb523495",
+          "source": "https://raw.githubusercontent.com/ibireme/yyjson/a84070fa6dc58f9b379ed75b8c8fab2c1da1b604/src/yyjson.h"
+        },
+        {
+          "path": "vendor/yyjson.c",
+          "valid": true,
+          "sha256": "32d3b10d7d4b8b0d4f3656c262a5e9f7ef8ac6ec97ce343af4cd76326350f24f",
+          "source": "https://raw.githubusercontent.com/ibireme/yyjson/a84070fa6dc58f9b379ed75b8c8fab2c1da1b604/src/yyjson.c"
+        },
+        {
+          "path": "vendor/licenses/yyjson/LICENSE",
+          "valid": true,
+          "sha256": "45e384d3d52c73cba3a64d6e6c25d47cd738cd8a55c30629e3201046eda62947",
+          "source": "https://raw.githubusercontent.com/ibireme/yyjson/a84070fa6dc58f9b379ed75b8c8fab2c1da1b604/LICENSE"
+        }
+      ],
+      "licenses": [
+        "vendor/licenses/yyjson/LICENSE"
+      ]
+    },
+    {
+      "name": "nanopb",
+      "files": [
+        {
+          "path": "vendor/nanopb/pb.h",
+          "valid": true,
+          "sha256": "a2ecdca9fdaeef5f4972ed983540c0d6fb0a5c402a2e0b0349d7e1bc5e188d29",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb.h"
+        },
+        {
+          "path": "vendor/nanopb/pb_common.h",
+          "valid": true,
+          "sha256": "6495a691aca68d6973f2274b5dd54b74fbb57f6b019c45fff255a857fe1abcfd",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb_common.h"
+        },
+        {
+          "path": "vendor/nanopb/pb_common.c",
+          "valid": true,
+          "sha256": "8d2ec28baaaf2b7a5e90e4cb2fa9700d21cef7f826f051a637c30b7a1e6a0516",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb_common.c"
+        },
+        {
+          "path": "vendor/nanopb/pb_encode.h",
+          "valid": true,
+          "sha256": "9aa00fee4ff08adf0da16e33a55be08810ea657800a648dc78f82e89c60c10cf",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb_encode.h"
+        },
+        {
+          "path": "vendor/nanopb/pb_encode.c",
+          "valid": true,
+          "sha256": "d8dff2a1acc58683095a41b0dc3103ba46248e4a8d8c4e20f5810be04127b650",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb_encode.c"
+        },
+        {
+          "path": "vendor/nanopb/pb_decode.h",
+          "valid": true,
+          "sha256": "1747746e5961de5789bcf0795588da0790cd18b2e4e706ad9c7099a0fa1cc83f",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb_decode.h"
+        },
+        {
+          "path": "vendor/nanopb/pb_decode.c",
+          "valid": true,
+          "sha256": "6c2fc2f357bffdb774c1d329b533e981498d58405c0b1ef066f5a87fd46b5a17",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/pb_decode.c"
+        },
+        {
+          "path": "vendor/nanopb/LICENSE.txt",
+          "valid": true,
+          "sha256": "e2f2fc8fe3faa7dcb09dbe995db48c6ec5c1f72705db915101e4a83fed44f66d",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/LICENSE.txt"
+        },
+        {
+          "path": "vendor/nanopb/generator/nanopb_generator.py",
+          "valid": true,
+          "sha256": "9e6551f8a5c9332cb16c711364e3de93dd16ae69b4c390547cbdf0b8639710f3",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/generator/nanopb_generator.py"
+        },
+        {
+          "path": "vendor/nanopb/generator/__init__.py",
+          "valid": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/generator/__init__.py"
+        },
+        {
+          "path": "vendor/nanopb/generator/proto/__init__.py",
+          "valid": true,
+          "sha256": "b387c9a6a553ed2184cf8c67243bb26b27bd46baf44465f0d5ffeb139c365105",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/generator/proto/__init__.py"
+        },
+        {
+          "path": "vendor/nanopb/generator/proto/_utils.py",
+          "valid": true,
+          "sha256": "492e7ccdfeefdb426bf1b7097978d209f563adf89723dd209ac4a30c6e6c0e37",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/generator/proto/_utils.py"
+        },
+        {
+          "path": "vendor/nanopb/generator/proto/nanopb.proto",
+          "valid": true,
+          "sha256": "1a50d0822c5ba4395297755b11864af952053be3e0dc44c860f988b1b73c3c55",
+          "source": "https://raw.githubusercontent.com/nanopb/nanopb/0.4.9.1/generator/proto/nanopb.proto"
+        }
+      ],
+      "licenses": [
+        "vendor/nanopb/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "shannon",
+      "files": [
+        {
+          "path": "vendor/shannon.c",
+          "valid": true,
+          "sha256": "4a4ddada834bac5f9e00a194384665d52f0c692bdab2fafd71c133eb9b38741f",
+          "source": null
+        },
+        {
+          "path": "vendor/shannon.h",
+          "valid": true,
+          "sha256": "773e6015c72561f83145ac49439efb0cd4f7d99fdaff5bbe2968bb271b5b4dd4",
+          "source": null
+        },
+        {
+          "path": "vendor/licenses/shannon/LICENSE",
+          "valid": true,
+          "sha256": "f5ef0994287249bb54a9855c4968b93f02addbe4c11a59be2583ab31cd28cbda",
+          "source": null
+        }
+      ],
+      "licenses": [
+        "vendor/licenses/shannon/LICENSE"
+      ]
+    },
+    {
+      "name": "miniz",
+      "files": [
+        {
+          "path": "vendor/miniz/LICENSE",
+          "valid": true,
+          "sha256": "0115478d567121238cf6cc1c0c361926cf07a49d9e4c9e66da97fac6a01646b3",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/LICENSE"
+        },
+        {
+          "path": "vendor/miniz/miniz.h",
+          "valid": true,
+          "sha256": "672280c799fff9d703f0ecd586de2a53349d0f4e50b13928f78529c1ddf3d75c",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/miniz.h"
+        },
+        {
+          "path": "vendor/miniz/miniz_common.h",
+          "valid": true,
+          "sha256": "f1ba29821c8caef83585b328196aa346c5da7c82890a70a3d10d77c6cec0ed39",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/miniz_common.h"
+        },
+        {
+          "path": "vendor/miniz/miniz_export.h",
+          "valid": true,
+          "sha256": "f898883b93a1b5a57650c701eb8b90f3928bde94e6ff71354d9bba7fbfba8a1b",
+          "source": null
+        },
+        {
+          "path": "vendor/miniz/miniz_tdef.h",
+          "valid": true,
+          "sha256": "d62da02953c3834dfcbde4db026c6d9345013ef9b0e53185131016a3a4e48c33",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/miniz_tdef.h"
+        },
+        {
+          "path": "vendor/miniz/miniz_tinfl.c",
+          "valid": true,
+          "sha256": "ff9cc5426df23a78070b5b8fa2dcb7aea68faac466169a883b4ffb8727532350",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/miniz_tinfl.c"
+        },
+        {
+          "path": "vendor/miniz/miniz_tinfl.h",
+          "valid": true,
+          "sha256": "da4850920fdf09f8877d9affabe1ebba1852ce4b1ebbd121f2ba7a7ea8e57e5d",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/miniz_tinfl.h"
+        },
+        {
+          "path": "vendor/miniz/miniz_zip.h",
+          "valid": true,
+          "sha256": "b062a5def545445c73fd1d664e35a89165dfb0d996ab848f507244e819cfcf04",
+          "source": "https://raw.githubusercontent.com/richgel999/miniz/d10b03cc73475af673df40f06e5cefd1d5f940d9/miniz_zip.h"
+        }
+      ],
+      "licenses": [
+        "vendor/miniz/LICENSE"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "spotic.exe",
+      "bytes": 1124352,
+      "sha256": "4b861c29db242f73dad8577f159d0ee09abcb269e2013c24f21f14b74dd53475",
+      "imports": [
+        "ADVAPI32.dll",
+        "CRYPT32.dll",
+        "DWrite.dll",
+        "GDI32.dll",
+        "IMM32.dll",
+        "KERNEL32.dll",
+        "SHELL32.dll",
+        "Secur32.dll",
+        "USER32.dll",
+        "VCRUNTIME140.dll",
+        "WINHTTP.dll",
+        "WS2_32.dll",
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "api-ms-win-core-winrt-l1-1-0.dll",
+        "api-ms-win-core-winrt-string-l1-1-0.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-utility-l1-1-0.dll",
+        "bcrypt.dll",
+        "d3d11.dll",
+        "dwmapi.dll",
+        "ole32.dll"
+      ]
+    },
+    {
+      "name": "spotic-headless.exe",
+      "bytes": 528896,
+      "sha256": "3b3ed32fa4cb1496029e253a3bba08fcb57d035b862f9e3422570c3d99034697",
+      "imports": [
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "Secur32.dll",
+        "USER32.dll",
+        "VCRUNTIME140.dll",
+        "WINHTTP.dll",
+        "WS2_32.dll",
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-utility-l1-1-0.dll",
+        "bcrypt.dll",
+        "ole32.dll"
+      ]
+    },
+    {
+      "name": "bench_release.exe",
+      "bytes": 26624,
+      "sha256": "792998db982d0daf6e05662238a3faf4806abc5fca619ad55066b65817667406",
+      "imports": [
+        "KERNEL32.dll",
+        "USER32.dll",
+        "VCRUNTIME140.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll"
+      ]
+    },
+    {
+      "name": "bench_idle.exe",
+      "bytes": 21504,
+      "sha256": "42e325722c45f63b91bc38a8ca9ad94f20a9c86b99d3efe5b71402c8f9954544",
+      "imports": [
+        "KERNEL32.dll",
+        "USER32.dll",
+        "VCRUNTIME140.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll"
+      ]
+    },
+    {
+      "name": "bench_navigation.exe",
+      "bytes": 397824,
+      "sha256": "72cc69587a1f76f99fe1ffad89ce5397df0d4b29225b6ff407811160a647bc7f",
+      "imports": [
+        "KERNEL32.dll",
+        "VCRUNTIME140.dll",
+        "WINHTTP.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "bcrypt.dll",
+        "ole32.dll"
+      ]
+    },
+    {
+      "name": "bench_headless.exe",
+      "bytes": 534016,
+      "sha256": "9b0c96405d2036ad30a0c7cc70fd3562dce1279a83a21cb9bf990ae49ffea57d",
+      "imports": [
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "Secur32.dll",
+        "USER32.dll",
+        "VCRUNTIME140.dll",
+        "WINHTTP.dll",
+        "WS2_32.dll",
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-utility-l1-1-0.dll",
+        "bcrypt.dll",
+        "ole32.dll"
+      ]
+    }
+  ],
+  "failures": []
+}

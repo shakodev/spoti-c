@@ -1,0 +1,20 @@
+Test project C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+    Start 11: bench_dependency_audit
+1/2 Test #11: bench_dependency_audit ...........   Passed    0.77 sec
+    Start 13: bench_idle
+2/2 Test #13: bench_idle .......................***Failed   29.74 sec
+bench_idle: FAIL (bench-idle.jsonl)
+
+
+50% tests passed, 1 tests failed out of 2
+
+Label Time Summary:
+gpu            =  29.74 sec*proc (1 test)
+native         =  29.74 sec*proc (1 test)
+performance    =  30.52 sec*proc (2 tests)
+
+Total Test time (real) =  30.53 sec
+
+The following tests FAILED:
+	 13 - bench_idle (Failed)                               gpu native performance
+Errors while running CTest

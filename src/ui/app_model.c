@@ -15,12 +15,15 @@ static void release_page(App *a)
 static AppResult generation(App *a)
 {
     if (a->model.generation == UINT64_MAX) { return APP_FULL; }
+    app_sidebar_cancel(a); a->sidebar.profile=false;
     if (a->model.pending && a->services.cancel) { a->services.cancel(a->services.context,&a->model.request); }
     a->model.pending = false; release_page(a); app_catalog_clear(a); ++a->model.generation;
     if (!a->model.auth_pending) { a->model.notice[0]=0; }
     if (a->services.retire) { a->services.retire(a->services.context,a->model.generation); }
     if (a->services.playlist) { playlist_close(a->services.playlist); }
     (void)ui_text_set(&a->widgets.texts[0],"",0);
+    (void)ui_text_set(&a->widgets.texts[1],"",0);
+    bool collapsed=a->browse.collapsed; memset(&a->browse,0,sizeof(a->browse)); a->browse.collapsed=collapsed;
     memset(a->images,0,sizeof(a->images)); a->image_count = 0;
     for (uint32_t i=0;i<UI_WIDGET_SEEKS;++i) {
         if (a->widgets.seeks[i].dragging) { (void)ui_seek_cancel(&a->widgets.seeks[i]); }
@@ -61,6 +64,7 @@ static AppResult navigate(App *a, AppLocation location, bool back)
     (void)generation(a); a->model.location = location;
     a->widgets.lists[0].scroll = location.scroll; a->widgets.focus = 0;
     if (location.screen==APP_SEARCH) { (void)ui_text_set(&a->widgets.texts[0],location.query,(uint32_t)strlen(location.query)); }
+    if (location.screen==APP_LIBRARY || location.screen==APP_SHELF) { app_browse_restore(a); }
     a->model.selected = location.entity;
     return request(a,0);
 }
@@ -70,14 +74,22 @@ AppResult app_refresh(App *a)
     if (a->model.location.screen==APP_SEARCH) {
         (void)ui_text_set(&a->widgets.texts[0],a->model.location.query,(uint32_t)strlen(a->model.location.query));
     }
+    if (a->model.location.screen==APP_LIBRARY || a->model.location.screen==APP_SHELF) { app_browse_restore(a); }
     return request(a,0);
 }
 AppResult app_entity(const CollectionItem *item, AppEntity *out)
 {
     if (!item || !out) { return APP_INVALID; }
     *out = (AppEntity){.kind=item->kind};
-    if (json_base_string_copy(item->uri,out->uri,sizeof(out->uri)) != JSON_OK ||
-        json_base_string_copy(item->name,out->title,sizeof(out->title)) != JSON_OK) { return APP_FULL; }
+    if (json_base_string_copy(item->uri,out->uri,sizeof(out->uri)) != JSON_OK) { return APP_FULL; }
+    JsonString name=item->name;
+    if (name.bytes>=sizeof(out->title)) {
+        if (!name.data) { return APP_INVALID; }
+        name.bytes=sizeof(out->title)-4;
+        while (name.bytes && ((unsigned char)name.data[name.bytes]&0xc0u)==0x80u) { --name.bytes; }
+        if (json_base_string_copy(name,out->title,sizeof(out->title))!=JSON_OK) { return APP_INVALID; }
+        memcpy(out->title+name.bytes,"...",4);
+    } else if (json_base_string_copy(name,out->title,sizeof(out->title))!=JSON_OK) { return APP_INVALID; }
     if (!out->title[0]) { memcpy(out->title,"Untitled",9); }
     out->playable = item->available && item->kind == COLLECTION_TRACK && item->has_compact_id;
     memcpy(out->id,item->compact_id,16); return APP_OK;
@@ -137,6 +149,7 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
     AppResult r = generation(a);
     if (r != APP_OK) { return r; }
     if (!logged_in) {
+        app_sidebar_clear(a);
         a->cached=NULL;
         memset(&a->now,0,sizeof(a->now));
         a->model.history_count = 0; memset(a->model.history,0,sizeof(a->model.history));
@@ -156,6 +169,9 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
         if (a->fonts) { (void)font_cache_reset(a->fonts->cache); }
         if (a->scheduler) { ui_scheduler_playing(a->scheduler,false,now); }
     }
+    if (logged_in && (a->model.location.screen==APP_LIBRARY || a->model.location.screen==APP_SHELF)) {
+        app_browse_restore(a);
+    }
     r = request(a,0); a->model.last_result=r; dirty(a); return r;
 }
 AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, const CollectionPage *page)
@@ -170,6 +186,7 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
             page->json.generation == delivery.generation && page->kind == delivery.kind && page->offset == delivery.cursor &&
             page->count <= COLLECTION_ROW_CAP && (page->next == COLLECTION_END || page->next > delivery.cursor)) {
             release_page(a); a->model.page = page; page = NULL;
+            a->browse.previous_count=a->browse.visible_count=0; a->image_count=0;
             a->model.status = a->model.page->loading ? APP_LOADING : a->model.page->count ? APP_CONTENT : APP_EMPTY;
             a->model.last_result=APP_OK;
             a->widgets.lists[0].scroll = a->model.location.scroll;
@@ -187,9 +204,9 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_QUEUE_PAGE ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_BROWSE_PLAY ||
         (action.type==APP_VOLUME && !isfinite(action.value)) ||
-        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
+        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO || action.type==APP_SIDEBAR_SELECT || action.type==APP_BROWSE_PLAY) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
     if (action.type==APP_VOLUME && a->action_count && a->actions[a->action_count-1].type==APP_VOLUME) {
         a->actions[a->action_count-1]=action; dirty(a); return APP_OK;
@@ -198,13 +215,34 @@ AppResult app_enqueue(App *a, AppAction action)
         action.generation=a->model.player.generation;
         memcpy(action.entity.id,a->model.player.track_id,16);
     }
+    if (action.type==APP_BROWSE_PLAY) { action.generation=a->model.generation; }
     if (a->action_count == APP_ACTIONS) { a->model.last_result = APP_FULL; dirty(a); return APP_FULL; }
     a->actions[a->action_count++] = action; dirty(a); return APP_OK;
 }
 static AppResult apply(App *a, AppAction action, uint64_t now)
 {
     AppModel *m = &a->model;
+    if (action.type!=APP_PROFILE_TOGGLE) {
+        if (a->sidebar.profile) { a->widgets.focus=CLAY_ID("NavAuth").id; }
+        a->sidebar.profile=false;
+    }
     switch (action.type) {
+    case APP_PROFILE_TOGGLE:
+        a->sidebar.profile=!a->sidebar.profile;
+        a->widgets.focus=a->sidebar.profile ? CLAY_IDI("ProfileItem",0).id : CLAY_ID("NavAuth").id; return APP_OK;
+    case APP_PROFILE_CLOSE: a->widgets.focus=CLAY_ID("NavAuth").id; return APP_OK;
+    case APP_SIDEBAR_MORE: return a->sidebar.page && a->sidebar.page->next!=COLLECTION_END ?
+        app_sidebar_request(a,a->sidebar.page->next) : APP_CANCELLED;
+    case APP_SIDEBAR_RETRY: a->sidebar.failed=false; return app_sidebar_request(a,a->sidebar.cursor);
+    case APP_SIDEBAR_QUERY: a->widgets.lists[1]=(UiVirtualList){0}; return APP_OK;
+    case APP_SIDEBAR_FOCUS: a->widgets.focus=CLAY_ID("SidebarQuery").id; return APP_OK;
+    case APP_SIDEBAR_SELECT:
+        if (!a->sidebar.page || !isfinite(action.value) || action.value<0 || action.value>=a->sidebar.page->count ||
+            floor(action.value)!=action.value) { return APP_INVALID; }
+        if (action.entity.uri[0] && strcmp(a->sidebar.page->items[(uint32_t)action.value].uri,action.entity.uri)) { return APP_STALE; }
+        CollectionItem side_item=app_rootlist_item(a->sidebar.page,(uint32_t)action.value);
+        if (app_entity(&side_item,&action.entity)!=APP_OK) { return APP_INVALID; }
+        action.type=APP_SELECT; return apply(a,action,now);
     case APP_SHUFFLE: return command(a,(PlayerCommand){.type=PLAYER_SHUFFLE,.value=m->player.shuffled ? 0 : 1});
     case APP_REPEAT: return command(a,(PlayerCommand){.type=PLAYER_REPEAT,.value=(m->player.repeat+1u)%3u});
     case APP_QUEUE:
@@ -216,6 +254,19 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
     case APP_PLAYER_INFO:
         return app_set_notice(a,APP_INFORMATION,(Clay_String){false,(int32_t)strlen(action.entity.title),action.entity.title});
     case APP_READ_MESSAGES: return app_messages_request(a);
+    case APP_SIDEBAR_TOGGLE: a->browse.collapsed=!a->browse.collapsed; return APP_OK;
+    case APP_LIBRARY_FOCUS: a->widgets.focus=CLAY_ID("LibraryQuery").id; return APP_OK;
+    case APP_LIBRARY_GRID: case APP_LIBRARY_FILTER: case APP_LIBRARY_QUERY:
+        if (m->location.screen!=APP_LIBRARY && m->location.screen!=APP_SHELF) { return APP_INVALID; }
+        if (action.type==APP_LIBRARY_GRID) { m->location.grid=!m->location.grid; }
+        else if (action.type==APP_LIBRARY_FILTER) {
+            if (!isfinite(action.value) || action.value<0 || action.value>3 || floor(action.value)!=action.value) { return APP_INVALID; }
+            m->location.selector=(uint32_t)action.value;
+        } else {
+            if (a->widgets.texts[1].length>=APP_QUERY_BYTES) { return APP_FULL; }
+            memcpy(m->location.query,a->widgets.texts[1].text,a->widgets.texts[1].length+1);
+        }
+        a->widgets.lists[0]=(UiVirtualList){0}; m->location.scroll=0; app_browse_project(a); return APP_OK;
     case APP_GO_HOME: return navigate(a,(AppLocation){.screen=APP_HOME},false);
     case APP_GO_LIBRARY: return navigate(a,(AppLocation){.screen=APP_LIBRARY},false);
     case APP_GO_SETTINGS: return navigate(a,(AppLocation){.screen=APP_SETTINGS},false);
@@ -239,6 +290,18 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
         if (logout) { (void)command(a,(PlayerCommand){.type=PLAYER_STOP}); (void)app_session(a,false,m->online,now); }
         AppResult r = a->services.auth ? a->services.auth(a->services.context,logout ? APP_LOGOUT : APP_LOGIN) : APP_UNAVAILABLE;
         m->auth_pending = r == APP_PENDING; return r;
+    }
+    case APP_BROWSE_PLAY: {
+        if (action.generation!=m->generation) { return APP_STALE; }
+        if (!m->logged_in || (!a->services.player && !a->services.submit && !a->services.playlist_queue)) { return APP_UNAVAILABLE; }
+        if (action.entity.kind==COLLECTION_TRACK && action.entity.playable) {
+            action.type=APP_SELECT; return apply(a,action,now);
+        }
+        if (!m->online || !a->services.playlist || (action.entity.kind!=COLLECTION_PLAYLIST_ITEM &&
+            action.entity.kind!=COLLECTION_LIKED)) { return APP_UNAVAILABLE; }
+        AppResult r=navigate(a,(AppLocation){.screen=APP_PLAYLIST,.entity=action.entity},false);
+        if (r==APP_PENDING) { a->browse.play_route=m->generation; }
+        return r;
     }
     case APP_SELECT:
         if (!m->logged_in) { return APP_UNAVAILABLE; }
@@ -297,13 +360,16 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
     case APP_TRACK_QUERY: case APP_TRACK_SORT:
         if (!a->services.playlist || m->location.screen!=APP_PLAYLIST ||
             (action.type==APP_TRACK_SORT && (!isfinite(action.value) || action.value<0 || action.value>TRACK_DURATION_ORDER))) { return APP_INVALID; }
+        a->browse.play_route=0;
         return track_result(playlist_query(a->services.playlist,a->widgets.texts[0].text,
             action.type==APP_TRACK_SORT ? (TrackSort)(int)action.value : a->services.playlist->sort));
     case APP_TRACK_PLAY:
         if (!a->services.playlist || m->location.screen!=APP_PLAYLIST || !isfinite(action.value) || action.value<1 || action.value>UINT32_MAX) { return APP_INVALID; }
+        a->browse.play_route=0;
         return track_result(playlist_select(a->services.playlist,(uint64_t)action.value,true));
     case APP_TRACK_WINDOW:
         if (!a->services.playlist || m->location.screen!=APP_PLAYLIST) { return APP_INVALID; }
+        a->browse.play_route=0;
         return track_result(playlist_window(a->services.playlist,action.value>0));
     default: return APP_INVALID;
     }
@@ -334,10 +400,15 @@ AppResult app_update(App *a, uint64_t now)
     if (a->services.artwork) { (void)artwork_begin_visible(a->services.artwork); }
     app_catalog_prepare(a,now);
     app_now_prepare(a);
+    app_sidebar_prepare(a);
+    app_browse_prepare(a);
     if (a->services.artwork) {
         for (uint32_t i = 0; i < a->image_count; ++i) {
             (void)artwork_lookup(a->services.artwork,a->images[i].id,&a->images[i].handle);
         }
+        (void)artwork_prepare(a->services.artwork);
+        /* Pruning can release queued capacity without a worker completion. */
+        app_browse_prepare(a);
         (void)artwork_prepare(a->services.artwork);
     }
     return a->model.last_result;
@@ -345,6 +416,6 @@ AppResult app_update(App *a, uint64_t now)
 void app_dispose(App *a)
 {
     if (!a || !a->alive || a->widgets.in_frame) { return; }
-    (void)generation(a); release_page(a); (void)ui_widgets_dispose(&a->widgets);
+    (void)generation(a); release_page(a); app_sidebar_clear(a); (void)ui_widgets_dispose(&a->widgets);
     a->alive = false; memset(&a->model,0,sizeof(a->model)); a->control_count = a->action_count = 0;
 }

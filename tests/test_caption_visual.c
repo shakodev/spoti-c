@@ -19,6 +19,20 @@ static void settle(UiWindow *w)
     do { CHECK(ui_window_step(w, 10)); } while (GetTickCount64() < end);
     CHECK(SUCCEEDED(DwmFlush()));
 }
+static void activate(UiWindow *w)
+{
+    /* A background CTest launch may not have foreground permission. This
+     * explicitly opted-in native-input test must activate its own visible
+     * window before capturing active/inactive captions. Use the same real
+     * mouse-input path as the caption button tests, then verify the result. */
+    POINT point={32,64}; CHECK(ClientToScreen(w->hwnd,&point) && SetCursorPos(point.x,point.y));
+    INPUT input[2]={{0}}; input[0].type=input[1].type=INPUT_MOUSE;
+    input[0].mi.dwFlags=MOUSEEVENTF_LEFTDOWN; input[1].mi.dwFlags=MOUSEEVENTF_LEFTUP;
+    CHECK(SendInput(2,input,sizeof(input[0]))==2);
+    uint64_t deadline=GetTickCount64()+2000;
+    while (GetForegroundWindow()!=w->hwnd && GetTickCount64()<deadline) { CHECK(ui_window_step(w,10)); }
+    CHECK(GetForegroundWindow()==w->hwnd); settle(w);
+}
 
 static void capture(UiWindow *w, const char *directory, const char *name)
 {
@@ -114,6 +128,7 @@ int main(int argc, char **argv)
     CHECK(SetWindowPos(w.hwnd, HWND_TOPMOST, 30, 30, 1100, 720, 0));
     ShowWindow(w.hwnd, SW_SHOW); (void)SetForegroundWindow(w.hwnd); settle(&w);
     POINT original_cursor; CHECK(GetCursorPos(&original_cursor));
+    activate(&w);
     const int widths[] = {420, 1100, 1440};
     const char *names[] = {"narrow", "default", "wide"};
     MONITORINFO monitor = {0}; monitor.cbSize = sizeof(monitor);
@@ -139,7 +154,11 @@ int main(int argc, char **argv)
     settle(&w);
     HWND other = CreateWindowExW(WS_EX_TOOLWINDOW, L"STATIC", L"caption activation test",
         WS_POPUP, -20000, -20000, 100, 100, NULL, NULL, config.instance, NULL); CHECK(other);
-    ShowWindow(other, SW_SHOW); CHECK(SetForegroundWindow(other)); settle(&w);
+    ShowWindow(other, SW_SHOW);
+    BOOL activated=SetForegroundWindow(other);
+    fprintf(stderr,"caption activation: api=%d foreground_is_other=%d foreground_is_main=%d\n",
+        (int)activated,(int)(GetForegroundWindow()==other),(int)(GetForegroundWindow()==w.hwnd));
+    CHECK(activated); settle(&w);
     CHECK(GetForegroundWindow() != w.hwnd); capture(&w, argv[1], "inactive");
     CHECK(SetForegroundWindow(w.hwnd)); CHECK(DestroyWindow(other)); settle(&w);
     pointer_button(&w, 3, argv[1], "maximize-hover", "maximize-pressed"); CHECK(IsZoomed(w.hwnd));

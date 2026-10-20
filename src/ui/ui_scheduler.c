@@ -39,11 +39,22 @@ void ui_scheduler_lyrics(UiScheduler *ui, bool visible, uint64_t next_boundary)
         next_boundary : CORE_CLOCK_NEVER;
 }
 
+void ui_scheduler_reduce_motion(UiScheduler *ui, bool reduced)
+{
+    if (ui->reduced_motion == reduced) { return; }
+    ui->reduced_motion = reduced; ui->dirty |= UI_DIRTY_STATE;
+    if (reduced) {
+        if (ui->animation != CORE_CLOCK_NEVER) { ui->dirty |= UI_DIRTY_ANIMATION; }
+        ui->animation = ui->animation_end = CORE_CLOCK_NEVER;
+    }
+}
+
 bool ui_scheduler_animate(UiScheduler *ui, uint32_t duration_ms, uint64_t now)
 {
     if (duration_ms > UI_ANIMATION_MAX_MS) { return false; }
-    if (!duration_ms || !drawable(ui)) {
+    if (!duration_ms || !drawable(ui) || ui->reduced_motion) {
         ui->animation = ui->animation_end = CORE_CLOCK_NEVER;
+        if (duration_ms && ui->reduced_motion) { ui->dirty |= UI_DIRTY_ANIMATION; }
     } else {
         ui->animation_end = core_deadline_after(now, duration_ms);
         uint64_t next = core_deadline_after(now, UI_ANIMATION_INTERVAL_MS);

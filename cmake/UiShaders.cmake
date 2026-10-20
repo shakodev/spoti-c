@@ -13,6 +13,7 @@ foreach(STAGE IN ITEMS vs ps)
     list(APPEND UI_SHADER_HEADERS "${HEADER}")
 endforeach()
 add_library(spotic_renderer STATIC src/ui/renderer.c src/ui/renderer_device.c
-    src/ui/renderer_batches.c src/ui/renderer_clay.c src/ui/icons.c ${UI_SHADER_HEADERS})
+    src/ui/renderer_batches.c src/ui/renderer_clay.c src/ui/icons.c
+    src/ui/artwork_quad.c ${UI_SHADER_HEADERS})
 target_include_directories(spotic_renderer PUBLIC src vendor PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_link_libraries(spotic_renderer PUBLIC spotic_build_options PRIVATE d3d11 dxgi dxguid user32)

@@ -132,12 +132,12 @@ static void test_icons(void)
     const float color[4]={1,1,1,1}; UiRect box={0,0,16,16};
     CHECK(ui_frame_begin(&frame,100,100,1)==UI_RENDER_OK);
     for (int icon=UI_ICON_PLAY;icon<=UI_ICON_FULLSCREEN;++icon) {
-        CHECK(ui_icon_draw(&frame,box,(UiIcon)icon,color)==UI_RENDER_OK);
+        CHECK(ui_icon_draw(&frame,(UiIcon)icon,box,color,false)==UI_RENDER_OK);
     }
-    CHECK(frame.quad_count==14 && frame.batch_count==1 && !frame.batches[0].texture);
-    CHECK(ui_icon_draw(&frame,box,(UiIcon)-1,color)==UI_RENDER_INVALID);
-    CHECK(ui_icon_draw(&frame,box,(UiIcon)14,color)==UI_RENDER_INVALID);
-    CHECK(ui_icon_draw(&frame,box,UI_ICON_PLAY,NULL)==UI_RENDER_INVALID);
+    CHECK(frame.quad_count==UI_ICON_FULLSCREEN-UI_ICON_PLAY+1 && frame.batch_count==1 && !frame.batches[0].texture);
+    CHECK(ui_icon_draw(&frame,(UiIcon)-1,box,color,false)==UI_RENDER_INVALID);
+    CHECK(ui_icon_draw(&frame,UI_ICON_COUNT,box,color,false)==UI_RENDER_INVALID);
+    CHECK(ui_icon_draw(&frame,UI_ICON_PLAY,box,NULL,false)==UI_RENDER_INVALID);
 }
 int main(void)
 {

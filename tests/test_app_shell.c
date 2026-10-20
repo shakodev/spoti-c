@@ -2,6 +2,7 @@
 #include "player_test.h"
 #include "support/ui_heap_watch.h"
 #include <math.h>
+static bool persistent_only;
 
 static void states(void)
 {
@@ -51,7 +52,7 @@ static void bounds_and_keyboard(void)
     for (unsigned i=0;i<100;++i) {
         AppGeometry g; float dpi=96+(float)(i%5)*24, width=400+(float)(i%7)*180;
         CHECK(app_geometry(width*dpi/96,640*dpi/96,dpi,true,&g)==APP_OK);
-        CHECK(fabsf(g.width-width)<0.01f && g.main>=280 && g.sidebar==(width<760?64:184));
+        CHECK(fabsf(g.width-width)<0.01f && g.main>=280 && g.sidebar==(width<760?64:280));
         (void)shell_layout(width*dpi/96,640*dpi/96,dpi);
         Clay_ElementData bar=Clay_GetElementData(CLAY_ID("AppNowPlaying"));
         Clay_ElementData body=Clay_GetElementData(CLAY_ID("AppBody"));
@@ -153,8 +154,9 @@ static void asynchronous(void)
 static DWORD WINAPI run(void *context)
 {
     bool visual=*(bool *)context;
+    if (persistent_only) { shell_sidebar(); return 0; }
     pt_load_fixtures(); pt_open(); states(); bounds_and_keyboard(); player_and_frames(); asynchronous();
-    shell_account(); shell_artwork(); shell_volume(); shell_now_playing();
+    shell_account(); shell_artwork(); shell_volume(); shell_browse(); shell_visibility(); shell_now_playing(); shell_sidebar();
     pt_close();
     shell_font_frames(); shell_native();
     int result=0;
@@ -168,6 +170,7 @@ static DWORD WINAPI run(void *context)
 int main(int argc, char **argv)
 {
     bool visual=argc==2 && !strcmp(argv[1],"--visual");
+    persistent_only=argc==2 && !strcmp(argv[1],"--persistent");
     HANDLE thread=CreateThread(NULL,0,run,&visual,0,NULL); CHECK(thread);
     CHECK(WaitForSingleObject(thread,85000)==WAIT_OBJECT_0);
     DWORD result; CHECK(GetExitCodeThread(thread,&result) && CloseHandle(thread)); return (int)result;

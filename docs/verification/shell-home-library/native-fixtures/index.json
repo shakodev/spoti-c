@@ -1,0 +1,150 @@
+{
+  "description": "Native synthetic fixtures only. No actual Spotify reference or account screenshot.",
+  "resampled": false,
+  "captures": [
+    {
+      "name": "home-default-120",
+      "pixels_sha256": "c932a11b93e952185e6070f4df8766c7ea867c3c12ad42f9eee7af3fb00c154e"
+    },
+    {
+      "name": "home-default-144",
+      "pixels_sha256": "64f0301bea09006961719e2eee52966b34db0ed0001ecf24fbe353ca45a84917"
+    },
+    {
+      "name": "home-default-192",
+      "pixels_sha256": "be95d642659d8707e43be80b08dfdb44643cad62eef9fad847fd572036d4f2c4"
+    },
+    {
+      "name": "home-default-96",
+      "pixels_sha256": "0c378042bcd6382b4cef2d691d5fd4996b12ce34ef2075c308020d344d73d2d1"
+    },
+    {
+      "name": "home-narrow-120",
+      "pixels_sha256": "8ba0fb4bfe1e3cce5d5d75f676035efa3efb7f6bd754cf80a5b86774caa6802e"
+    },
+    {
+      "name": "home-narrow-144",
+      "pixels_sha256": "7a29ba4013d8d4e2564acbfbda3af985183d3b602d2ced26fb0a84d84a43f380"
+    },
+    {
+      "name": "home-narrow-192",
+      "pixels_sha256": "2b4e1e81afbc61a4f6eb7456282b3fa030a6ddaf0ef3f9eafd4cffebede38a62"
+    },
+    {
+      "name": "home-narrow-96",
+      "pixels_sha256": "ca6d013dc6f210e28c408cc574cc8c53100b7243cba26f878f764d11c4ecb64f"
+    },
+    {
+      "name": "home-wide-120",
+      "pixels_sha256": "2c763f8a121f21d0f61aaa541827c976d7f560660d2a5b49c8f8e9155557d84f"
+    },
+    {
+      "name": "home-wide-144",
+      "pixels_sha256": "f13fecfa08b79d586e245aa88173b9ed341f6265b9807e60c3eaf6d90f31a6ab"
+    },
+    {
+      "name": "home-wide-192",
+      "pixels_sha256": "0d2d83f72fb8997aac2241ea838981e2d16dec20c8b976733ae499ccbb2e0511"
+    },
+    {
+      "name": "home-wide-96",
+      "pixels_sha256": "e68d898cd2790d8c9606f10f8f07059277b390e3371fff7ca708bebadb3c246e"
+    },
+    {
+      "name": "library-grid-default-120",
+      "pixels_sha256": "a5703816bc1aa7d4fa577b874f452a35060f2097890a68233ae297d66efcc271"
+    },
+    {
+      "name": "library-grid-default-144",
+      "pixels_sha256": "064599536b8dc9a2a44a9149c41fcfc6b560336b31f4b340c0d25a5b1d49644f"
+    },
+    {
+      "name": "library-grid-default-192",
+      "pixels_sha256": "96e8660fcdb55e442277cc6b839cc97aab30d44abd85d5f28073ca7485af30e5"
+    },
+    {
+      "name": "library-grid-default-96",
+      "pixels_sha256": "eb745cc575aae033e7ce8b6730df9799599e11c5c1d289112e2741f22eac35ca"
+    },
+    {
+      "name": "library-grid-narrow-120",
+      "pixels_sha256": "3145bec9344dd283f31d8cb6191113dc7289d8a6c09887f6890eb0ae35b2e51a"
+    },
+    {
+      "name": "library-grid-narrow-144",
+      "pixels_sha256": "ee9193f97c87f549de6dd3e9cb4b0a82961fed733cae1158d3bc386e8809f8a3"
+    },
+    {
+      "name": "library-grid-narrow-192",
+      "pixels_sha256": "aea85a7ee972c17b4255102655d8ff6c892ea3aa2cfab1bc7a1b842b5a0e5b1b"
+    },
+    {
+      "name": "library-grid-narrow-96",
+      "pixels_sha256": "14f29dda953a0e7c2daa64d6f0802d5d283ef42f72e47891119d68f08e5ffb4f"
+    },
+    {
+      "name": "library-grid-wide-120",
+      "pixels_sha256": "9c5b3d5aa4894e9494b4030a013f71b9dcc62b49de89f32260947633b6108445"
+    },
+    {
+      "name": "library-grid-wide-144",
+      "pixels_sha256": "1c6b934a33ec590b7713767ad8ec2a5008810fade212989c55e6c35e5b7f7984"
+    },
+    {
+      "name": "library-grid-wide-192",
+      "pixels_sha256": "f343c8ec277b69c8ec48e69200b1b4f0d9d28859e59a5ca38cf193c73c7c5ae0"
+    },
+    {
+      "name": "library-grid-wide-96",
+      "pixels_sha256": "8dba78f2da13e7d1d8163eeef37a89a01a00cdd9e6368951a4785463637c7c59"
+    },
+    {
+      "name": "library-list-default-120",
+      "pixels_sha256": "3c45c0827cf8f92669970084160ffd632348c7da97de0d582fdcd1f743c68822"
+    },
+    {
+      "name": "library-list-default-144",
+      "pixels_sha256": "1463583d95ff643704805be1d27289d77e27b5ca8cc2042d78fc1ce0ae8976e2"
+    },
+    {
+      "name": "library-list-default-192",
+      "pixels_sha256": "37f315bbf7ce9b036365fd1c022e29be1f1ab62bddd248b8120fa4573c7cfc76"
+    },
+    {
+      "name": "library-list-default-96",
+      "pixels_sha256": "365b1359180948ec4a000a9949d1df6bf6c2bf2b8dbc17a25b624ed098063c48"
+    },
+    {
+      "name": "library-list-narrow-120",
+      "pixels_sha256": "616e478e04e91e30174a989efe06d509a52048f3a5c1f8a1d55140998c8793b8"
+    },
+    {
+      "name": "library-list-narrow-144",
+      "pixels_sha256": "a748b9b75bd373cfc5fca3ed293f19ad86f015ac9630ecbdee98ba2393938757"
+    },
+    {
+      "name": "library-list-narrow-192",
+      "pixels_sha256": "a2243ac14781da629f0353dd9985da2a1844ef24bedc7a7500d52d154cdbf830"
+    },
+    {
+      "name": "library-list-narrow-96",
+      "pixels_sha256": "3b624f443fb517f37b9ab22053d499ea7bf28c8cc353c115b55557f6c6bd2a43"
+    },
+    {
+      "name": "library-list-wide-120",
+      "pixels_sha256": "30aba191a649f4b632da7c6b4825e69633ecc39e235d6dd6ed7f06106c77d8fe"
+    },
+    {
+      "name": "library-list-wide-144",
+      "pixels_sha256": "55c5fe88780fedba1c7d78876303458e10895e8e29395acf98d6f9a119f1a86d"
+    },
+    {
+      "name": "library-list-wide-192",
+      "pixels_sha256": "741f85b62beb95d2b0ec358b719039a54d2e6a99eb2ac9d96fdfe990a7390b66"
+    },
+    {
+      "name": "library-list-wide-96",
+      "pixels_sha256": "b9eed5357b019f09a820c290180d94b388108572aa8fd1970ddf844da6936bea"
+    }
+  ]
+}

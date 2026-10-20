@@ -17,10 +17,14 @@ const CollectionPage *shell_page(AppRequest, const char *name);
 void shell_deliver(const char *name);
 Clay_RenderCommandArray shell_layout(float width, float height, float dpi);
 int shell_visual(void);
+void shell_dense_page(bool home);
 void shell_native(void);
 void shell_font_frames(void);
 void shell_account(void);
 void shell_artwork(void);
 void shell_volume(void);
+void shell_browse(void);
+void shell_visibility(void);
 void shell_now_playing(void);
+void shell_sidebar(void);
 #endif

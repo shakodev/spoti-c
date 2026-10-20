@@ -78,7 +78,7 @@ void shell_font_frames(void)
             CHECK(ui_frame_clay(&render_frame,commands,&bridge)==UI_RENDER_OK);
         }
     }
-    CHECK(app.measure_count==256 && app.measure_next>0 && font_stats(&cache).pending==0);
+    CHECK(app.measure_count==APP_MEASURES && app.measure_next>0 && font_stats(&cache).pending==0);
     font_cache_destroy(&cache); app.fonts=NULL; shell_close();
     puts("1000 DirectWrite/Clay/renderer warm frames: no heap calls, no pending text, no new shaping");
 }

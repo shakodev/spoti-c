@@ -1,4 +1,5 @@
 #include "ui/font.h"
+#include "ui/font_roles.h"
 #include "support/test_check.h"
 #include <math.h>
 #include <string.h>
@@ -113,6 +114,59 @@ static void misses(void)
     CHECK(font_request_text(&cache,text("overflow"),&k) == FONT_FULL);
     CHECK(font_prepare_pending(&cache) == FONT_OK);
 }
+static void typography_roles(void)
+{
+    CHECK(font_cache_reset(&cache) == FONT_OK);
+    FontConfig base = config(); base.weight = 900; base.rtl = true;
+    base.dpi = 120; base.text_generation = 41; base.max_width = 220; base.ellipsis = true;
+    FontConfig legacy = font_config_for_clay(base,1,14,2,24);
+    CHECK(legacy.face == 1 && legacy.weight == 900 && legacy.rtl);
+    CHECK(legacy.size == 14 && legacy.letter_spacing == 2 && legacy.line_height == 24);
+    const uint16_t ids[] = {FONT_ROLE_BODY,FONT_ROLE_BOLD,FONT_ROLE_TITLE,
+        FONT_ROLE_HEADLINE,FONT_ROLE_BODY | FONT_ROLE_RTL};
+    const uint16_t weights[] = {400,700,700,800,400};
+    const char label[] = "office \xd8\xa7\xd9\x84\xd8\xb9\xd8\xb1\xd8\xa8\xd9\x8a\xd8\xa9 123";
+    FontMeasureContext ctx = {&cache,base,FONT_OK};
+    Clay_TextElementConfig styles[5] = {0};
+    for (unsigned i = 0; i < 5; ++i) {
+        styles[i] = (Clay_TextElementConfig){.fontId=ids[i],.fontSize=16,.lineHeight=24};
+        FontConfig key = font_config_for_clay(base,ids[i],16,0,24);
+        CHECK(key.face == 0 && key.weight == weights[i] && key.rtl == (i == 4));
+        CHECK(key.dpi == 120 && key.text_generation == 41 && key.max_width == 220 && key.ellipsis);
+        FontMetrics metrics = measure(label,key);
+        CHECK(metrics.width > 0 && metrics.height == 24 && metrics.rtl_runs > 0);
+        /* #40 keeps Clay word advances separate from atlas-backed draw runs.
+         * Warm both keys before asserting allocation-free measurement/render. */
+        key.measure_only=true;
+        FontMetrics advance=measure(label,key);
+        CHECK(advance.width==metrics.width && advance.height==metrics.height);
+    }
+    FontConfig invalid = font_config_for_clay(base,255,16,0,0); FontHandle handle;
+    CHECK(font_prepare_text(&cache,text(label),&invalid,&handle) == FONT_INVALID);
+    invalid = font_config_for_clay(base,1 | FONT_ROLE_RTL,16,0,0);
+    CHECK(font_prepare_text(&cache,text(label),&invalid,&handle) == FONT_INVALID);
+    CHECK(font_atlas_commit(&cache,257) == FONT_OK);
+    uint64_t prepared = font_stats(&cache).prepared; uint32_t before = wakes;
+#if defined(_MSC_VER) && defined(_DEBUG)
+    _CrtSetAllocHook(allocation_hook); heap_calls = 0; watch_heap = true;
+#endif
+    for (unsigned n = 0; n < 1000; ++n) {
+        CHECK(ui_frame_begin(&frame,1000,750,1.25f) == UI_RENDER_OK);
+        for (unsigned i = 0; i < 5; ++i) {
+            Clay_Dimensions dims = font_measure(text(label),&styles[i],&ctx);
+            CHECK(ctx.last_result == FONT_OK && dims.width > 0);
+            Clay_RenderCommand command = {.commandType=CLAY_RENDER_COMMAND_TYPE_TEXT,
+                .boundingBox={0,(float)(i * 24),dims.width,dims.height}};
+            command.renderData.text = (Clay_TextRenderData){.stringContents=text(label),
+                .textColor={255,255,255,255},.fontId=ids[i],.fontSize=16,.lineHeight=24};
+            CHECK(font_render_clay(&ctx,&frame,&command) == UI_RENDER_OK && ctx.last_result == FONT_OK);
+        }
+    }
+#if defined(_MSC_VER) && defined(_DEBUG)
+    watch_heap = false; CHECK(heap_calls == 0); _CrtSetAllocHook(NULL);
+#endif
+    CHECK(font_stats(&cache).pending == 0 && font_stats(&cache).prepared == prepared && wakes == before);
+}
 static void eviction(void)
 {
     CHECK(font_cache_reset(&cache) == FONT_OK); FontConfig k = config(); k.size = 40; k.dpi = 192;
@@ -167,7 +221,7 @@ static void clay_binding(void)
 int main(void)
 {
     CHECK(font_cache_create(&cache,wake,&wakes) == FONT_OK);
-    unicode(); misses(); eviction(); clay_binding();
+    unicode(); misses(); typography_roles(); eviction(); clay_binding();
     font_cache_destroy(&cache); CHECK(font_stats(&cache).com_objects == 0);
     puts("ui_font: Unicode, DirectWrite metrics, pending coalescing, warm cache, LRU and lifetime passed");
     return 0;

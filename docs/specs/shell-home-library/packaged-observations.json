@@ -1,0 +1,401 @@
+{
+    "source_root":  "C:\\Users\\Daan\\Documents\\Projects\\spoti-c\\.cache\\issue-41\\.cache\\xpui-current",
+    "javascript_snippets":  [
+                                {
+                                    "path":  "dwp-top-bar.js",
+                                    "byte_offset":  2962,
+                                    "snippet":  "let h=[\"\",\"/\",\"/home/\",\"/content-feed/\",\"/lyrics\",\"/search\",\"/search/:query\",\"/search/:query/:category\",\"/recent-searches\",\"/recents\",\"/taste-profile\",\"/section/:id\",\"/genre/:id\",\"/user/:username/:subpage\",\"/user/:username/top/artists\",\"/user/:username/top/tracks\",\"/preferences\",\"/artist/:id/featuring\",\"/artist/:id/playlists\",\"/artist/:id/appears-on\",\"/artist/:id/discovered-on\",\"/artist/:id/related\",\"/artist/:id/saved-releases\",\"/messages\",\"/download\",\"/premium\"];var w=r(54361),g=r(74202),f=r(92448),H=r(23065);let A={[g.E.SMALL]:0,[g.E.MEDIUM]:600,[g.E.LARGE]:1024},b=()=\u003e{let e=(0,w.lr)(),t=(0,x._)(e=\u003e{let t=e.pathname.replace(/^\\/intl-[A-Za-z]{2}/i,\"\");return h.every(e=\u003ee!==t\u0026\u0026null===(0,m.B6)(e,t))}),r=(0,i.useRef)(null),{breakpoint:n}=(0,H.x)(A,r),{color:l,isDynamic:g",
+                                    "topic":  "Route content header exclusions, not global navigation"
+                                },
+                                {
+                                    "path":  "dwp-home-header.js",
+                                    "byte_offset":  95,
+                                    "snippet":  "HomeHeader:()=\u003ef});var r=l(23955),n=l(62515),s=l(28625),a=l.n(s),o=l(38661),u=l(84988),c=l(77448);let f=(0,n.memo)(function(){let e=(0,c.A)(o.l0o),t=!(0,u.n)();return(0,r.jsx)(\"div\",{className:a()(\"kMaYBahSBLOnErF7DLR2\",{ERB9Yr1OyWiEbIozlRtA:t}),style:{backgroundColor:e}})})},77448(e,t,l){var r=l(41094);function n(e){let{color:t}=(0,r.Xc)();return t||e}l.d(t,{A:()=\u003en})}}]);\n//# sourceMappingURL=dw",
+                                    "topic":  "Dynamic Home background and conditional hidden class"
+                                },
+                                {
+                                    "path":  "dwp-home-chips-row.js",
+                                    "byte_offset":  8372,
+                                    "snippet":  "initialSelectedChip:e,children:t})=\u003e{let[i]=(0,r.useState)(()=\u003e(0,g.y)(t=\u003e({openChips:[],selectedChip:e,openChip:e=\u003et(t=\u003e({openChips:[...t.openChips,e]})),closeChip:e=\u003et(t=\u003e({openChips:t.openChips.filter(t=\u003et!==e)})),toggleChip:e=\u003et(t=\u003e({openChips:t.openChips.includes(e)?t.openChips.filter(t=\u003et!==e):[...t.openChips,e]})),selectChip:e=\u003et({selectedChip:e}),resetState:()=\u003et({openChips:[],selectedChip:\"\"})})));return(0,n.jsx)(w.Provider,{value:i,children:t})},N=()=\u003e{let e=(0,r.useContext)(w);if(!e)throw Error(\"useChipStateStore must be used within ChipStateProvider\");return e},j=()=\u003e{let e=N();return(0,x.P)(e,(0,b.k)(e=\u003e({openChip:e.openChip,clos",
+                                    "topic":  "Selected/open chip state"
+                                },
+                                {
+                                    "path":  "home-v2-section.js",
+                                    "byte_offset":  10431,
+                                    "snippet":  "let b=({section:e})=\u003e(0,n.jsx)(x.p,{id:e.uri,title:e.data.title?.transformedLabel??\"\",showAll:!0,index:0,rowGap:g.lT,fullPage:!0,children:e.sectionItems.items.map(_.G)});var f=a(40162),j=a(41497),y=a(96273),C=a(54461);let v=({section:e})=\u003e(0,n.jsx)(y.x,{config:(0,C.s1)(C.yV.HOME_LOW_DENSITY),children:(0,n.jsx)(x.p,{id:e.uri,title:e.data.title?.transformedLabel??\"\",showAll:!0,index:0,rowGap:(0,f.po)(\"looser\"),fullPage:!0,children:e.sectionItems.items.map(j.G)})});var A=a(16375);let N=({section:e})=\u003e(0,n.jsx)(y.x,{config:(0,C.s1)(C.yV.MUSIC_VIDEOS),children:(0,n.jsx)(x.p,{id:e.uri,title:e.data.title?.transformedLabel??\"\",showAll:!0,index:0,rowGap:(0,f.po)(\"looser\"),fullPage:!0,children:e.sectionItems.items.map(A.L)})});var L=a(15364),S=a(19901);let w=({section:e})=\u003e{let t=(0,l.NC)(L.hWV),a=(0,l.NC)(L.Vkp);switch(\"spotify:section:0JQ5DAnM3wG",
+                                    "topic":  "Generic and low-density section branches"
+                                },
+                                {
+                                    "path":  "home-v2-section.js",
+                                    "byte_offset":  12537,
+                                    "snippet":  "let T=10,F=(",
+                                    "topic":  "Full-page section skeleton count, not shelf column count"
+                                },
+                                {
+                                    "path":  "xpui-routes-your-library-x.js",
+                                    "byte_offset":  130527,
+                                    "snippet":  "M=eI?\"collapsed\":eN===a_.X.GRID_COMPACT?eE?\"expanded_compact_grid\":\"compact_grid\":eN===a_.X.GRID_DEFAULT?eE?\"expanded_default_grid\":\"default_grid\":eN===a_.X.LIST_COMPACT?eE?\"expanded_compact_list\":\"compact_list\":eE?\"expanded_default_list\":\"default_list\";let eM=(0,n.useMemo)(()=\u003eeD.sidebarFactory({uri:eb??\"\",identifier:M}),[eD,eb,M]),",
+                                    "topic":  "Collapsed plus compact/default list/grid variants"
+                                },
+                                {
+                                    "path":  "xpui-routes-your-library-x.js",
+                                    "byte_offset":  92436,
+                                    "snippet":  "let aQ=({isCollapsed:e,toggleCollapsedState:t,dropTargetClassName:r,folderUri:l,...a})=\u003e(0,i.jsx)(\"div\",{className:o()(\"EUgC_nlMA4CCv1WCwaaY\",e\u0026\u0026\"Q6uts0_TYrH_4L1Hz7fc\",!e\u0026\u0026\"L88ActoNrC2uznn2sjPF\"),...a,children:(0,i.jsxs)(\"button\",{type:\"button\",\"aria-label\":e?w.Ru.get(\"web-player.your-library-x.open-your-library\"):w.Ru.get(\"web-player.your-library-x.collapse-your-library\"),onClick:t,className:o()(\"Jz_5isqgR18LplKQrOr8\",r),children:[(0,i.jsx)(\"span\",{className:\"nHeUNlsOGyG1JTdaaX2K\",children:e?(0,i.jsx)(aW.M,{}):(0,i.jsx)(aG.C,{size:\"small\"})}),e\u0026\u0026(0,i.jsx)(\"span\",{className:\"x8V6yaC91n27Micf8MIU\",children:(0,i.jsx)(aX.t,{})}),l||e?(0,i.jsx)(aZ.s,{children:(0,i.jsx)(W.E,{as:\"h1\",children:w.Ru.get(\"web-player.your-library-x.your-library\")})}):(0,i.jsx)(W.E,{variant:\"bodyMediumBold\",semanticColor:\"textBase\",className:\"QSyKUNrsITKi8A2InGtO\",as:\"h1\",children:w.Ru.get(\"web-player.your-library-x.your-library\")})]})});var aJ=r(84516),aq=r(28987);let a$=e=\u003e{switch(e){case ei.h.EXPANDED:return\"e",
+                                    "topic":  "Library collapse button, action and accessible names"
+                                },
+                                {
+                                    "path":  "xpui-routes-your-library-x.js",
+                                    "byte_offset":  48019,
+                                    "snippet":  "images:p(r,48),shape:l?rA.u.CIRCLE:rA.u.ROUNDED_CORNERS,size:rI.Qe.SIZE_48,iconSize:\"medium\",type:t,title:e,className:o()(tO.A.entityImage,{[s]:n}),color:a,loadingMode:\"eager\"}),x\u0026\u0026(0,i.jsx)(\"div\",{className:o()(\"Y3i0QVby7QVDsOh2l0_m\",{AH7NYlNWNDPQhMeIZg7A:l,OeAHnHTqoJSB8frQKbnC:!l}),children:(0,i.jsx)(rT,{name:e,uri:m,togglePlay:d,isPlaying:u,isActive:c,size:\"medium\"})}),y]})}),rD=(0,n.memo)(function({title:e,type:t",
+                                    "topic":  "48px row artwork with circle/rounded shape and loading input"
+                                },
+                                {
+                                    "path":  "xpui-routes-your-library-x.js",
+                                    "byte_offset":  47879,
+                                    "snippet":  "isCollapsed:g}=(0,ei.Q)(),x=d\u0026\u0026!g;return(0,i.jsxs)(\"div\",{className:o()({[tO.A.imageContainer]:x||!!y}),children:[(0,i.jsx)(rA.b,{fadeIn:!0,images:p(r,48),shape:l?rA.u.CIRCLE:rA.u.ROUNDED_CORNERS,size:rI.Qe.SIZE_48,iconSize:\"medium\",type:t,title:e,className:o()(tO.A.entityImage,{[s]:n}),color:a,loadingMode:\"eager\"}),x\u0026",
+                                    "topic":  "Row play overlay capability and collapse condition"
+                                },
+                                {
+                                    "path":  "xpui-routes-your-library-x.js",
+                                    "byte_offset":  121357,
+                                    "snippet":  "\"sort-and-view-picker\"}),placement:\"bottom-end\",children:(e,t,r)=\u003e(0,i.jsx)(el.H,{\"aria-label\":w.Ru.get(\"web-player.your-library-x.sort-and-view-picker.button-aria-label\",d.value,g.fullName),onClick:e=\u003e{u(),t(e)},onKeyDown:e=\u003e{\"ArrowDown\"===e.key\u0026\u0026(u(),t(e))},size:\"small\",iconTrailing:g.icon,role:\"combobox\",\"aria-haspopup\":\"true\",\"aria-controls\":\"sort-and-view-picker\",\"aria-exp",
+                                    "topic":  "Sort/view picker state"
+                                },
+                                {
+                                    "path":  "xpui-routes-your-library-x.js",
+                                    "byte_offset":  92315,
+                                    "snippet":  "estimatedItemMaxHeight:250,scrollNodeRef:t,onGridResize:y})})})})})};var aW",
+                                    "topic":  "Virtual grid estimated height, not a fixed card height"
+                                },
+                                {
+                                    "path":  "dwp-offline-empty-state.js",
+                                    "byte_offset":  327,
+                                    "snippet":  "OfflineEmptyState:({showDownloadInformation:e})=\u003e(0,i.jsxs)(\"div\",{className:r.A.emptyStateContainer,children:[e?(0,i.jsx)(s.i,{size:\"xxxlarge\",className:r.A.icon}):(0,i.jsx)(l.P,{size:\"xxxlarge\",className:r.A.icon}),(0,i.jsx)(n.E,{as:\"h1\",variant:\"titleLarge\",semanticColor:\"textBase\",dir:\"auto\",children:o.Ru.get(\"web-player.offline.empty-state.title\")}),(0,i.jsx)(n.E,{as:\"h2\",variant:\"bodyMedium\",semanticColor:\"textSubdued\",dir:\"auto\",className:r.A.info,children:e?o.Ru.get(\"web-player.offline.empty-state.subtitle\"):o.Ru.get(\"offline.callout-disconnected\")})]})})}}]);\n//# sourceMappingURL=dwp-offline-empty-state.js.map",
+                                    "topic":  "Offline title, subtitle and download-information alternative"
+                                },
+                                {
+                                    "path":  "dwp-page-error-template.js",
+                                    "byte_offset":  709,
+                                    "snippet":  "e=(0,a.useCallback)(()=\u003e{t({type:\"hitRefreshContent\"}),window.location.reload()},[t]);return(0,n.jsx)(l.$,{onClick:e,children:u.Ru.get(\"fatal-error.button-label\")})},y=a.memo(function(){let t=(0,r.zy)(),e=C[t.pathname]||h.b,{SpecP",
+                                    "topic":  "Error template refresh action and button label"
+                                }
+                            ],
+    "css_rules":  [
+                      {
+                          "rule":  ".MqAdcwpMRukiKp3i8Fxr{grid-gap:var(--grid-gap);grid-template-columns:repeat(auto-fill, minmax(var(--min-column-width), 1fr));grid-auto-rows:min-content;display:grid}",
+                          "path":  "dwp-home-chips-row.css",
+                          "byte_offset":  12606,
+                          "context_before":  "mation-duration:var(--encore-short-4);animation-timing-function:var(--encore-expressive-decelerate)}"
+                      },
+                      {
+                          "rule":  ".kMaYBahSBLOnErF7DLR2{z-index:-1;background-image:linear-gradient(#0009 0%, var(--background-base) 100%), var(--background-noise);width:100%;height:256px;margin-top:0;transition-property:background;transition-duration:1s;transition-timing-function:ease;position:absolute}",
+                          "path":  "dwp-home-header.css",
+                          "byte_offset":  0,
+                          "context_before":  ""
+                      },
+                      {
+                          "rule":  ".kMaYBahSBLOnErF7DLR2.ERB9Yr1OyWiEbIozlRtA{display:none}",
+                          "path":  "dwp-home-header.css",
+                          "byte_offset":  271,
+                          "context_before":  "sition-property:background;transition-duration:1s;transition-timing-function:ease;position:absolute}"
+                      },
+                      {
+                          "rule":  ".kOAVq_5h2_KhR2SmJfaj{margin-inline-start:calc(min(var(--ylx-folder-depth,0), 5) * 16px);grid-template-rows:48px!important}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  5570,
+                          "context_before":  "pacing-tighter-2);flex-direction:row;display:flex}.nKvFuHBVkyIyiH5WGlhE{z-index:0;margin-left:-48px}"
+                      },
+                      {
+                          "rule":  ".kOAVq_5h2_KhR2SmJfaj.WhOLDvdymTooJlYiZbNZ{grid-template-rows:24px!important}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  5693,
+                          "context_before":  "argin-inline-start:calc(min(var(--ylx-folder-depth,0), 5) * 16px);grid-template-rows:48px!important}"
+                      },
+                      {
+                          "rule":  ".kOAVq_5h2_KhR2SmJfaj .cG_EdUD8VD_W0DYHcDlG{padding:8px;display:block}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  5897,
+                          "context_before":  "TEgLiK95FNSlXdQ{margin-inline-start:unset}.kOAVq_5h2_KhR2SmJfaj .dnLJySP7_HL5mWVYBAzQ{display:block}"
+                      },
+                      {
+                          "rule":  ".WhOLDvdymTooJlYiZbNZ .cG_EdUD8VD_W0DYHcDlG{padding-block:4px}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  6030,
+                          "context_before":  "_W0DYHcDlG{padding:8px;display:block}.kOAVq_5h2_KhR2SmJfaj .UvAVRTnAKJZDw5uRW1hV{padding-block:16px}"
+                      },
+                      {
+                          "rule":  ".AyQuHx4nhILLZ2tOcDiA{width:48px;height:48px}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  6177,
+                          "context_before":  "ding-block:4px}.WhOLDvdymTooJlYiZbNZ .UvAVRTnAKJZDw5uRW1hV{padding-block:4px;padding-inline:8px 6px}"
+                      },
+                      {
+                          "rule":  ".L4ULnrZfqED8dnsf1kRt{background-image:var(--placeholder-image);background-repeat:repeat-y;background-size:250px 64px}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  6284,
+                          "context_before":  "4nhILLZ2tOcDiA{width:48px;height:48px}.OvdONKa74tgEaXIMS5wm{z-index:1;padding:8px;position:relative}"
+                      },
+                      {
+                          "rule":  ".E7qovAeNOgz4DhcnQ1J2{background-image:var(--placeholder-compact-image);background-repeat:repeat-y;background-size:220px 32px}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  6547,
+                          "context_before":  "ckground-image:var(--placeholder-artist-image)}[dir=rtl] .L4ULnrZfqED8dnsf1kRt{transform:scaleX(-1)}"
+                      },
+                      {
+                          "rule":  ".Yqfut8Aw1vohHPWNRsWy{--gap:24px;--columnSize:20%;grid-template-areas:\"listRow addedAt lastPlayedAt\";grid-template-columns:1fr var(--columnSize) var(--columnSize);align-items:center;gap:var(--gap);background-color:var(--background-base);z-index:1;display:grid}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  6789,
+                          "context_before":  "AeNOgz4DhcnQ1J2{transform:scaleX(-1)}.kwkP4fTtjx0huJ1620tO{place-items:center;gap:16px;display:flex}"
+                      },
+                      {
+                          "rule":  ".Y3i0QVby7QVDsOh2l0_m{opacity:0;pointer-events:auto;background-color:#00000080;position:absolute;top:0}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  8463,
+                          "context_before":  "aria-selected=true]) .kOAVq_5h2_KhR2SmJfaj{border-bottom-right-radius:0;border-bottom-left-radius:0}"
+                      },
+                      {
+                          "rule":  ".Y3i0QVby7QVDsOh2l0_m:has(:focus-visible){opacity:1}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  8566,
+                          "context_before":  "i0QVby7QVDsOh2l0_m{opacity:0;pointer-events:auto;background-color:#00000080;position:absolute;top:0}"
+                      },
+                      {
+                          "rule":  ".xNN4u6E5VGbOxYTpOp6X:hover .Y3i0QVby7QVDsOh2l0_m{opacity:1}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  8740,
+                          "context_before":  "AH7NYlNWNDPQhMeIZg7A{border-radius:50%}.Y3i0QVby7QVDsOh2l0_m.OeAHnHTqoJSB8frQKbnC{border-radius:4px}"
+                      },
+                      {
+                          "rule":  ".FmKJWwZAE3hskdmEk_qu:not(.g17mZo3hN5ItSnNz4xGg){grid-template-rows:auto 44px;display:grid!important}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  8919,
+                          "context_before":  "EM{opacity:0;pointer-events:none;position:absolute}.FmKJWwZAE3hskdmEk_qu{contain:content;width:100%}"
+                      },
+                      {
+                          "rule":  ".WAc4pJu2EshSMM7cQK9c{opacity:0;bottom:8px;opacity:0;pointer-events:none;border-radius:50%;transition:transform .3s,opacity .3s;position:absolute;inset-inline-end:8px;transform:translateY(8px);box-shadow:0 8px 8px #0000004d}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  9207,
+                          "context_before":  "smuqbDI0vVHai6cL{width:50%!important;height:50%!important}.r0iYJkplatcKtS3eI9BA{pointer-events:none}"
+                      },
+                      {
+                          "rule":  ".WAc4pJu2EshSMM7cQK9c{display:none}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  9455,
+                          "context_before":  "set-inline-end:8px;transform:translateY(8px);box-shadow:0 8px 8px #0000004d}@media (pointer:coarse){"
+                      },
+                      {
+                          "rule":  ".FmKJWwZAE3hskdmEk_qu:hover .WAc4pJu2EshSMM7cQK9c,.FmKJWwZAE3hskdmEk_qu:focus-within .WAc4pJu2EshSMM7cQK9c{opacity:1;transform:translateY(0)}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  9704,
+                          "context_before":  "r-events:auto;position:absolute;transform:translateY(0)}.p5CRA6w818sv5i4qFZwu{will-change:transform}"
+                      },
+                      {
+                          "rule":  ".FmKJWwZAE3hskdmEk_qu:hover .WAc4pJu2EshSMM7cQK9c,.FmKJWwZAE3hskdmEk_qu:focus-within .WAc4pJu2EshSMM7cQK9c{opacity:1;pointer-events:auto;position:absolute}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  9867,
+                          "context_before":  "kdmEk_qu:focus-within .WAc4pJu2EshSMM7cQK9c{opacity:1;transform:translateY(0)}@media (pointer:fine){"
+                      },
+                      {
+                          "rule":  ".FaCi3LjHTjAbSuSnegTN{z-index:1;flex-direction:column;gap:8px;padding:16px 16px 8px;display:flex;position:relative}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  12533,
+                          "context_before":  "m:rotate(0)}to{transform:rotate(360deg)}}@keyframes FEAlsQ4LS0q_XdN_UgXC{0%{opacity:0}to{opacity:1}}"
+                      },
+                      {
+                          "rule":  ".qB0QkhexXi3Wx0P1k0Rf{background-color:var(--background-base);flex-direction:column;flex:1;width:100%;height:100%;min-height:0;padding-top:0;display:flex;overflow-x:hidden}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  18703,
+                          "context_before":  "ems:center;gap:16px;display:flex}.nhsKC6rw1MCYesN_sjR0{padding:12px;position:absolute;top:0;right:0}"
+                      },
+                      {
+                          "rule":  ".RD7Pn8_nYXLoBOaIbdvc{min-height:100%;padding:0 var(--encore-spacing-tighter-2) var(--encore-spacing-tighter-2);gap:var(--encore-spacing-tighter-2);flex-direction:column;display:flex;container:ylx-contents/inline-size}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  20020,
+                          "context_before":  "ransform:translateY(-50%);box-shadow:0 16px 24px #0000004d,0 6px 8px #0003;font-size:14px!important}"
+                      },
+                      {
+                          "rule":  ".RD7Pn8_nYXLoBOaIbdvc:has(.e2T4kII_8aSMGVgzaLJz [role=searchbox][aria-hidden=false]) .e2T4kII_8aSMGVgzaLJz [data-sortbox-label]{opacity:0;pointer-events:none;width:0;position:absolute}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  20459,
+                          "context_before":  "BMghLYVuN38bnptJg{padding-top:var(--encore-spacing-tighter-2)}@container ylx-contents (width\u003c400px){"
+                      },
+                      {
+                          "rule":  ".eIMqq7JyNeNCDtjFSlFQ{background-color:var(--background-highlight);padding:var(--encore-spacing-tighter-4);border-radius:8px;min-width:200px;display:flex;position:relative}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  21038,
+                          "context_before":  "-2);display:flex}.HfLUs3FrujQayRJaCQPt\u003e.e2T4kII_8aSMGVgzaLJz{flex-shrink:0;margin-inline-start:auto}"
+                      },
+                      {
+                          "rule":  ".eIMqq7JyNeNCDtjFSlFQ li{width:25%}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  21210,
+                          "context_before":  "ng:var(--encore-spacing-tighter-4);border-radius:8px;min-width:200px;display:flex;position:relative}"
+                      },
+                      {
+                          "rule":  ".BKSy1FhNKrGmUPkur9gp{padding:var(--encore-spacing-tighter-2);text-align:center;width:100%;height:32px;min-height:auto;color:var(--text-subdued);background-color:#0000;border:none;border-radius:6px;justify-content:center;align-items:center;gap:0;display:flex;position:relative}",
+                          "path":  "xpui-routes-your-library-x.css",
+                          "byte_offset":  21658,
+                          "context_before":  "lected-offset));border-radius:6px;transition:transform .1s cubic-bezier(.3,0,0,1);position:absolute}"
+                      },
+                      {
+                          "rule":  "@property --left-sidebar-width{syntax:\"\u003cnumber\u003e\";inherits:false;initial-value:232}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  6515,
+                          "context_before":  "pTarget{opacity:.25}[data-dragging-type~=text\\/x-spotify-users] .GlueDropTarget--users{opacity:.999}"
+                      },
+                      {
+                          "rule":  ".LiEjwLua6RNBCvlysAT2{--left-sidebar-grid-area-z-index:4;--above-everything-except-now-playing-bar-z-index:5;--now-playing-bar-grid-area-z-index:calc(var(--above-everything-except-now-playing-bar-z-index) + 1);--above-everything-grid-area-z-index:7;--onboarding-search-grid-area-z-index:calc(var(--above-everything-grid-area-z-index) + 1);gap:var(--panel-gap);width:100%;height:100%;min-height:100%;padding:var(--panel-gap);background-color:#000;grid-template:\"top-banner top-banner top-banner\"\"global-nav global-nav global-nav\"\"left-sidebar main-view right-sidebar\"1fr\"now-playing-bar now-playing-bar now-playing-bar\"/auto 1fr;display:grid;position:relative}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  16150,
+                          "context_before":  ":16px}}@container main-view-grid-area (width\u003e=1024px){.wl4l8VReeS8XP9xdlDZA{--content-spacing:24px}}"
+                      },
+                      {
+                          "rule":  ".yQCyOSVcMCen_NJKPHB6{min-height:0;width:calc(var(--left-sidebar-width) * 1px);z-index:var(--left-sidebar-grid-area-z-index);background-color:#000;border-radius:8px;flex-direction:column;grid-area:left-sidebar;display:flex;position:relative}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  17086,
+                          "context_before":  "none;display:grid;position:relative}.aVjq0KTZuI3eC0rBTudm{margin:-8px calc(var(--panel-gap) * -1) 0}"
+                      },
+                      {
+                          "rule":  ".u3xv0vOK9EJmOplXOrhG{cursor:default;background-color:var(--background-base);border-radius:8px;overflow-x:hidden}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  18971,
+                          "context_before":  "33n7f4ATrztL2CWA{width:calc(var(--left-sidebar-width,0) * 1px);grid-area:left-sidebar;display:block}"
+                      },
+                      {
+                          "rule":  ".R1kU6b2KxZc8FWfbYf3m{timeline-scope:--scroll-to-viewport-button-anim;background-color:var(--background-base);border-radius:8px;flex-direction:column;grid-area:main-view;width:100%;min-height:0;display:flex;position:relative;overflow:hidden}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  19310,
+                          "context_before":  "kdIXX96ISKi9xW1OF6{gap:var(--panel-gap);flex-direction:column;height:100%;min-height:0;display:flex}"
+                      },
+                      {
+                          "rule":  ".R1kU6b2KxZc8FWfbYf3m{container:main-view-grid-area/size}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  19660,
+                          "context_before":  "ht-sidebar-hidden=true] .R1kU6b2KxZc8FWfbYf3m{grid-area:main-view/main-view/main-view/right-sidebar}"
+                      },
+                      {
+                          "rule":  ".XvuTwlgQRqJ5NnVLN9ZH{padding:calc(var(--panel-gap));margin:calc(var(--panel-gap) * -1);z-index:var(--now-playing-bar-grid-area-z-index);background-color:#000;grid-area:now-playing-bar}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  21498,
+                          "context_before":  ";height:100%;background-color:#000;position:absolute;inset-inline-start:calc(-1 * var(--panel-gap))}"
+                      },
+                      {
+                          "rule":  ".LayoutResizer__resize-bar{cursor:col-resize;opacity:0;width:var(--panel-gap);will-change:opacity;touch-action:none;justify-content:center;align-items:center;height:100%;transition:opacity .15s ease-out;display:flex;position:absolute}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  10808,
+                          "context_before":  ":after{content:\"\";pointer-events:none;outline:5px auto #3673d4;margin:2px;position:absolute;inset:0}"
+                      },
+                      {
+                          "rule":  ".Ho539Cb0LwVdYEIDfHCW{height:calc(48px + var(--panel-gap) * 2);grid-area:global-nav;justify-content:space-between;align-items:center;display:flex;position:relative}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  73644,
+                          "context_before":  "nts:none;width:1px;height:1px;position:absolute;overflow:hidden}.Yhi4BTQ3ET2ctPpPVxLm{color:#4687d6}"
+                      },
+                      {
+                          "rule":  ".Ho539Cb0LwVdYEIDfHCW{padding:calc(var(--panel-gap));margin:calc(var(--panel-gap) * -1);background-color:#000}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  74697,
+                          "context_before":  "0LwVdYEIDfHCW{z-index:var(--above-everything-grid-area-z-index);view-transition-name:global-nav-bar}"
+                      },
+                      {
+                          "rule":  ".wPTWE6ubGXmX2aeVyhzW{pointer-events:none;flex:1;justify-content:center;align-items:center;gap:0;width:100%;display:flex;position:absolute;left:0;right:0}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  74978,
+                          "context_before":  "x;display:flex}.Fd71zSwGqDtnZEBU7u7B{flex-direction:row;align-items:center;margin:20px;display:flex}"
+                      },
+                      {
+                          "rule":  ".oxFroaXCJTMXfoZDaaf1{pointer-events:auto;width:50%;min-width:350px;max-width:546px;display:flex}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  75132,
+                          "context_before":  "fy-content:center;align-items:center;gap:0;width:100%;display:flex;position:absolute;left:0;right:0}"
+                      },
+                      {
+                          "rule":  ".swoq8h_oER0f7W3oblBE .oxFroaXCJTMXfoZDaaf1{width:100%;min-width:auto}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  75315,
+                          "context_before":  ";display:flex}.swoq8h_oER0f7W3oblBE\u003e.wPTWE6ubGXmX2aeVyhzW{position:unset;justify-content:flex-start}"
+                      },
+                      {
+                          "rule":  ".forceExpandSearchInput.searchInputCollapsed .vb34897sOc8rm4gVvw6a{animation:.22s ease-in PGWJZ9IOJWjeVsO6L3pA;display:none}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  76129,
+                          "context_before":  "r;gap:8px;max-width:100%;padding-inline:0;animation:.22s ease-out o3ZhWgkMct6FNZnx_Pv4;display:flex}"
+                      },
+                      {
+                          "rule":  ".jZZUhUAqjBxjeJnb4GIK{height:calc(32px / (var(--zoom-level,100) / 100));width:calc(135px / (var(--zoom-level,100) / 100))}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  76758,
+                          "context_before":  "{height:calc(16px / (var(--zoom-level,100) / 100));width:calc(28px / (var(--zoom-level,100) / 100))}"
+                      },
+                      {
+                          "rule":  ".IKiPTZqEz15n8iB19aAW{grid-gap:var(--grid-gap);grid-template-columns:repeat(auto-fill, minmax(var(--min-column-width), 1fr));grid-auto-rows:min-content;display:grid}",
+                          "path":  "xpui-snapshot.css",
+                          "byte_offset":  269404,
+                          "context_before":  "nline-start:8px;transition:opacity .2s,transform .2s;display:inline-block;transform:translate(-8px)}"
+                      }
+                  ],
+    "method":  "Supplemental inert literal/rule extraction; exact UTF-8 offsets, no execution or cascade evaluation",
+    "rea_parent":  "ev_591ff2bc2f44e77aeb27efdf4c6d23eca9c048aa0a27f332ecffbc9cbc1c05ed",
+    "limits":  [
+                   "Selectors can have conditional ancestors; retain context_before and consult original source.",
+                   "Module imports and feature flags can change placement, density and active variants.",
+                   "No window, account, pointer, keyboard, GPU or runtime observation."
+               ],
+    "identities":  [
+                       {
+                           "path":  "dwp-home-chips-row.css",
+                           "sha256":  "1b905e834bda72fa74cafa772a6369727d3d521c17c89676c6c152a32e0e4a8d",
+                           "bytes":  23828
+                       },
+                       {
+                           "path":  "dwp-home-header.css",
+                           "sha256":  "9672f3f65a94806539ef1595ab3445ec82403da85c46c97c40151de81f72460b",
+                           "bytes":  374
+                       },
+                       {
+                           "path":  "xpui-routes-your-library-x.css",
+                           "sha256":  "0382bd3aaeda4b779f043e065cff058f93147bfce46f5d9fa90d0a73b02dab83",
+                           "bytes":  23093
+                       },
+                       {
+                           "path":  "xpui-snapshot.css",
+                           "sha256":  "84fcb28a2bf449e9dba5091866747e0f91af5797af0edb773cf5b3cb5ccfd987",
+                           "bytes":  505810
+                       },
+                       {
+                           "path":  "dwp-top-bar.js",
+                           "sha256":  "780e732beadbfb9c5c982822589a32b38a3edccb63d0a777f914577a28fc9f5c",
+                           "bytes":  6811
+                       },
+                       {
+                           "path":  "dwp-home-header.js",
+                           "sha256":  "6f5a54a5e5c73be51c40b48285a6b0d473d6e9d0e9f66f704212bc9f11825a81",
+                           "bytes":  515
+                       },
+                       {
+                           "path":  "dwp-home-chips-row.js",
+                           "sha256":  "430dd6abd521c0dbe820be42f254376714c1c7d95aa34873564cf2e4654115eb",
+                           "bytes":  22591
+                       },
+                       {
+                           "path":  "home-v2-section.js",
+                           "sha256":  "eb5c8c216aabd7319c5183b9b0d9d7e7bf50977019bb55b8b43c0174e22bf7eb",
+                           "bytes":  27107
+                       },
+                       {
+                           "path":  "xpui-routes-your-library-x.js",
+                           "sha256":  "2c808dbfb30b4403b4540d4088048135463556520ed07a90ea7ebd3f855551c6",
+                           "bytes":  144908
+                       },
+                       {
+                           "path":  "dwp-offline-empty-state.js",
+                           "sha256":  "e79a0d5a7eb06788f95b8b7ece6b3fd8b1e95797e84b642f8d6cee5258c52123",
+                           "bytes":  953
+                       },
+                       {
+                           "path":  "dwp-page-error-template.js",
+                           "sha256":  "498e431e268a89f6cb06607b8670b61c28cb678a6c7baf66e787cd644494e141",
+                           "bytes":  4108
+                       }
+                   ]
+}

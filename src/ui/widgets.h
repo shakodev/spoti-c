@@ -69,6 +69,10 @@ Clay_RenderCommandArray ui_widgets_end(UiWidgets *ui);
 void *ui_widgets_scratch(UiWidgets *ui, size_t bytes, size_t alignment);
 void ui_widgets_fail(UiWidgets *ui, UiWidgetResult error);
 void ui_widgets_focus(UiWidgets *ui, Clay_ElementId id);
+/* Shared component plumbing: declaration budget and the single capture path.
+ * Call event only after a successful declaration, inside an active frame. */
+bool ui_widgets_declare(UiWidgets *ui, Clay_ElementId id);
+bool ui_widgets_button_event(UiWidgets *ui, Clay_ElementId id, bool disabled);
 bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, float height, bool disabled);
 bool ui_button_behavior(UiWidgets *, Clay_ElementId, bool disabled);
 bool ui_track_button(UiWidgets *, Clay_ElementId, Clay_String, float width, bool disabled, bool current);

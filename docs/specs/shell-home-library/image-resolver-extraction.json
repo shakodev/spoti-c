@@ -1,0 +1,29 @@
+{
+  "source_snapshot": {
+    "file": "v8_context_snapshot.bin",
+    "bytes": 18184512,
+    "sha256": "aefd55fa7f292f438ee7cec4ed4803a2b7ff6b7dc6a8453ec0e32b151d2b07df",
+    "extracted_span": [589917, 17343559],
+    "encoding": "utf-16-le",
+    "span_sha256": "ff69b449157856728d3cfa5421906f3099a6f9e851ea9b1cc1d73709873c9469",
+    "authority": "analyst-derived inert source; no code execution"
+  },
+  "input_sha256": "991cc95a5fdb9104aba8aa95c3de511c577e914be155447ff12cabc05715e296",
+  "transformation": "Exact AST member span wrapped in inert Rspack registration; target code never executed",
+  "modules": [
+    {
+      "id": "43575",
+      "start_utf16": 4172793,
+      "end_utf16": 4175210,
+      "fragment_sha256": "fc83308bcb37de4b7a2cc5f9a15c8e3532f98b65bcf7fc15556db873e61ce317",
+      "derived_sha256": "2cd721f77726c0ea19491575c818c24e1f48fceec93de790dfce2c1d5e83d867"
+    },
+    {
+      "id": "71646",
+      "start_utf16": 4771534,
+      "end_utf16": 4772012,
+      "fragment_sha256": "5e8f420f75d3e9b52d8136e1fbce541772abec852b91d29e3a3ab7421fa65b36",
+      "derived_sha256": "635d50365a8809e1da0b5b3bd0b69dcb1315f63fc63d75d3ac89213551993436"
+    }
+  ]
+}

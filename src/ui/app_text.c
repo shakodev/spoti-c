@@ -1,4 +1,5 @@
 #include "app.h"
+#include "font_roles.h"
 #include <string.h>
 
 static bool same(FontConfig a, FontConfig b)
@@ -33,7 +34,7 @@ static Clay_Dimensions measure(Clay_StringSlice text, Clay_TextElementConfig *st
         }
         /* Progress timestamps change throughout a route's lifetime. Scalar
          * measurements are unpinned cache entries, so replace them in place. */
-        uint32_t slot=a->measure_count<256 ? a->measure_count++ : a->measure_next++%256;
+        uint32_t slot=a->measure_count<APP_MEASURES ? a->measure_count++ : a->measure_next++%APP_MEASURES;
         AppMeasure *m=&a->measures[slot];
         m->config=key; m->length=(uint32_t)text.length;
         if (m->length) { memcpy(m->text,text.chars,m->length); }

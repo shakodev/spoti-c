@@ -12,6 +12,7 @@ static void run(const Event *event, const CancelToken *cancel, void *context)
     if (slot->authentication) {
         slot->result = COLLECTION_OK; return;
     }
+    if (slot->request.sidebar) { app_fixture_sidebar_run(h,slot,cancel); return; }
     if (slot->request.screen>=APP_SEARCH) { app_fixture_catalog_run(h,slot,cancel); return; }
     if (slot->request.kind==COLLECTION_PLAYLIST) {
         slot->playlist=true; slot->result=app_fixture_playlist_open(h,slot,cancel); return;
@@ -52,7 +53,7 @@ static AppResult submit(AppFixture *h, const AppRequest *request, bool auth, App
         slot->artwork[0]=0;
         if (artwork.bytes && json_base_string_copy(artwork,slot->artwork,sizeof(slot->artwork))!=JSON_OK) { return APP_FULL; }
         slot->catalog_page=NULL; slot->lyrics=NULL; slot->catalog_result=CATALOG_CANCELLED; slot->lyrics_result=LYRICS_CANCELLED;
-        slot->page = NULL; slot->result = COLLECTION_CANCELLED;
+        slot->page = NULL; slot->rootlist=NULL; slot->result = COLLECTION_CANCELLED;
         atomic_store(&slot->phase,1);
         WorkerJob job = {.request={.id=i},.run=run,.complete=complete,.context=h,.deadline=CORE_CLOCK_NEVER,.priority=WORKER_DISK};
         if (worker_submit(h->worker,&job,&slot->ticket) != CORE_OK) { atomic_store(&slot->phase,0); return APP_FULL; }
@@ -95,7 +96,7 @@ static AppResult auth(void *context, AppAuth action)
 }
 AppServices app_fixture_services(AppFixture *h)
 {
-    return (AppServices){.request=request,.catalog=catalog,.cancel=cancel,.retire=app_fixture_retire,.auth=auth,.context=h,.demo=true,.playlist=&h->playlist};
+    return (AppServices){.request=request,.sidebar=request,.catalog=catalog,.cancel=cancel,.retire=app_fixture_retire,.auth=auth,.context=h,.demo=true,.playlist=&h->playlist};
 }
 AppResult app_fixture_init(AppFixture *h, Arena *core, EventQueue *events, App *app, const wchar_t *directory)
 {
@@ -105,6 +106,8 @@ AppResult app_fixture_init(AppFixture *h, Arena *core, EventQueue *events, App *
     wcscpy_s(h->directory,256,directory);
     if (json_page_pool_init(h->pool_storage,sizeof(h->pool_storage),&h->pool) != JSON_OK ||
         collection_service_init(h->service_storage,sizeof(h->service_storage),h->pool,&h->service) != COLLECTION_OK) { return APP_FAILED; }
+    h->rootlists=app_rootlist_store(h->service_storage,sizeof(h->service_storage));
+    if (!h->rootlists) { return APP_FULL; }
     for (unsigned i = 0; i < 4; ++i) { atomic_init(&h->slots[i].phase,0); }
     atomic_init(&h->retirement_phase,0); atomic_init(&h->retire_generation,0);
     if (worker_start(core,4,(CoreClock){0},&h->worker)!=CORE_OK || track_filter_init(&h->filter,h->worker,events)!=TRACK_OK) { return APP_FAILED; }
@@ -121,6 +124,8 @@ void app_fixture_pump(AppFixture *h)
                 if (slot->result==COLLECTION_OK) { (void)app_session(h->app,slot->auth == APP_LOGIN,true,GetTickCount64()); }
                 else { h->app->model.auth_pending=false; h->app->model.last_result=APP_FAILED; }
             }
+        } else if (slot->request.sidebar) {
+            (void)app_sidebar_deliver(h->app,slot->request,slot->result,slot->rootlist); slot->rootlist=NULL;
         } else if (slot->request.screen==APP_LYRICS) {
             (void)app_lyrics_deliver(h->app,slot->request,slot->lyrics_result,slot->lyrics); slot->lyrics=NULL;
         } else if (slot->request.screen>=APP_SEARCH) {
@@ -145,6 +150,7 @@ bool app_fixture_stop(AppFixture *h)
     track_filter_release(&h->filter); (void)track_filter_clear(&h->filter); memset(&h->last_queue,0,sizeof(h->last_queue));
     for (unsigned i = 0; i < 4; ++i) {
         if (h->slots[i].page) { (void)page_release((JsonPage *)&h->slots[i].page->json); h->slots[i].page = NULL; }
+        app_rootlist_release(h->slots[i].rootlist); h->slots[i].rootlist=NULL;
         if (h->slots[i].catalog_page) { (void)page_release((JsonPage *)&h->slots[i].catalog_page->json); h->slots[i].catalog_page=NULL; }
         if (h->slots[i].lyrics) { (void)lyrics_document_release(h->slots[i].lyrics); h->slots[i].lyrics=NULL; }
     }

@@ -16,12 +16,25 @@ void app_playlist_prepare(App *a)
     bool changed=track_filter_done(p->filter)!=NULL;
     TrackResult r=playlist_prepare(p,&a->widgets.lists[0],fminf(360,fmaxf(0,a->geometry.viewport-104)));
     if (changed) { Clay_SetCurrentContext(a->widgets.clay); Clay_ResetMeasureTextCache(); }
-    if (a->model.location.screen!=APP_PLAYLIST || !p->active || p->route!=a->model.generation) { return; }
+    if (a->model.location.screen!=APP_PLAYLIST || !p->active || p->route!=a->model.generation) {
+        a->browse.play_route=0; return;
+    }
     if (p->source.read) {
         a->model.pending=false;
         a->model.status=p->pending ? APP_LOADING : p->ready ? p->count ? APP_CONTENT : APP_EMPTY : APP_ERROR;
     }
     if (r!=TRACK_OK && r!=TRACK_PENDING && r!=TRACK_CANCELLED) { a->model.last_result=APP_FAILED; }
+    if (a->browse.play_route) {
+        if (a->browse.play_route!=a->model.generation || !a->model.logged_in ||
+            (!a->model.pending && a->model.status==APP_ERROR) || (!p->pending && p->result!=TRACK_OK)) {
+            a->browse.play_route=0;
+        } else if (p->ready && !p->pending) {
+            /* Explicit card play waits for the existing immutable playable
+             * index; it never invents a track ID from the playlist identity. */
+            uint64_t target=playlist_play_target(p); a->browse.play_route=0;
+            if (!target || playlist_select(p,target,true)!=TRACK_OK) { a->model.last_result=APP_UNAVAILABLE; }
+        }
+    }
     PlaylistQueue queue;
     r=playlist_take_play(p,&queue);
     if (r==TRACK_CANCELLED) { return; }
