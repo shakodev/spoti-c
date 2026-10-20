@@ -10,6 +10,9 @@ vendor/nanopb/** -text -whitespace
 vendor/shannon.c text eol=lf
 vendor/shannon.h text eol=lf
 vendor/licenses/shannon/** -text
+vendor/yyjson.c text eol=lf
+vendor/yyjson.h text eol=lf
+vendor/licenses/yyjson/LICENSE text eol=lf
 tools/shannon_reference/** text eol=lf
 tests/fixtures/shannon-vectors.json text eol=lf
 tests/fixtures/crypto-vectors.json text eol=lf

@@ -1,4 +1,5 @@
 #include "font_internal.h"
+#include "font_roles.h"
 #include <math.h>
 #include <string.h>
 
@@ -125,10 +126,7 @@ FontResult font_metrics(FontCache *c, FontHandle handle, FontMetrics *out)
 
 FontConfig font_clay_config(const FontMeasureContext *context, uint16_t face, uint16_t size, uint16_t spacing, uint16_t height)
 {
-    FontConfig config = context->config;
-    config.face = face; config.size = size; config.letter_spacing = spacing; config.line_height = height;
-    if (face==FONT_FACE_NOTICE) { config.face=0; config.max_width=0; config.ellipsis=false; }
-    return config;
+    return font_config_for_clay(context->config,face,size,spacing,height);
 }
 Clay_Dimensions font_measure(Clay_StringSlice text, Clay_TextElementConfig *config, void *user_data)
 {
