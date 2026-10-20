@@ -1,0 +1,237 @@
+{
+  "evidence_id": "ev_a46d4bd5326935b1a8b55987650a6c8dd31d7a0efe901547be5e5e407c82cf0f",
+  "subject": {
+    "name": "grant-public.har",
+    "digest": {
+      "sha256": "989af116a505f873966748d0dbdd388206fae3a9eedb2a6f29a68703a9122002"
+    },
+    "local_path": "C:\\Users\\Daan\\.codex\\worktrees\\issue-44-player-bar\\spoti-c\\.cache\\issue44\\grant-public.har",
+    "format": "file",
+    "architecture": null
+  },
+  "provider": {
+    "id": "har-schema/lossless-json",
+    "name": "REA HAR capture adapter",
+    "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+  },
+  "analysis_profile": null,
+  "predicate_type": "rea.analysis",
+  "operation": "inspect_web_network_capture",
+  "parameters": {
+    "capture_path": "C:\\Users\\Daan\\.codex\\worktrees\\issue-44-player-bar\\spoti-c\\.cache\\issue44\\grant-public.har",
+    "format": "har",
+    "record_ordinals": [
+      0
+    ],
+    "sensitive_value_count": 0
+  },
+  "raw_result": null,
+  "normalized_result": {
+    "decoder": {
+      "id": "har-schema/lossless-json",
+      "name": "REA HAR capture adapter",
+      "version": "har-schema@2.0.0;jsonc-parser@3.3.1;lossless-json@4.3.1"
+    },
+    "container": {
+      "reported": {
+        "log": {
+          "version": "1.2",
+          "creator": {
+            "name": "spoti-c public-field projection",
+            "version": "1"
+          },
+          "entries": null,
+          "_additionalObservation": {
+            "component": "extended-metadata response",
+            "decoded_provider_status": 200,
+            "local_media_result": 12,
+            "scope": "Separate subsequent native response observation, not a field of the clienttoken request/response record. Exact metadata URL, headers and body are not retained."
+          },
+          "_seekTailObservation": {
+            "validated_ogg_eos_bytes": 13676959,
+            "logical_source_bytes": 13676961,
+            "trailing_hex": "0000",
+            "source": "native decoder diagnostics from approved Release account run; original stream bytes and requests not retained",
+            "rea_process_capture": "native Windows PTY capture unavailable because descendant cleanup cannot be verified"
+          }
+        }
+      },
+      "numeric_literals": [
+        {
+          "pointer": "/log/_additionalObservation/decoded_provider_status",
+          "producer_type": "json-number",
+          "literal": "200"
+        },
+        {
+          "pointer": "/log/_additionalObservation/local_media_result",
+          "producer_type": "json-number",
+          "literal": "12"
+        },
+        {
+          "pointer": "/log/_seekTailObservation/validated_ogg_eos_bytes",
+          "producer_type": "json-number",
+          "literal": "13676959"
+        },
+        {
+          "pointer": "/log/_seekTailObservation/logical_source_bytes",
+          "producer_type": "json-number",
+          "literal": "13676961"
+        }
+      ],
+      "redactions": [],
+      "records_pointer": "/log/entries"
+    },
+    "total_records": 1,
+    "records": [
+      {
+        "ordinal": 0,
+        "location": {
+          "kind": "json-pointer",
+          "pointer": "/log/entries/0"
+        },
+        "reported": {
+          "startedDateTime": "2026-10-20T19:17:16.310529+00:00",
+          "time": 0,
+          "request": {
+            "method": "POST",
+            "url": "https://clienttoken.spotify.com/v1/clienttoken",
+            "httpVersion": "",
+            "headers": [],
+            "cookies": [],
+            "queryString": [],
+            "headersSize": -1,
+            "bodySize": -1
+          },
+          "response": {
+            "status": 200,
+            "statusText": "",
+            "httpVersion": "",
+            "headers": [],
+            "cookies": [],
+            "content": {
+              "size": 0,
+              "mimeType": "application/x-protobuf"
+            },
+            "headersSize": -1,
+            "bodySize": -1,
+            "redirectURL": ""
+          },
+          "cache": {},
+          "timings": {
+            "send": 0,
+            "wait": 0,
+            "receive": 0
+          },
+          "_decodedPublicGrant": {
+            "expires_after_seconds": 1216800,
+            "refresh_after_seconds": 1209600,
+            "local_token_result": 12
+          },
+          "_projection": "Public numeric fields decoded by the existing client during the authorized 2026-10-20 Release run. No headers, credential values, protobuf body or wire bytes retained. startedDateTime is projection creation time; timings are unmeasured placeholders. Status 200 follows the existing token_poll admission path. This is a sanitized field projection, not an original wire capture."
+        },
+        "binary_fields": [],
+        "numeric_literals": [
+          {
+            "pointer": "/time",
+            "producer_type": "json-number",
+            "literal": "0"
+          },
+          {
+            "pointer": "/request/headersSize",
+            "producer_type": "json-number",
+            "literal": "-1"
+          },
+          {
+            "pointer": "/request/bodySize",
+            "producer_type": "json-number",
+            "literal": "-1"
+          },
+          {
+            "pointer": "/response/status",
+            "producer_type": "json-number",
+            "literal": "200"
+          },
+          {
+            "pointer": "/response/content/size",
+            "producer_type": "json-number",
+            "literal": "0"
+          },
+          {
+            "pointer": "/response/headersSize",
+            "producer_type": "json-number",
+            "literal": "-1"
+          },
+          {
+            "pointer": "/response/bodySize",
+            "producer_type": "json-number",
+            "literal": "-1"
+          },
+          {
+            "pointer": "/timings/send",
+            "producer_type": "json-number",
+            "literal": "0"
+          },
+          {
+            "pointer": "/timings/wait",
+            "producer_type": "json-number",
+            "literal": "0"
+          },
+          {
+            "pointer": "/timings/receive",
+            "producer_type": "json-number",
+            "literal": "0"
+          },
+          {
+            "pointer": "/_decodedPublicGrant/expires_after_seconds",
+            "producer_type": "json-number",
+            "literal": "1216800"
+          },
+          {
+            "pointer": "/_decodedPublicGrant/refresh_after_seconds",
+            "producer_type": "json-number",
+            "literal": "1209600"
+          },
+          {
+            "pointer": "/_decodedPublicGrant/local_token_result",
+            "producer_type": "json-number",
+            "literal": "12"
+          }
+        ],
+        "redactions": [],
+        "limitations": [
+          "HAR text is producer-decoded Unicode. Original body bytes remain unknown unless content explicitly uses valid base64; declared sizes are preserved independently of retained bytes. mitmproxy 12.2.3 SaveHar may report null optional postData.text; that null is retained and omitted only from the upstream validation copy."
+        ]
+      }
+    ],
+    "artifact": {
+      "path": "C:\\Users\\Daan\\.codex\\worktrees\\issue-44-player-bar\\spoti-c\\.cache\\issue44\\grant-public.har",
+      "sha256": "989af116a505f873966748d0dbdd388206fae3a9eedb2a6f29a68703a9122002",
+      "bytes": 2380
+    },
+    "runtime_attribution": "unknown",
+    "limitations": [
+      "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+      "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+      "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+      "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup."
+    ],
+    "format": "har"
+  },
+  "confidence": "observed",
+  "authority": "historical-reference",
+  "environment": null,
+  "limitations": [
+    "This is retained producer evidence, without live browser transaction IDs, scenario provenance, execution attribution or deployment authenticity. Recorded URLs are never fetched.",
+    "Every record is decoded before selection; no partial success is returned on malformed input or a resource limit.",
+    "Known authentication headers/cookies and explicitly marked literal values are excluded. Unknown extension names do not establish sensitivity.",
+    "A 32 MiB input, 96 MiB reply and 64-level nesting budget bound complete evidence. HAR/SAZ/qlog use a 192 MiB Node old-generation heap; mitmproxy decoding uses a 768 MiB Linux address-space limit. Each owned command has a 30-second deadline with independent cleanup."
+  ],
+  "relationship_coverage": null,
+  "locations": [
+    {
+      "kind": "artifact-path",
+      "path": "C:\\Users\\Daan\\.codex\\worktrees\\issue-44-player-bar\\spoti-c\\.cache\\issue44\\grant-public.har"
+    }
+  ],
+  "evidence_links": []
+}

@@ -101,6 +101,25 @@ static void source_errors(void)
         HeadlessMetrics m; CHECK(headless_close(h,&m) && m.balanced); hf_close(&f);
     }
 }
+static void repeated_retirement(HeadlessFixture *f)
+{
+    HeadlessConfig c={.cache_directory=f->cache,.fixture_url=f->url,.realtime=true}; Headless *h;
+    CHECK(headless_open(&c,&h));
+    /* More retirements than the fixed range-request table, in one runtime.
+     * Pausing/seeking retires current and prefetched owners, not just playback. */
+    for (unsigned i=0;i<24;++i) {
+        hf_load(h,false); hf_wait(h,PLAYER_PAUSED);
+        PlayerCommand next={.type=PLAYER_QUEUE_APPEND}; next.track_id[15]=2;
+        CHECK(headless_submit(h,&next)==PLAYER_OK);
+        CHECK(headless_command(h,"seek 1500"));
+        uint64_t until=GetTickCount64()+5000; PlayerSnapshot s;
+        do { s=headless_snapshot(h); if (s.state==PLAYER_ERROR) { CHECK(false); } Sleep(1); }
+        while ((s.state!=PLAYER_PAUSED || s.position_frames!=72000) && GetTickCount64()<until);
+        CHECK(s.state==PLAYER_PAUSED && s.position_frames==72000);
+        CHECK(headless_command(h,"stop")); hf_wait(h,PLAYER_STOPPED);
+    }
+    HeadlessMetrics m; CHECK(headless_close(h,&m) && m.balanced);
+}
 static void device_import_startup(void)
 {
     /* Reject before opening any physical device. Device import initialization
@@ -125,6 +144,6 @@ int main(void)
     headless_display_tests();
     headless_volume_receipts();
     parser(); failed_startup(); idle_listener(); HeadlessFixture f; hf_open(&f);
-    duration_and_gapless(&f); controls_and_cancel(&f); hf_close(&f); source_errors(); device_import_startup();
+    duration_and_gapless(&f); controls_and_cancel(&f); repeated_retirement(&f); hf_close(&f); source_errors(); device_import_startup();
     puts("Encrypted HTTP/cache/CTR/header/Vorbis/gapless duration, commands and cancellation passed."); return 0;
 }

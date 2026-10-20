@@ -13,6 +13,12 @@ AudioResult vorbis_validate(VorbisDecoder *d)
         if (r == AUDIO_NEED_MORE) { return d->eof ? AUDIO_TRUNCATED : r; }
         if (r != AUDIO_OK) { return r; }
         if (d->final_seen) { return AUDIO_UNSUPPORTED; }
+        if ((page.flags&4) && page.offset+page.bytes<d->config.source_bytes) {
+            size_t end=at+page.bytes;
+            r=vorbis_end_trim(d,page.offset+page.bytes,d->window+end,d->used-end);
+            if (r!=AUDIO_OK) { return r; }
+            d->used=end; d->eof=true;
+        }
         if (!d->stream_started && page.offset == 0) {
             const uint8_t *p = d->window + at;
             if (page.flags != 2 || page.sequence != 0 || page.granule != 0 || page.bytes != 58 ||

@@ -113,6 +113,7 @@ static void envelope_tests(void)
     e.kind = 12; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.status = 404; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();
     e.provider = 500; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();
+    e.provider = 200; (void)decode(&root,e,MEDIA_OK); e=defaults();
     e.uri = other_uri; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.type = "type.googleapis.com/spotify.metadata.Episode"; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.omit_header = true; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();

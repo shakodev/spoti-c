@@ -42,6 +42,7 @@ AudioResult vorbis_validate(VorbisDecoder *);
 AudioResult vorbis_pump(VorbisDecoder *);
 AudioResult vorbis_fill(VorbisDecoder *);
 AudioResult vorbis_seek_drive(VorbisDecoder *);
+AudioResult vorbis_end_trim(VorbisDecoder *, uint64_t end, const uint8_t *tail, size_t bytes);
 void vorbis_clear_input(VorbisDecoder *, uint64_t offset);
 AudioResult vorbis_restart(VorbisDecoder *, uint64_t offset, bool resync);
 #endif

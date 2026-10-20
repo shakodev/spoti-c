@@ -5,7 +5,7 @@ AudioResult decoder_open(Arena *codec, Arena *work, const DecoderConfig *config,
 {
     if (out == NULL) { return AUDIO_INVALID; } *out = NULL;
     if (codec == NULL || work == NULL || codec == work || config == NULL || config->generation == 0 ||
-        config->source_bytes == 0 || config->source_bytes > UINT32_MAX || codec->used != 0 || work->used != 0 ||
+        config->source_bytes == 0 || config->source_bytes > UINT32_MAX || config->trailing_zero_limit>15 || codec->used != 0 || work->used != 0 ||
         codec->capacity > DECODER_CODEC_BYTES || work->capacity > DECODER_WORK_BYTES) { return AUDIO_INVALID; }
     if (!audio_format_valid(config->output)) { return AUDIO_UNSUPPORTED; }
     ArenaMark cm = arena_mark(codec), wm = arena_mark(work);

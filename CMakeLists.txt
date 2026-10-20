@@ -72,7 +72,7 @@ target_link_libraries(spotic_windows INTERFACE
 
 include(CTest)
 add_library(spotic_core STATIC
-    src/core/arena.c src/core/spsc_ring.c src/core/clock.c
+    src/core/arena.c src/core/spsc_ring.c src/core/clock.c src/core/thread.c
     src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c src/core/state_cache.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options PRIVATE psapi)
@@ -170,7 +170,7 @@ target_include_directories(spotic_decrypt PUBLIC src)
 target_link_libraries(spotic_decrypt PUBLIC spotic_range spotic_media spotic_crypto)
 
 add_library(spotic_vorbis STATIC src/audio/vorbis_codec.c src/audio/vorbis_decoder.c
-    src/audio/vorbis_input.c src/audio/vorbis_seek.c src/audio/ogg_index.c src/audio/audio_convert.c)
+    src/audio/vorbis_input.c src/audio/vorbis_seek.c src/audio/vorbis_padding.c src/audio/ogg_index.c src/audio/audio_convert.c)
 target_include_directories(spotic_vorbis PUBLIC src PRIVATE vendor)
 target_link_libraries(spotic_vorbis PUBLIC spotic_core)
 
@@ -540,7 +540,7 @@ if(BUILD_TESTING)
     set_tests_properties(audio_headless_smoke PROPERTIES TIMEOUT 120)
     if(ENABLE_LIVE_HEADLESS_TEST)
         if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT ENABLE_ASAN)
-            add_executable(test_player_bar_live tests/test_player_bar_live.c)
+            add_executable(test_player_bar_live tests/test_player_bar_live.c tests/player_bar_live_gpu.c)
             target_link_libraries(test_player_bar_live PRIVATE spotic_app spotic_headless)
             add_test(NAME app_player_bar_live COMMAND test_player_bar_live)
             set_tests_properties(app_player_bar_live PROPERTIES TIMEOUT 240 LABELS "live;account;hardware" SKIP_RETURN_CODE 77)
@@ -765,6 +765,10 @@ if(BUILD_TESTING)
     set_tests_properties(smoke PROPERTIES TIMEOUT 10)
 
     add_executable(test_arena tests/test_arena.c)
+    add_executable(test_thread tests/test_thread.c)
+    target_include_directories(test_thread PRIVATE tests)
+    target_link_libraries(test_thread PRIVATE spotic_core user32)
+    add_test(NAME core_thread COMMAND test_thread)
     target_link_libraries(test_arena PRIVATE spotic_core)
     add_test(NAME core_arena COMMAND test_arena)
     set_tests_properties(core_arena PROPERTIES TIMEOUT 10)

@@ -79,7 +79,7 @@ This does not change a Spotify API request. Missing cover IDs remain explicit.
 | Seek | Consumed frames; release-only commit; arrows five seconds, Home/End | Unknown duration or invalid timeline (except paused) |
 | Volume/mute | Existing ticket receipts, continuous drag, remembered nonzero level | Sign-in or playback binding missing |
 | Shuffle | Existing bounded Player queue shuffle | Same admission as transport |
-| Repeat | Existing Player repeat enum; explicit labels cycle off → one → all → off | Same admission as transport |
+| Repeat | Existing Player repeat enum; explicit labels cycle off â†’ one â†’ all â†’ off | Same admission as transport |
 | Lyrics | Existing lyrics route and catalog service; no new endpoint | Explains catalog/track dependency |
 | Queue | Read-only finite owner queue, current marker and keyboard-accessible earlier/later pages | Explains missing queue service; uncached names say metadata pending |
 | Devices | No device selection service bound to this shell | Focus/activation explains Connect dependency |
@@ -93,32 +93,32 @@ this does not establish absence. No Spotify repeat-cycle runtime was changed to
 infer its order. Unavailable buttons are dimmed but remain focusable for their
 reason. Full tooltip text is retained by the existing Read messages transcript.
 
-## Verification and remaining acceptance
+## Verification
 
-On 2026-10-20, the isolated issue checkout passed the complete Debug/ASan command
-`ctest --test-dir build --output-on-failure`: **54/54** tests, 63.62 seconds.
-Strict-warning builds passed. New checks cover bounded UTF-8 metadata projection,
-cover selection, owner handoff/eviction, all icon admissions, centered/narrow/DPI
-geometry, queue paging, real Player mode/next/previous commands, metadata changes,
-frozen buffering clocks, external generation changes and cancelled/stale seeks.
-Existing allocation, gapless, scheduler, SMTC and volume ticket tests still pass.
-App state is 257152 bytes, within the existing 256 KiB cap. New C modules remain
-below 500 lines. No idle polling/render timer or release threshold was added.
+On 2026-10-20 the complete Debug/ASan command
+`ctest --test-dir build --output-on-failure` passed **55/55** tests in
+**64.19 seconds**. Strict-warning Debug and Release builds passed. Checks cover
+bounded UTF-8 metadata/cover projection, handoff and eviction, icon admissions,
+centered/narrow/DPI geometry, queue paging, actual Player commands, track changes,
+frozen buffering clocks, external generations and cancelled/stale seeks. Existing
+allocation, gapless, scheduler, SMTC and volume-receipt tests pass. New regressions
+cover background owner roles, client-token lifetime bounds, provider status 200,
+metadata duration superseded by exact decoder length, strict/opted-in Ogg tails
+against independent PCM, and 24 source-retirement cycles in one runtime.
 
-Release was built with `ENABLE_ASAN=OFF`; the existing dependency audit passed
-with **383 C translation units, six artifacts, zero failures**. `spotic.exe` is
-**1,051,136 bytes**. App shell, media-source, renderer and SMTC Release tests pass.
-The audit initially detected checkout CRLF conversion in three yyjson files;
-restoring their exact pinned LF bytes passed without changing vendor content.
-This source/import/size audit is separate from the complete #35 performance gate;
-cold-start, live-account and physical-device criteria are not waived or certified.
+Release regression tests and the unchanged dependency audit passed: **387 C
+translation units, six artifacts, zero failures**, `spotic.exe` **1,051,648
+bytes**. Native HWND/WinRT metadata/status/timeline and teardown also passed.
+The source/import/size audit does not certify the complete #35 performance gate.
+No release threshold or idle timer was changed. App state remains within its
+256 KiB cap, new C modules stay below 500 lines, and warm-frame/callback allocation
+checks still pass.
 
-`capture_player_bar` is an explicit manual DX11/WARP target. It records synthetic
-metadata and artwork through the actual bounded services, asserts the displayed
-cover pixel color, and emits nine normal/narrow/scaled/state captures. This
-caught and fixed a Clay painter-order issue where a custom image's background
-could cover the texture. The synthetic captures do **not** prove account-backed
-artwork or physical GPU/WASAPI behavior.
+`capture_player_bar` records nine explicit WARP/fixture captures through actual
+bounded metadata/artwork services and asserts the displayed cover pixel. These
+cover normal/narrow/scaled, mixed long RTL, signed-out/stopped/buffering/playing/
+paused/error states. The pixel assertion caught a Clay painter-order bug where
+an opaque custom-image background covered the texture.
 
 ![Same-scale desktop reference and native fixture bar](images/issue44/normal-comparison.png)
 
@@ -128,30 +128,26 @@ artwork or physical GPU/WASAPI behavior.
 
 ![Long mixed RTL title](images/issue44/player-bar-rtl-long-1100x720-strip.png)
 
-The reference image is a read-only Spotify 1.3.5.3058 capture. A desktop
-notification occludes its rightmost area; no hidden pixels were reconstructed.
-The captured labels and controls were also observed through accessibility. A
-later read-only observation showed playback on a phone and external track
-changes; it is not evidence that this native client's media controls interoperate
-with that device. No Spotify playback control was operated in these captures.
+The read-only reference is Spotify 1.3.5.3058. A notification occludes its
+rightmost area; no hidden pixels were reconstructed. Accessibility supplied
+additional observed control labels. The compact composition is a local policy,
+not an invented claim about an unrecorded narrow Spotify layout.
 
-Remaining acceptance prevents closing #44:
+The user subsequently approved account/WASAPI playback and desktop/GPU checks.
+The Release live check passed commands, frozen pause, acknowledged seek and
+volume/mute, next/previous metadata, modes, queue, route persistence and balanced
+shutdown. Actual cover downloads rendered on hardware DX11 at normal and narrow
+widths and changed with the next track. The visible offline-demo native check
+independently passed pointer drag, keyboard, Settings, compact controls and
+process restart persistence. Detailed observations, limited REA runtime
+projections, screenshots, exact scope and repeatable opt-in instructions are in
+[now-playing-live-acceptance.md](now-playing-live-acceptance.md); artifact/capture
+hashes and final results are in `now-playing-live-validation.json`.
 
-- The explicitly opted-in account/WASAPI Release check is awaiting consent to
-  start playback. `ENABLE_LIVE_HEADLESS_TEST=ON` builds `test_player_bar_live` in
-  Release. It requires `SPOTIC_PLAYER_BAR_LIVE=1` plus private
-  `SPOTIC_HEADLESS_CREDENTIALS`, `SPOTIC_HEADLESS_CACHE`, `SPOTIC_MEDIA_TRACK`,
-  `SPOTIC_MEDIA_TRACK_NEXT`, `SPOTIC_MEDIA_COUNTRY` and `SPOTIC_MEDIA_CATALOGUE`.
-  Without these it returns CTest skip 77. The harness verifies bar commands,
-  pause freeze, acknowledged seek/volume/mute, next/previous metadata, modes,
-  queue and an owner-originated pause, and always closes the runtime on failure.
-  Its safe skip was verified; a skip is not a successful live check.
-- The optional visible Release `app_volume_native` attempt failed because
-  Windows denied foreground activation (`SetForegroundWindow`). Checking actual
-  foreground ownership also failed. The original test remains intact. Its two
-  failed child processes were identified by exact executable path and retired.
-- Account-backed cover download/GPU and native desktop control acceptance still
-  need successful runs. Prerequisite #41's full measured visual foundation and
-  #42's shell integration remain open. The committed desktop host still binds
-  offline demonstration services; fixture routes do not establish production
-  account-backed GUI acceptance.
+Prerequisites #41's full visual foundation and #42's account-backed shell routes
+remain independent open work. The committed desktop host still binds explicit
+offline demonstration services; the live harness binds the same player-bar App
+module to the account/WASAPI runtime. Live offscreen artwork and visible offline
+desktop validation are separate checks. Global SMTC flyout/listener and physical
+media-key observation remain manual. Nothing here closes or waives #35, #39,
+#41 or #42.

@@ -147,9 +147,25 @@ static void expiry_and_binding(void)
     memcpy(t->record.client_id, "other-client", 13); CHECK(token_ensure(t->manager, TOKEN_CLIENT) == TOKEN_CLIENT_MISMATCH);
     token_test_close();
 }
+static void client_lifetimes(void)
+{
+    TokenManager m={.now=1000};
+    CHECK(token_install(&m,TOKEN_CLIENT,"synthetic",1216800,1209600)==TOKEN_OK);
+    CHECK(m.slots[TOKEN_CLIENT].info.expires_at==UINT64_C(1216801000));
+    CHECK(m.slots[TOKEN_CLIENT].info.refresh_at==UINT64_C(1209601000));
+    TokenSlot saved=m.slots[TOKEN_CLIENT];
+    CHECK(token_install(&m,TOKEN_CLIENT,"synthetic",31u*86400u+1,1)==TOKEN_MALFORMED);
+    CHECK(!memcmp(&saved,&m.slots[TOKEN_CLIENT],sizeof(saved)));
+    CHECK(token_install(&m,TOKEN_CLIENT,"synthetic",1,2)==TOKEN_MALFORMED);
+    CHECK(token_install(&m,TOKEN_CLIENT,"synthetic",1,0)==TOKEN_MALFORMED);
+    CHECK(token_install(&m,TOKEN_BEARER,"synthetic",86401,1)==TOKEN_MALFORMED);
+    CHECK(token_install(&m,TOKEN_BEARER,"synthetic",86400,86400)==TOKEN_OK);
+    CHECK(token_install(&m,TOKEN_CLIENT,"synthetic",31u*86400u,31u*86400u)==TOKEN_OK);
+    SecureZeroMemory(&m,sizeof(m));
+}
 int main(void)
 {
-    grant_and_scope(); dedup_and_retry(); expiry_and_binding(); test_token_challenges(); test_token_errors();
+    client_lifetimes(); grant_and_scope(); dedup_and_retry(); expiry_and_binding(); test_token_challenges(); test_token_errors();
     printf("Tokens: %zu arena bytes + %u validator scratch bytes; scoped refresh, hashcash and cleanup passed\n",
         sizeof(TokenManager), (unsigned)PROTO_MAX_BLOB); return 0;
 }

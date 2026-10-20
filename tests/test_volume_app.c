@@ -7,6 +7,14 @@
  * no account, physical device, or Windows global volume is touched. */
 static BenchProcess process;
 static unsigned char pixels[4096u*2160u*4u];
+static void foreground(void)
+{
+    (void)SetForegroundWindow(process.window);
+    uint64_t until=GetTickCount64()+15000;
+    puts("Waiting for the visible test window to own foreground input"); fflush(stdout);
+    while (GetForegroundWindow()!=process.window && GetTickCount64()<until) { Sleep(50); }
+    CHECK(GetForegroundWindow()==process.window);
+}
 static BenchSnapshot state(void)
 {
     BenchSnapshot s; CHECK(bench_snapshot(&process,&s)); return s;
@@ -40,7 +48,10 @@ static void click(Clay_BoundingBox box,float fraction)
 static void key(WORD code)
 {
     INPUT input[2]={{0}};
-    input[0].type=INPUT_KEYBOARD; input[0].ki.wVk=code; input[1]=input[0]; input[1].ki.dwFlags=KEYEVENTF_KEYUP;
+    input[0].type=INPUT_KEYBOARD; input[0].ki.wVk=code;
+    input[0].ki.wScan=(WORD)MapVirtualKeyW(code,MAPVK_VK_TO_VSC);
+    input[0].ki.dwFlags=KEYEVENTF_EXTENDEDKEY;
+    input[1]=input[0]; input[1].ki.dwFlags|=KEYEVENTF_KEYUP;
     CHECK(SendInput(2,input,sizeof(INPUT))==2); Sleep(100);
 }
 static void capture(const wchar_t *directory,const wchar_t *name)
@@ -66,7 +77,7 @@ int wmain(int argc,wchar_t **argv)
     CHECK(argc==3); CHECK(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2));
     POINT cursor; CHECK(GetCursorPos(&cursor));
     CHECK(bench_launch(&process,argv[1],true));
-    CHECK(SetWindowPos(process.window,HWND_TOPMOST,40,40,1100,720,0)); CHECK(SetForegroundWindow(process.window));
+    CHECK(SetWindowPos(process.window,HWND_TOPMOST,40,40,1100,720,0)); foreground();
     CHECK(bench_command(&process,BENCH_LOAD)); Sleep(200); CHECK(bench_command(&process,BENCH_PLAY)); Sleep(300);
     BenchSnapshot s=state(); CHECK(s.volume_box.width>0); click(s.volume_box,0.37f); wait_level(0.37f);
     capture(argv[2],L"default-37");
@@ -87,7 +98,7 @@ int wmain(int argc,wchar_t **argv)
     /* Benchmark launches use their own .cache/release-bench.state, keeping
      * this real process restart separate from the user's account preferences. */
     CHECK(bench_launch(&process,argv[1],true));
-    CHECK(SetWindowPos(process.window,HWND_TOPMOST,40,40,420,720,0)); CHECK(SetForegroundWindow(process.window));
+    CHECK(SetWindowPos(process.window,HWND_TOPMOST,40,40,420,720,0)); foreground();
     wait_level(0.24f); capture(argv[2],L"restart-24");
     CHECK(bench_close(&process)); CHECK(SetCursorPos(cursor.x,cursor.y));
     puts("Release app volume: real pointer drag, mute/restore, keyboard, Settings, compact controls and process restart passed; balanced shutdown");

@@ -22,6 +22,9 @@ static void source_reply(Player *p, const PlayerCommand *c)
         *s = (PlayerSlot){0}; player_ticket_publish(p, (unsigned)at);
     } else if (s->state == PS_REQUESTED && c->type == PLAYER_SOURCE_READY) {
         s->source = c->source; s->state = PS_READY;
+        if (!p->durations[s->index] && c->source.duration_ms) {
+            p->durations[s->index]=(uint64_t)c->source.duration_ms*p->view.rate/1000;
+        }
     } else if (s->state == PS_REQUESTED && c->type == PLAYER_SOURCE_FAILED) {
         s->state = PS_FAILED; s->failure = c->error == AUDIO_OK ? AUDIO_CORRUPT : c->error;
     }

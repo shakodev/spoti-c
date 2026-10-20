@@ -236,11 +236,26 @@ static void unavailable_device(void)
     CHECK(handles[0] && WaitForSingleObject(handles[0], 0) == WAIT_TIMEOUT);
     pt_close();
 }
+static void metadata_duration(void)
+{
+    pt_open(); pt.source_duration_ms=1000; pt.hold_network=true;
+    pt_track(PLAYER_LOAD,0,false); pt_drive(); CHECK(pt.held_count==1);
+    pt_reply(&pt.held[0]); pt.held_count=0; pt.hold_network=false;
+    for (unsigned i=0;i<2;++i) { if (pt.readers[i].used) { pt.readers[i].blocked=true; } }
+    pt_drive(); PlayerSnapshot snapshot=player_snapshot(pt.player);
+    CHECK(snapshot.duration_frames==snapshot.rate && snapshot.position_frames==0);
+    for (unsigned i=0;i<2;++i) { pt.readers[i].blocked=false; }
+    pt_command((PlayerCommand){.type=PLAYER_PLAY}); pt_drive();
+    for (unsigned i=0;i<1000 && player_snapshot(pt.player).state!=PLAYER_ENDED;++i) { pt_render(4096); pt_drive(); }
+    snapshot=player_snapshot(pt.player);
+    CHECK(snapshot.state==PLAYER_ENDED && snapshot.duration_frames==pt.files[0].frames && snapshot.position_frames==pt.files[0].frames);
+    pt_close();
+}
 static DWORD WINAPI run(void *ctx)
 {
     (void)ctx; pt_load_fixtures(); DWORD before, after; CHECK(GetProcessHandleCount(GetCurrentProcess(), &before));
     command_matrix(); underrun_and_format(); queue_and_mpsc(); clock_refresh(); rapid_commands();
-    shutdown_and_errors(); timeline_ledger(); queue_policy(); seek_limits(); unavailable_device();
+    shutdown_and_errors(); timeline_ledger(); queue_policy(); seek_limits(); unavailable_device(); metadata_duration();
     CHECK(GetProcessHandleCount(GetCurrentProcess(), &after)); CHECK(before == after);
     puts("player: passed"); return 0;
 }
