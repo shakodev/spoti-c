@@ -36,7 +36,7 @@ void app_browse_project(App *a)
 }
 uint32_t app_browse_columns(const App *a)
 {
-    return (uint32_t)fminf(4,fmaxf(1,floorf((a->geometry.main-20)/172)));
+    return (uint32_t)fminf(6,fmaxf(1,floorf((a->geometry.main-20)/172)));
 }
 void app_browse_restore(App *a)
 {
@@ -77,7 +77,13 @@ void app_browse_cover(App *a, const CollectionItem *item, uint32_t shelf, uint32
     AppEntity entity={0}; AppImage *image=NULL;
     if (app_entity(item,&entity)==APP_OK) {
         if (a->browse.visible_count<APP_BROWSE_VISIBLE) {
-            a->browse.visible[a->browse.visible_count++]=(AppVisibleImage){shelf,index,(uint32_t)fminf(256,ceilf(edge*a->geometry.scale))};
+            /* Reserve ten DPI-scaled sidebar thumbnails and the persistent
+             * 56px player cover within the existing 4MiB decoded GPU budget. */
+            float side=fminf(256,ceilf(48*a->geometry.scale));
+            float available=(float)ART_GPU_BYTES/4-10*side*side-56*56;
+            float limit=fminf(224,floorf(sqrtf(available/APP_BROWSE_VISIBLE)));
+            a->browse.visible[a->browse.visible_count++]=(AppVisibleImage){shelf,index,
+                (uint32_t)fminf(limit,ceilf(edge*a->geometry.scale))};
         }
         for (uint32_t i=0;i<a->image_count;++i) {
             if (!strcmp(a->images[i].entity.uri,entity.uri)) { image=&a->images[i]; break; }
@@ -121,15 +127,23 @@ void app_browse_card(App *a, Clay_ElementId id, const CollectionItem *item,
     uint32_t shelf, uint32_t index, float width, float edge, bool list)
 {
     AppEntity entity={0}; bool valid=app_entity(item,&entity)==APP_OK && item->available;
+    Clay_ElementId play=Clay__HashStringWithOffset(CLAY_STRING("CardPlay"),0,id.id);
+    bool player=a->services.player || a->services.submit;
+    bool can_play=valid && a->model.logged_in && ((entity.playable && player) ||
+        (a->model.online && a->services.playlist && (player || a->services.playlist_queue) &&
+        (entity.kind==COLLECTION_PLAYLIST_ITEM || entity.kind==COLLECTION_LIKED)));
+    bool play_over=can_play && Clay_PointerOver(play);
     if (a->control_count==APP_CONTROLS || !ui_widgets_declare(&a->widgets,id)) { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); return; }
     AppAction action={.type=APP_SELECT,.entity=entity,.value=index};
     a->controls[a->control_count++]=(AppControl){id,action,!valid};
-    bool hit=ui_widgets_button_event(&a->widgets,id,!valid);
+    /* The floating play control owns its gesture; the surrounding card remains
+     * navigation, including after a release outside the play button. */
+    bool hit=(!play_over && a->widgets.active!=play.id) && ui_widgets_button_event(&a->widgets,id,!valid);
     if (shelf==UINT32_MAX && a->widgets.hover==id.id && a->widgets.input.pressed) {
         a->widgets.lists[0].focus=a->widgets.lists[0].selection=(uint64_t)a->model.page->offset+index+1;
     }
     if (hit) { (void)app_enqueue(a,action); }
-    bool hover=a->widgets.hover==id.id, focus=a->widgets.focus==id.id ||
+    bool hover=play_over || a->widgets.hover==id.id, focus=a->widgets.focus==id.id || a->widgets.focus==play.id ||
         (shelf==UINT32_MAX && a->widgets.focus==CLAY_ID("AppList").id &&
         a->widgets.lists[0].focus==(uint64_t)a->model.page->offset+index+1);
     uint32_t state=(!valid ? UI_CONTROL_DISABLED : 0) | (hover ? UI_CONTROL_HOVER : 0) | (focus ? UI_CONTROL_FOCUS : 0) |
@@ -150,14 +164,18 @@ void app_browse_card(App *a, Clay_ElementId id, const CollectionItem *item,
             ui_component_label(app_text(a,title),FONT_ROLE_BODY,14,style.foreground,direction);
             ui_component_label(kind_name(item->kind),FONT_ROLE_BODY,12,(Clay_Color){179,179,179,255},direction);
         }
-        if (entity.playable && (hover || focus)) {
-            Clay_ElementId play=Clay__HashStringWithOffset(CLAY_STRING("CardPlay"),0,id.id);
-            CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(32),CLAY_SIZING_FIXED(32)},
-                .childAlignment={CLAY_ALIGN_X_CENTER,CLAY_ALIGN_Y_CENTER}},
-                .floating={.attachTo=CLAY_ATTACH_TO_PARENT,.attachPoints={CLAY_ATTACH_POINT_RIGHT_TOP,CLAY_ATTACH_POINT_RIGHT_TOP},
-                    .offset={-12,12},.pointerCaptureMode=CLAY_POINTER_CAPTURE_MODE_PASSTHROUGH},
-                .backgroundColor={30,215,96,255},.cornerRadius=CLAY_CORNER_RADIUS(16)}) {
-                ui_icon(&a->widgets,play,UI_ICON_PLAY,20,(Clay_Color){0,0,0,255},false);
+        if (can_play && (hover || focus || a->widgets.active==play.id)) {
+            AppAction start={.type=APP_BROWSE_PLAY,.entity=entity};
+            if (a->control_count==APP_CONTROLS) { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); }
+            else {
+                a->controls[a->control_count++]=(AppControl){play,start,false};
+                CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(32),CLAY_SIZING_FIXED(32)},
+                    .childAlignment={CLAY_ALIGN_X_CENTER,CLAY_ALIGN_Y_CENTER}},
+                    .floating={.attachTo=CLAY_ATTACH_TO_PARENT,.attachPoints={CLAY_ATTACH_POINT_RIGHT_TOP,CLAY_ATTACH_POINT_RIGHT_TOP},
+                        .offset={-12,12},.pointerCaptureMode=CLAY_POINTER_CAPTURE_MODE_PASSTHROUGH}}) {
+                    if (ui_component_button(&a->widgets,play,CLAY_STRING(""),UI_ICON_PLAY,UI_COMPONENT_PRIMARY,
+                        (UiControl){.width=32,.height=32})) { (void)app_enqueue(a,start); }
+                }
             }
         }
     }

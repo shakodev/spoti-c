@@ -3,13 +3,13 @@
 #include "api/collection_api.h"
 #include "components.h"
 
-#define APP_BROWSE_VISIBLE 14u /* Reserves renderer slots for font atlas and persistent player cover. */
+#define APP_BROWSE_VISIBLE 18u /* Three partial six-column rows + ten sidebar covers + player fit the 32-entry cache. */
 typedef struct AppVisibleImage { uint32_t shelf, index, size; } AppVisibleImage;
 typedef struct AppBrowse {
     uint16_t order[COLLECTION_ROW_CAP];
     AppVisibleImage visible[APP_BROWSE_VISIBLE], previous[APP_BROWSE_VISIBLE];
     uint32_t count, visible_count, previous_count;
-    uint64_t generation;
+    uint64_t generation, play_route; /* Pending explicit card play, retired with its UI route. */
     uint16_t surrogate;
     bool collapsed;
 } AppBrowse;

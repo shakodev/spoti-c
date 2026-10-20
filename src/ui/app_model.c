@@ -204,9 +204,9 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_SIDEBAR_SELECT ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_BROWSE_PLAY ||
         (action.type==APP_VOLUME && !isfinite(action.value)) ||
-        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO || action.type==APP_SIDEBAR_SELECT) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
+        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO || action.type==APP_SIDEBAR_SELECT || action.type==APP_BROWSE_PLAY) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
     if (action.type==APP_VOLUME && a->action_count && a->actions[a->action_count-1].type==APP_VOLUME) {
         a->actions[a->action_count-1]=action; dirty(a); return APP_OK;
@@ -215,6 +215,7 @@ AppResult app_enqueue(App *a, AppAction action)
         action.generation=a->model.player.generation;
         memcpy(action.entity.id,a->model.player.track_id,16);
     }
+    if (action.type==APP_BROWSE_PLAY) { action.generation=a->model.generation; }
     if (a->action_count == APP_ACTIONS) { a->model.last_result = APP_FULL; dirty(a); return APP_FULL; }
     a->actions[a->action_count++] = action; dirty(a); return APP_OK;
 }
@@ -290,6 +291,18 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
         AppResult r = a->services.auth ? a->services.auth(a->services.context,logout ? APP_LOGOUT : APP_LOGIN) : APP_UNAVAILABLE;
         m->auth_pending = r == APP_PENDING; return r;
     }
+    case APP_BROWSE_PLAY: {
+        if (action.generation!=m->generation) { return APP_STALE; }
+        if (!m->logged_in || (!a->services.player && !a->services.submit && !a->services.playlist_queue)) { return APP_UNAVAILABLE; }
+        if (action.entity.kind==COLLECTION_TRACK && action.entity.playable) {
+            action.type=APP_SELECT; return apply(a,action,now);
+        }
+        if (!m->online || !a->services.playlist || (action.entity.kind!=COLLECTION_PLAYLIST_ITEM &&
+            action.entity.kind!=COLLECTION_LIKED)) { return APP_UNAVAILABLE; }
+        AppResult r=navigate(a,(AppLocation){.screen=APP_PLAYLIST,.entity=action.entity},false);
+        if (r==APP_PENDING) { a->browse.play_route=m->generation; }
+        return r;
+    }
     case APP_SELECT:
         if (!m->logged_in) { return APP_UNAVAILABLE; }
         m->selected = action.entity;
@@ -347,13 +360,16 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
     case APP_TRACK_QUERY: case APP_TRACK_SORT:
         if (!a->services.playlist || m->location.screen!=APP_PLAYLIST ||
             (action.type==APP_TRACK_SORT && (!isfinite(action.value) || action.value<0 || action.value>TRACK_DURATION_ORDER))) { return APP_INVALID; }
+        a->browse.play_route=0;
         return track_result(playlist_query(a->services.playlist,a->widgets.texts[0].text,
             action.type==APP_TRACK_SORT ? (TrackSort)(int)action.value : a->services.playlist->sort));
     case APP_TRACK_PLAY:
         if (!a->services.playlist || m->location.screen!=APP_PLAYLIST || !isfinite(action.value) || action.value<1 || action.value>UINT32_MAX) { return APP_INVALID; }
+        a->browse.play_route=0;
         return track_result(playlist_select(a->services.playlist,(uint64_t)action.value,true));
     case APP_TRACK_WINDOW:
         if (!a->services.playlist || m->location.screen!=APP_PLAYLIST) { return APP_INVALID; }
+        a->browse.play_route=0;
         return track_result(playlist_window(a->services.playlist,action.value>0));
     default: return APP_INVALID;
     }

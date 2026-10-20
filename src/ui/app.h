@@ -14,10 +14,10 @@ struct MediaDisplay;
 
 #define APP_HISTORY 16u
 #define APP_ACTIONS 32u
-#define APP_CONTROLS 52u
-#define APP_IMAGES 16u
+#define APP_CONTROLS 68u /* Six-column browse + retained sidebar + queue + two active card affordances. */
+#define APP_IMAGES 20u
 #define APP_INPUTS 16u
-#define APP_MEASURES 240u
+#define APP_MEASURES 192u /* Trade replaceable word advances for bounded visible controls/images. */
 #include "app_result.h"
 #include "app_notice.h"
 #include "screens/catalog_view.h"
@@ -66,7 +66,7 @@ typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_B
     APP_LIBRARY_GRID, APP_LIBRARY_FILTER, APP_LIBRARY_QUERY, APP_SIDEBAR_TOGGLE, APP_LIBRARY_FOCUS,
     APP_SHUFFLE, APP_REPEAT, APP_QUEUE, APP_PLAYER_INFO, APP_QUEUE_PAGE,
     APP_PROFILE_TOGGLE, APP_PROFILE_CLOSE, APP_SIDEBAR_MORE, APP_SIDEBAR_RETRY,
-    APP_SIDEBAR_QUERY, APP_SIDEBAR_FOCUS, APP_SIDEBAR_SELECT } AppActionType;
+    APP_SIDEBAR_QUERY, APP_SIDEBAR_FOCUS, APP_SIDEBAR_SELECT, APP_BROWSE_PLAY } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; uint64_t generation; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
 enum { APP_CUSTOM_IMAGE=0x41525431, APP_CUSTOM_ICON=0x49434f31, APP_CUSTOM_SIDEBAR=0x53494431 };
