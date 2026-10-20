@@ -1,4 +1,5 @@
 #include "app.h"
+#include "font_roles.h"
 #include <math.h>
 #include <string.h>
 
@@ -6,6 +7,21 @@ static bool contains(Clay_ElementData element,UiWidgetInput input)
 {
     Clay_BoundingBox b=element.boundingBox;
     return element.found && input.x>=b.x && input.x<b.x+b.width && input.y>=b.y && input.y<b.y+b.height;
+}
+static bool menu_row(App *a,Clay_ElementId id,Clay_String label,float width)
+{
+    if (!ui_widgets_declare(&a->widgets,id)) { return false; }
+    bool hit=ui_widgets_button_event(&a->widgets,id,false);
+    uint32_t state=(a->widgets.hover==id.id ? UI_CONTROL_HOVER : 0) |
+        (a->widgets.active==id.id && a->widgets.input.down ? UI_CONTROL_PRESSED : 0) |
+        (a->widgets.focus==id.id ? UI_CONTROL_FOCUS : 0);
+    UiComponentStyle style=ui_component_style(UI_COMPONENT_MENU,state);
+    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(40)},.padding={12,12,0,0},
+        .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.backgroundColor=style.background,.cornerRadius=CLAY_CORNER_RADIUS(style.radius),
+        .border={.color=style.outline,.width=CLAY_BORDER_ALL(style.border)},.clip={.horizontal=true,.vertical=true}}) {
+        ui_component_label(label,FONT_ROLE_BODY,ui_theme()->small_text,style.foreground,false);
+    }
+    return hit;
 }
 UiWidgetInput app_profile_input(App *a,UiWidgetInput input)
 {
@@ -40,8 +56,7 @@ void app_profile_menu(App *a)
             Clay_ElementId id=CLAY_IDI("ProfileItem",i);
             if (a->control_count==APP_CONTROLS) { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); break; }
             a->controls[a->control_count++]=(AppControl){id,action,false};
-            if (ui_component_button(&a->widgets,id,app_text(a,(Clay_String){false,(int32_t)strlen(label),label}),
-                UI_ICON_NONE,UI_COMPONENT_MENU,(UiControl){.width=width-8,.height=40})) {
+            if (menu_row(a,id,app_text(a,(Clay_String){false,(int32_t)strlen(label),label}),width-8)) {
                 (void)app_enqueue(a,action);
             }
         }

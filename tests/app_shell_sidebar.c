@@ -1,5 +1,7 @@
 #include "app_shell_support.h"
 #include "support/ui_heap_watch.h"
+#include "ui/font_roles.h"
+#include "ui/icons_internal.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -7,6 +9,86 @@ static AppRequest sidebar_request;
 static unsigned sidebar_requests;
 static _Alignas(16) unsigned char rootlist_models[COLLECTION_MODEL_BUDGET];
 static AppRootlistStore *rootlists;
+static bool same_box(Clay_BoundingBox a,Clay_BoundingBox b)
+{
+    return fabsf(a.x-b.x)<0.01f && fabsf(a.y-b.y)<0.01f &&
+        fabsf(a.width-b.width)<0.01f && fabsf(a.height-b.height)<0.01f;
+}
+static const Clay_RenderCommand *text_command(Clay_RenderCommandArray commands,const char *text)
+{
+    size_t bytes=strlen(text);
+    for (int32_t i=0;i<commands.length;++i) {
+        const Clay_RenderCommand *c=&commands.internalArray[i];
+        if (c->commandType==CLAY_RENDER_COMMAND_TYPE_TEXT && c->renderData.text.stringContents.length==(int32_t)bytes &&
+            !memcmp(c->renderData.text.stringContents.chars,text,bytes)) { return c; }
+    }
+    return NULL;
+}
+static unsigned border_width(Clay_RenderCommandArray commands,Clay_BoundingBox box)
+{
+    for (int32_t i=0;i<commands.length;++i) {
+        const Clay_RenderCommand *c=&commands.internalArray[i];
+        if (c->commandType==CLAY_RENDER_COMMAND_TYPE_BORDER && same_box(c->boundingBox,box)) { return c->renderData.border.width.left; }
+    }
+    return 0;
+}
+static void filled_surface(Clay_RenderCommandArray commands,Clay_BoundingBox box)
+{
+    bool found=false;
+    for (int32_t i=0;i<commands.length;++i) {
+        const Clay_RenderCommand *c=&commands.internalArray[i];
+        if (c->commandType==CLAY_RENDER_COMMAND_TYPE_RECTANGLE && same_box(c->boundingBox,box)) {
+            CHECK(c->renderData.rectangle.backgroundColor.a==255 && c->renderData.rectangle.backgroundColor.r==31);
+            CHECK(c->renderData.rectangle.cornerRadius.topLeft==24); found=true;
+        }
+    }
+    CHECK(found);
+}
+static void header_surface(void)
+{
+    shell_open(NULL); app.services.demo=false; app.widgets.focus=CLAY_ID("NavAuth").id;
+    const float widths[]={400,1100,1800},dpis[]={96,120,144,192};
+    for (unsigned d=0;d<4;++d) {
+        for (unsigned w=0;w<3;++w) {
+            Clay_RenderCommandArray commands=shell_layout(widths[w]*dpis[d]/96,900*dpis[d]/96,dpis[d]);
+            Clay_BoundingBox search=Clay_GetElementData(CLAY_ID("NavSearch")).boundingBox;
+            Clay_BoundingBox icon=Clay_GetElementData(CLAY_ID("NavSearchIcon")).boundingBox;
+            Clay_BoundingBox home=Clay_GetElementData(CLAY_ID("NavHome")).boundingBox;
+            CHECK(search.height==48 && icon.width==24 && fabsf(icon.x-search.x-12)<0.01f);
+            CHECK(fabsf(icon.y+icon.height/2-search.y-search.height/2)<0.01f);
+            const Clay_RenderCommand *placeholder=text_command(commands,"What do you want to play?"); CHECK(placeholder);
+            CHECK(placeholder->renderData.text.fontId==FONT_ROLE_BODY && placeholder->renderData.text.fontSize==16);
+            CHECK(placeholder->renderData.text.textColor.r==179 && fabsf(placeholder->boundingBox.x-search.x-48)<0.01f);
+            CHECK(!border_width(commands,search)); filled_surface(commands,search); filled_surface(commands,home);
+        }
+    }
+    app.model.location.screen=APP_SEARCH;
+    Clay_RenderCommandArray commands=shell_layout(1100,900,96);
+    Clay_BoundingBox search=Clay_GetElementData(CLAY_ID("NavSearch")).boundingBox; unsigned glyphs=0;
+    for (int32_t i=0;i<commands.length;++i) {
+        const Clay_RenderCommand *c=&commands.internalArray[i];
+        if (c->commandType==CLAY_RENDER_COMMAND_TYPE_CUSTOM && c->userData==&ui_icon_command_tag &&
+            c->boundingBox.x>=search.x && c->boundingBox.x<search.x+search.width &&
+            c->boundingBox.y>=search.y && c->boundingBox.y<search.y+search.height) {
+            const UiIconCommand *icon=c->renderData.custom.customData;
+            CHECK(icon->icon==UI_ICON_SEARCH); ++glyphs;
+        }
+    }
+    CHECK(glyphs==1 && !border_width(commands,search));
+    app.widgets.focus=CLAY_ID("NavSearch").id; commands=shell_layout(1100,900,96);
+    CHECK(border_width(commands,Clay_GetElementData(CLAY_ID("NavSearch")).boundingBox)==2);
+    CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK && app.action_count==1 && app.actions[0].type==APP_GO_SEARCH);
+    app.action_count=0;
+    UiWidgetInput press={.x=search.x+72,.y=search.y+24,.down=true,.pressed=true};
+    (void)app_layout(&app,1100,900,96,press);
+    CHECK(app.widgets.active==CLAY_ID("NavSearch").id && !app.action_count);
+    press.down=press.pressed=false; press.released=true; (void)app_layout(&app,1100,900,96,press);
+    CHECK(app.action_count==1 && app.actions[0].type==APP_GO_SEARCH); app.action_count=0;
+    app.services.demo=true;
+    commands=shell_layout(1100,900,96); CHECK(text_command(commands,"What do you want to play? | Offline demo"));
+    commands=shell_layout(400,900,96); CHECK(text_command(commands,"Offline demo"));
+    shell_close();
+}
 static const AppRootlistPage *page_for(AppRequest r)
 {
     AppRootlistPage *page=app_rootlist_begin(rootlists,r.generation,r.cursor,4); CHECK(page);
@@ -80,7 +162,12 @@ static void menu_and_geometry(void)
         CHECK(fabsf(center.x+center.width/2-widths[i]/2)<0.01f && avatar.x+avatar.width<=widths[i]-8);
     }
     shell_action(APP_PROFILE_TOGGLE); CHECK(app.sidebar.profile);
-    (void)shell_layout(1100,720,96); CHECK(app.control_count==7 && app.widgets.focus==CLAY_IDI("ProfileItem",0).id);
+    Clay_RenderCommandArray menu=shell_layout(1100,720,96);
+    CHECK(app.control_count==7 && app.widgets.focus==CLAY_IDI("ProfileItem",0).id);
+    const Clay_RenderCommand *account=text_command(menu,"Account"); CHECK(account);
+    Clay_BoundingBox account_row=Clay_GetElementData(CLAY_IDI("ProfileItem",0)).boundingBox;
+    CHECK(account->renderData.text.fontId==FONT_ROLE_BODY && account->renderData.text.fontSize==14);
+    CHECK(fabsf(account->boundingBox.x-account_row.x-12)<0.01f && border_width(menu,account_row)==2);
     CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,1);
     CHECK(!app.sidebar.profile && strstr(app.model.notice,"Account service is unavailable"));
     (void)shell_layout(1100,720,96); CHECK(app.widgets.focus==CLAY_ID("NavAuth").id);
@@ -169,6 +256,6 @@ void shell_sidebar(void)
 {
     printf("persistent shell state: App=%zu, collection+rootlist=%zu (caps 262144/65536 bytes)\n",
         sizeof(App),collection_service_size()+sizeof(AppRootlistStore));
-    ownership(); stale_and_failure(); menu_and_geometry(); dense_and_capacity(); asynchronous_rootlist();
+    header_surface(); ownership(); stale_and_failure(); menu_and_geometry(); dense_and_capacity(); asynchronous_rootlist();
     puts("persistent shell: retained rootlist, stale account delivery, loaded-page search, collapse, keyboard, menu and warm allocation checks passed");
 }
