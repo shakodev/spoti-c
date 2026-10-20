@@ -62,6 +62,7 @@ void player_command(Player *p, const PlayerCommand *c)
             player_begin(p, audible_index(p), position, PLAYER_SEEKING);
         } break;
     case PLAYER_VOLUME:
+        p->view.volume_ticket = c->ticket;
         p->view.volume = c->volume < 0 ? 0 : c->volume > 1 ? 1 : c->volume;
         if (sink_set_volume(p->config.sink, p->view.volume) != AUDIO_OK) { player_fail(p, AUDIO_BAD_STATE); } break;
     case PLAYER_QUEUE_APPEND:

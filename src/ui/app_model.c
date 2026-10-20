@@ -93,6 +93,7 @@ AppResult app_publish_player(App *a, PlayerSnapshot snapshot, uint64_t now)
         a->widgets.seeks[0] = (UiSeekSlider){0};
     }
     PlayerSnapshot before=a->model.player;
+    app_volume_snapshot(a,snapshot);
     a->model.player = snapshot;
     if (!a->widgets.seeks[0].dragging) {
         a->widgets.seeks[0].value = (snapshot.timeline_valid || snapshot.state == PLAYER_PAUSED) && snapshot.duration_frames ?
@@ -100,6 +101,7 @@ AppResult app_publish_player(App *a, PlayerSnapshot snapshot, uint64_t now)
     }
     if (a->scheduler) { ui_scheduler_playing(a->scheduler,snapshot.state == PLAYER_PLAYING,now); }
     if (before.state!=snapshot.state || before.generation!=snapshot.generation || before.volume!=snapshot.volume ||
+        before.volume_ticket!=snapshot.volume_ticket ||
         before.rate!=snapshot.rate || before.duration_frames!=snapshot.duration_frames || before.error!=snapshot.error ||
         before.timeline_valid!=snapshot.timeline_valid || memcmp(before.track_id,snapshot.track_id,16)) { dirty(a); }
     return APP_OK;
@@ -136,7 +138,8 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
         memset(a->model.playing_artist_id,0,sizeof(a->model.playing_artist_id));
         memset(a->model.playing_artwork_id,0,sizeof(a->model.playing_artwork_id));
         a->model.location = (AppLocation){.screen=APP_HOME};
-        a->model.player = (PlayerSnapshot){0};
+        app_volume_session_end(a);
+        a->model.player = (PlayerSnapshot){.volume=a->model.volume.value};
         memset(a->controls,0,sizeof(a->controls)); a->control_count=0;
         memset(a->labels,0,sizeof(a->labels)); a->label_count=0;
         memset(a->measures,0,sizeof(a->measures)); a->measure_count=0;
@@ -176,9 +179,13 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_LYRICS_FOLLOW ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_MUTE ||
+        (action.type==APP_VOLUME && !isfinite(action.value)) ||
         (action.type==APP_SELECT && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
+    if (action.type==APP_VOLUME && a->action_count && a->actions[a->action_count-1].type==APP_VOLUME) {
+        a->actions[a->action_count-1]=action; dirty(a); return APP_OK;
+    }
     if (a->action_count == APP_ACTIONS) { a->model.last_result = APP_FULL; dirty(a); return APP_FULL; }
     a->actions[a->action_count++] = action; dirty(a); return APP_OK;
 }
@@ -236,8 +243,9 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
         return command(a,(PlayerCommand){.type=PLAYER_SEEK,.position_frames=(uint64_t)
             (fmax(0,action.value) * (double)m->player.duration_frames)});
     case APP_VOLUME:
-        if (!isfinite(action.value)) { return APP_INVALID; }
-        return command(a,(PlayerCommand){.type=PLAYER_VOLUME,.volume=(float)fmin(1,fmax(0,action.value))});
+        return app_volume_set(a,action.value);
+    case APP_MUTE:
+        return app_volume_set(a,m->volume.value>0 ? 0 : m->volume.nonzero);
     case APP_DETAIL: m->detail = !m->detail; return APP_OK;
     case APP_CATALOG_QUERY: case APP_CATALOG_SECTION: {
         if (m->location.screen!=APP_SEARCH && m->location.screen!=APP_ARTIST) { return APP_INVALID; }
@@ -274,6 +282,7 @@ AppResult app_update(App *a, uint64_t now)
 {
     if (!a || !a->alive || a->widgets.in_frame) { return APP_INVALID; }
     a->catalog.now=now;
+    app_volume_prepare(a);
     AppAction batch[APP_ACTIONS]; uint32_t count=a->action_count;
     memcpy(batch,a->actions,(size_t)count*sizeof(batch[0]));
     a->action_count=0; memset(a->actions,0,sizeof(a->actions));

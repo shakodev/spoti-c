@@ -21,7 +21,7 @@ typedef struct StateCacheEntity { uint32_t kind; uint8_t id[16]; char label[STAT
 typedef struct StateCache {
     uint64_t epoch;
     int32_t x,y;
-    uint32_t width,height,route,detail,volume,repeat,shuffle,scroll,route_kind;
+    uint32_t width,height,route,detail,volume,repeat,shuffle,scroll,route_kind,volume_nonzero;
     uint8_t route_id[16],track_id[16];
     uint32_t count;
     StateCacheEntity entities[STATE_CACHE_ENTITIES];

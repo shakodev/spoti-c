@@ -13,6 +13,7 @@ typedef enum PlayerRepeat { PLAYER_REPEAT_OFF, PLAYER_REPEAT_ONE, PLAYER_REPEAT_
 typedef struct PlayerSnapshot {
     uint64_t generation;
     uint64_t clock_serial; /* Acknowledges explicit owner-side clock samples. */
+    uint64_t volume_ticket; /* Echo of the latest PLAYER_VOLUME ticket; 0 for external controls. */
     uint8_t track_id[16];
     uint64_t position_frames;
     uint64_t duration_frames; /* Zero until decoder length is known. */
@@ -49,7 +50,7 @@ typedef struct PlayerTransfer {
 typedef struct PlayerCommand {
     PlayerCommandType type;
     uint8_t track_id[16];
-    uint64_t ticket, position_frames;
+    uint64_t ticket, position_frames; /* VOLUME: optional opaque acknowledgement ticket. */
     float volume;
     uint32_t value; /* repeat enum or shuffle seed (0 disables) */
     bool play; /* LOAD starts playing when true, otherwise prepares paused. */

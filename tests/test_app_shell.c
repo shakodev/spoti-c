@@ -56,7 +56,7 @@ static void bounds_and_keyboard(void)
         Clay_ElementData bar=Clay_GetElementData(CLAY_ID("AppNowPlaying"));
         Clay_ElementData body=Clay_GetElementData(CLAY_ID("AppBody"));
         CHECK(bar.found && body.found && bar.boundingBox.y>=body.boundingBox.y+body.boundingBox.height);
-        CHECK(bar.boundingBox.height==88);
+        CHECK(bar.boundingBox.height==(width<760 ? 120 : 88));
     }
     CHECK(app_geometry(NAN,640,96,false,&app.geometry)==APP_INVALID);
     CHECK(app_geometry(399,640,96,false,&app.geometry)==APP_FULL);
@@ -154,7 +154,7 @@ static DWORD WINAPI run(void *context)
 {
     bool visual=*(bool *)context;
     pt_load_fixtures(); pt_open(); states(); bounds_and_keyboard(); player_and_frames(); asynchronous();
-    shell_account(); shell_artwork();
+    shell_account(); shell_artwork(); shell_volume();
     pt_close();
     shell_font_frames(); shell_native();
     int result=0;

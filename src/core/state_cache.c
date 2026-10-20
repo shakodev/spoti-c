@@ -20,7 +20,7 @@ static uint32_t checksum(const uint8_t *p,size_t n)
 }
 void state_cache_defaults(StateCache *s,uint64_t epoch)
 {
-    if (s) { memset(s,0,sizeof(*s)); s->epoch=epoch; s->width=1100; s->height=720; s->volume=1000; }
+    if (s) { memset(s,0,sizeof(*s)); s->epoch=epoch; s->width=1100; s->height=720; s->volume=s->volume_nonzero=1000; }
 }
 static bool label_ok(const char *p)
 {
@@ -31,7 +31,8 @@ static bool valid(const StateCache *s)
 {
     if (s->width<420 || s->width>16384 || s->height<360 || s->height>16384 ||
         s->x < -65536 || s->x>65536 || s->y < -65536 || s->y>65536 || s->route>8 ||
-        s->detail>1 || s->volume>1000 || s->repeat>2 || s->shuffle>1 || s->scroll>100000000 ||
+        s->detail>1 || s->volume>1000 || !s->volume_nonzero || s->volume_nonzero>1000 ||
+        s->repeat>2 || s->shuffle>1 || s->scroll>100000000 ||
         s->route_kind>8 || s->count>STATE_CACHE_ENTITIES) { return false; }
     for (uint32_t i=0;i<s->count;++i) {
         if (s->entities[i].kind>8 || !label_ok(s->entities[i].label)) { return false; }
@@ -45,7 +46,7 @@ StateCacheResult state_cache_encode(const StateCache *s,void *data,size_t cap,si
     size_t size=STATE_CACHE_HEADER+STATE_CACHE_SETTINGS+(size_t)s->count*STATE_CACHE_ENTRY;
     if (cap<size) { return STATE_CACHE_FULL; }
     uint8_t *p=data; memset(p,0,size);
-    put32(p,CACHE_MAGIC); put32(p+4,2); put32(p+8,STATE_CACHE_HEADER); put32(p+12,(uint32_t)size);
+    put32(p,CACHE_MAGIC); put32(p+4,3); put32(p+8,STATE_CACHE_HEADER); put32(p+12,(uint32_t)size);
     put32(p+24,(uint32_t)s->epoch); put32(p+28,(uint32_t)(s->epoch>>32));
     put32(p+32,STATE_CACHE_HEADER); put32(p+36,STATE_CACHE_SETTINGS);
     put32(p+40,STATE_CACHE_HEADER+STATE_CACHE_SETTINGS); put32(p+44,s->count);
@@ -54,6 +55,7 @@ StateCacheResult state_cache_encode(const StateCache *s,void *data,size_t cap,si
     put32(v+16,s->route); put32(v+20,s->detail); put32(v+24,s->volume); put32(v+28,s->repeat);
     put32(v+32,s->shuffle); put32(v+36,s->scroll); put32(v+40,s->route_kind);
     memcpy(v+44,s->route_id,16); memcpy(v+60,s->track_id,16);
+    put32(v+76,s->volume_nonzero);
     for (uint32_t i=0;i<s->count;++i) {
         v=p+STATE_CACHE_HEADER+STATE_CACHE_SETTINGS+(size_t)i*STATE_CACHE_ENTRY;
         put32(v,s->entities[i].kind); memcpy(v+4,s->entities[i].id,16);
@@ -69,7 +71,7 @@ StateCacheResult state_cache_decode(const void *data,size_t n,uint64_t epoch,Sta
     const uint8_t *p=data;
     if (get32(p)!=CACHE_MAGIC || get32(p+8)!=STATE_CACHE_HEADER || get32(p+12)!=n || get32(p+20)) { return STATE_CACHE_CORRUPT; }
     uint32_t version=get32(p+4);
-    if (version!=1 && version!=2) { return STATE_CACHE_VERSION; }
+    if (version<1 || version>3) { return STATE_CACHE_VERSION; }
     uint32_t offset=get32(p+32), bytes=get32(p+36), entities=get32(p+40), count=get32(p+44);
     if (offset!=STATE_CACHE_HEADER || bytes!=STATE_CACHE_SETTINGS || entities!=offset+bytes ||
         count>STATE_CACHE_ENTITIES || entities>n || (n-entities)/STATE_CACHE_ENTRY!=count ||
@@ -77,7 +79,8 @@ StateCacheResult state_cache_decode(const void *data,size_t n,uint64_t epoch,Sta
     StateCache s; state_cache_defaults(&s,epoch); const uint8_t *v=p+offset;
     s.x=(int32_t)get32(v); s.y=(int32_t)get32(v+4); s.width=get32(v+8); s.height=get32(v+12);
     s.route=get32(v+16); s.detail=get32(v+20); s.volume=get32(v+24);
-    s.repeat=version==2 ? get32(v+28) : 0; s.shuffle=version==2 ? get32(v+32) : 0;
+    s.repeat=version>=2 ? get32(v+28) : 0; s.shuffle=version>=2 ? get32(v+32) : 0;
+    s.volume_nonzero=version>=3 ? get32(v+76) : s.volume ? s.volume : 1000;
     s.scroll=get32(v+36); s.route_kind=get32(v+40); memcpy(s.route_id,v+44,16); memcpy(s.track_id,v+60,16); s.count=count;
     for (uint32_t i=0;i<count;++i) {
         v=p+entities+(size_t)i*STATE_CACHE_ENTRY; s.entities[i].kind=get32(v);

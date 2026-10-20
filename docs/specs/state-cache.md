@@ -31,9 +31,11 @@ Settings hold bounded window geometry, last route, route identity, detail layout
 volume/repeat/shuffle, scroll and last track ID. Up to 128 library entities hold
 kind, 128-bit ID and a bounded UTF-8 display label. URLs, tokens, blobs, keys,
 account names, artwork and arbitrary serialized strings have no storage fields.
-Version 1 is migrated with default repeat/shuffle; unknown revisions reject.
-Both revisions are local schema definitions, not discovered historical Spotify
-formats. Version 2 uses 14,992 bytes at its 128-entity maximum, below the 256 KiB
+Version 1 is migrated with default repeat/shuffle; version 3 adds the remembered
+nonzero app volume at settings offset 76 for persistent mute restoration (#38).
+Versions 1/2 derive that preference from their nonzero volume or default to 100%.
+Unknown revisions reject. These are local schema definitions, not discovered
+historical Spotify formats. Versions 2/3 use 14,992 bytes at their 128-entity maximum, below the 256 KiB
 hard limit. The loader rejects larger unsupported layouts before reading them;
 it never allocates a full cap-sized buffer from a supplied length.
 All failure outcomes reset the output to safe defaults; old epochs retain

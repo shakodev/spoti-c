@@ -28,7 +28,7 @@ static void roundtrip(void)
     source.entities[0]=(StateCacheEntity){.kind=COLLECTION_ALBUM,.id={7},.label="Synthetic album"};
     source.entities[1]=(StateCacheEntity){.kind=COLLECTION_PLAYLIST_ITEM,.id={9},.label="Saved playlist"};
     CHECK(state_cache_encode(&source,wire,sizeof(wire),&bytes)==STATE_CACHE_OK);
-    CHECK(bytes==48+96+2*116 && bytes<STATE_CACHE_MAX_BYTES && wire[0]=='S' && wire[4]==2);
+    CHECK(bytes==48+96+2*116 && bytes<STATE_CACHE_MAX_BYTES && wire[0]=='S' && wire[4]==3);
     CHECK(state_cache_decode(wire,bytes,42,&decoded)==STATE_CACHE_OK);
     CHECK(!memcmp(&source,&decoded,sizeof(source)));
     size_t written=123; CHECK(state_cache_encode(&source,mutated,bytes-1,&written)==STATE_CACHE_FULL && !written);
@@ -36,6 +36,11 @@ static void roundtrip(void)
     CHECK(decoded.volume==237 && decoded.repeat==2 && !decoded.count && !decoded.route && !decoded.track_id[0]);
     memcpy(mutated,wire,bytes); put(mutated+4,1); repair(mutated,bytes);
     CHECK(state_cache_decode(mutated,bytes,42,&decoded)==STATE_CACHE_OK && !decoded.repeat && !decoded.shuffle);
+    CHECK(decoded.volume_nonzero==237);
+    put(mutated+4,2); repair(mutated,bytes);
+    CHECK(state_cache_decode(mutated,bytes,42,&decoded)==STATE_CACHE_OK && decoded.repeat==2 && decoded.volume_nonzero==237);
+    put(mutated+48+24,0); repair(mutated,bytes);
+    CHECK(state_cache_decode(mutated,bytes,42,&decoded)==STATE_CACHE_OK && !decoded.volume && decoded.volume_nonzero==1000);
     put(mutated+4,99); repair(mutated,bytes);
     CHECK(state_cache_decode(mutated,bytes,42,&decoded)==STATE_CACHE_VERSION); defaults();
     for (size_t n=0;n<bytes;++n) { CHECK(state_cache_decode(wire,n,42,&decoded)==STATE_CACHE_CORRUPT); defaults(); }
@@ -50,7 +55,7 @@ static void roundtrip(void)
 }
 static void malformed(void)
 {
-    const unsigned fields[]={0,8,12,20,32,36,40,44,48+8,48+12,48+16,48+20,48+24,48+28,48+32,48+36,48+40,144};
+    const unsigned fields[]={0,8,12,20,32,36,40,44,48+8,48+12,48+16,48+20,48+24,48+28,48+32,48+36,48+40,48+76,144};
     for (unsigned i=0;i<sizeof(fields)/sizeof(fields[0]);++i) {
         memcpy(mutated,wire,bytes); put(mutated+fields[i],UINT32_MAX); repair(mutated,bytes);
         CHECK(state_cache_decode(mutated,bytes,42,&decoded)==STATE_CACHE_CORRUPT); defaults();
@@ -72,6 +77,8 @@ static void malformed(void)
     StateCache invalid=source; invalid.count=129;
     CHECK(state_cache_encode(&invalid,mutated,sizeof(mutated),&bytes)==STATE_CACHE_INVALID);
     CHECK(state_cache_encode(&source,wire,sizeof(wire),&bytes)==STATE_CACHE_OK);
+    invalid=source; invalid.volume_nonzero=0;
+    CHECK(state_cache_encode(&invalid,mutated,sizeof(mutated),&bytes)==STATE_CACHE_INVALID);
 }
 typedef struct SaveGate { HANDLE ready,release; bool commit; StateCache state; StateCacheResult result; } SaveGate;
 static bool gate(void *context)

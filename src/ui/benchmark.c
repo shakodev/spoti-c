@@ -57,10 +57,17 @@ bool bench_probe_input(BenchProbe *p,AppDesktop *d,UiWindow *w,Headless *h,UINT 
         out.ready=d->startup->services_started && d->startup->times.useful && d->surface.ready;
         out.startup=d->startup->times;
         out.input_messages=p->input_messages;
+        out.intended_volume=d->app.model.volume.value; out.screen=(uint32_t)d->app.model.location.screen;
+        if (d->app.alive) {
+            out.volume_box=Clay_GetElementData(CLAY_ID("AppVolume")).boundingBox;
+            out.mute_box=Clay_GetElementData(CLAY_ID("PlayerMute")).boundingBox;
+            out.settings_box=Clay_GetElementData(CLAY_ID("NavSettings")).boundingBox;
+        }
         if (h) {
             PlayerSnapshot player=headless_snapshot(h);
             (void)headless_metrics(h,&out.audio); out.player_state=(uint32_t)player.state;
             out.player_error=(uint32_t)player.error;
+            out.player_volume=player.volume;
         }
         gpu(&d->surface.renderer,&out); *p->shared=out; *result=1; return true;
     }

@@ -4,7 +4,7 @@
 #include "headless/headless.h"
 
 #define BENCH_MESSAGE (WM_APP+135)
-#define BENCH_VERSION 1u
+#define BENCH_VERSION 2u
 typedef enum BenchCommand {
     BENCH_SNAPSHOT, BENCH_LOAD, BENCH_PLAY, BENCH_PAUSE, BENCH_SEEK,
     BENCH_SCROLL, BENCH_DEVICE_LOSS
@@ -23,6 +23,9 @@ typedef struct BenchSnapshot {
     uint64_t gpu_local, gpu_nonlocal, driver_version;
     uint32_t gpu_valid, vendor, device;
     wchar_t adapter[128];
+    float intended_volume, player_volume;
+    uint32_t screen;
+    Clay_BoundingBox volume_box, mute_box, settings_box;
 } BenchSnapshot;
 typedef struct BenchProbe {
     HANDLE mapping;

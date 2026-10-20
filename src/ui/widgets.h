@@ -71,6 +71,7 @@ void ui_widgets_fail(UiWidgets *ui, UiWidgetResult error);
 void ui_widgets_focus(UiWidgets *ui, Clay_ElementId id);
 bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, float height, bool disabled);
 void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width);
+void ui_level_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width, bool disabled);
 void ui_text_input(UiWidgets *ui, Clay_ElementId id, UiTextInput *text, float width);
 typedef void (*UiListRow)(void *model, uint32_t row, uint64_t key);
 UiWidgetResult ui_virtual_list(UiWidgets *ui, Clay_ElementId id, UiVirtualList *list,

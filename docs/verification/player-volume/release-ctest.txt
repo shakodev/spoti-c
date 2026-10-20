@@ -1,0 +1,33 @@
+Test project C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue38-verify/build-rel
+      Start  1: core_release_metrics
+ 1/11 Test  #1: core_release_metrics .............   Passed    0.01 sec
+      Start  2: app_volume_native
+ 2/11 Test  #2: app_volume_native ................   Passed    6.37 sec
+      Start  4: bench_dependency_audit
+ 3/11 Test  #4: bench_dependency_audit ...........   Passed    0.39 sec
+      Start  7: core_state_cache
+ 4/11 Test  #7: core_state_cache .................   Passed    0.20 sec
+      Start  8: app_media_controls
+ 5/11 Test  #8: app_media_controls ...............   Passed    0.02 sec
+      Start 14: app_shell
+ 6/11 Test #14: app_shell ........................   Passed    0.46 sec
+      Start 16: ui_widgets
+ 7/11 Test #16: ui_widgets .......................   Passed    0.02 sec
+      Start 26: bench_ui_dx11
+ 8/11 Test #26: bench_ui_dx11 ....................   Passed    3.57 sec
+      Start 30: bench_ui_idle
+ 9/11 Test #30: bench_ui_idle ....................   Passed    3.78 sec
+      Start 38: audio_player
+10/11 Test #38: audio_player .....................   Passed    0.19 sec
+      Start 41: protocol_connect
+11/11 Test #41: protocol_connect .................   Passed    0.12 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Label Time Summary:
+desktop        =   6.37 sec*proc (1 test)
+gpu            =   9.94 sec*proc (2 tests)
+optional       =   6.37 sec*proc (1 test)
+performance    =   7.74 sec*proc (3 tests)
+
+Total Test time (real) =  15.14 sec

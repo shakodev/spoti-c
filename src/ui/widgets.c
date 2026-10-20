@@ -156,6 +156,44 @@ void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, floa
             .backgroundColor={30,200,95,255},.cornerRadius=CLAY_CORNER_RADIUS(8)}) { }
     }
 }
+void ui_level_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width, bool disabled)
+{
+    if (!declare(ui,id)) { return; }
+    if (!slider || !isfinite(slider->value) || !isfinite(width) || width<16) {
+        ui_widgets_fail(ui,UI_WIDGET_INVALID); return;
+    }
+    Clay_ElementData data=Clay_GetElementData(id); bool over=hovered(ui,id);
+    double value=data.found && data.boundingBox.width>0 ?
+        (ui->input.x-data.boundingBox.x)/data.boundingBox.width : slider->value;
+    if (disabled || ui->input.cancel) {
+        if (slider->dragging) { (void)ui_seek_cancel(slider); }
+        if (ui->active==id.id) { ui->active=0; }
+    } else {
+        if (over && ui->input.pressed && !ui->active) {
+            ui->active=ui->focus=id.id; (void)ui_seek_begin(slider,value);
+        }
+        if (ui->active==id.id) {
+            (void)ui_seek_move(slider,value);
+            if (ui->input.released) { (void)ui_seek_commit(slider); ui->active=0; }
+        }
+    }
+    float fill=(float)fmin(1,fmax(0,slider->value))*width;
+    Clay_Color color=disabled ? (Clay_Color){100,100,100,255} : (Clay_Color){30,200,95,255};
+    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)},
+        .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.border={.color={220,220,220,255},
+        .width=CLAY_BORDER_ALL(!disabled && ui->focus==id.id ? 1 : 0)}}) {
+        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(4)}},
+            .backgroundColor={60,60,60,255},.cornerRadius=CLAY_CORNER_RADIUS(2)}) {
+            CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(fill),CLAY_SIZING_FIXED(4)}},
+                .backgroundColor=color,.cornerRadius=CLAY_CORNER_RADIUS(2)}) { }
+        }
+        CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(12),CLAY_SIZING_FIXED(12)}},
+            .floating={.attachTo=CLAY_ATTACH_TO_PARENT,.attachPoints={.element=CLAY_ATTACH_POINT_LEFT_CENTER,
+                .parent=CLAY_ATTACH_POINT_LEFT_CENTER},.offset={(float)fmin(width-12,fmax(0,fill-6)),0},
+                .pointerCaptureMode=CLAY_POINTER_CAPTURE_MODE_PASSTHROUGH},
+            .backgroundColor=disabled ? color : (Clay_Color){235,235,235,255},.cornerRadius=CLAY_CORNER_RADIUS(6)}) { }
+    }
+}
 static void span(const char *s, uint32_t n, bool selected)
 {
     if (!n) { return; }

@@ -1,0 +1,126 @@
+Test project C:/Users/Daan/Documents/Projects/spoti-c/build
+      Start  1: app_live_wire
+ 1/58 Test  #1: app_live_wire ....................   Passed    0.20 sec
+      Start  2: app_live_host
+ 2/58 Test  #2: app_live_host ....................   Passed    0.08 sec
+      Start  3: app_live_http
+ 3/58 Test  #3: app_live_http ....................   Passed    0.08 sec
+      Start  4: core_release_metrics
+ 4/58 Test  #4: core_release_metrics .............   Passed    0.04 sec
+      Start  5: core_state_cache
+ 5/58 Test  #5: core_state_cache .................   Passed    0.43 sec
+      Start  6: app_media_controls
+ 6/58 Test  #6: app_media_controls ...............   Passed    0.05 sec
+      Start  7: app_catalog_screens
+ 7/58 Test  #7: app_catalog_screens ..............   Passed    1.39 sec
+      Start  8: app_playlist
+ 8/58 Test  #8: app_playlist .....................   Passed    5.11 sec
+      Start  9: app_shell
+ 9/58 Test  #9: app_shell ........................   Passed    5.87 sec
+      Start 10: ui_widgets
+10/58 Test #10: ui_widgets .......................   Passed    0.17 sec
+      Start 11: ui_virtual_list
+11/58 Test #11: ui_virtual_list ..................   Passed    0.99 sec
+      Start 12: ui_artwork
+12/58 Test #12: ui_artwork .......................   Passed    0.36 sec
+      Start 13: ui_font
+13/58 Test #13: ui_font ..........................   Passed    0.32 sec
+      Start 14: ui_renderer
+14/58 Test #14: ui_renderer ......................   Passed    0.04 sec
+      Start 15: ui_caption_visual
+15/58 Test #15: ui_caption_visual ................   Passed    6.60 sec
+      Start 16: ui_scheduler
+16/58 Test #16: ui_scheduler .....................   Passed    0.04 sec
+      Start 17: ui_window
+17/58 Test #17: ui_window ........................   Passed    0.55 sec
+      Start 18: api_lyrics
+18/58 Test #18: api_lyrics .......................   Passed    0.42 sec
+      Start 19: api_catalog
+19/58 Test #19: api_catalog ......................   Passed    0.15 sec
+      Start 20: api_collections
+20/58 Test #20: api_collections ..................   Passed    0.24 sec
+      Start 21: api_contract
+21/58 Test #21: api_contract .....................   Passed    0.08 sec
+      Start 22: audio_cdn_transport
+22/58 Test #22: audio_cdn_transport ..............   Passed    0.39 sec
+      Start 23: audio_headless_smoke
+23/58 Test #23: audio_headless_smoke .............   Passed   15.44 sec
+      Start 24: audio_headless_stalls
+24/58 Test #24: audio_headless_stalls ............   Passed   11.59 sec
+      Start 25: audio_player
+25/58 Test #25: audio_player .....................   Passed    2.37 sec
+      Start 26: audio_gapless
+26/58 Test #26: audio_gapless ....................   Passed    0.55 sec
+      Start 27: protocol_dealer
+27/58 Test #27: protocol_dealer ..................   Passed    0.12 sec
+      Start 28: protocol_connect
+28/58 Test #28: protocol_connect .................   Passed    0.33 sec
+      Start 29: audio_sink
+29/58 Test #29: audio_sink .......................   Passed    0.24 sec
+      Start 30: audio_vorbis_stream
+30/58 Test #30: audio_vorbis_stream ..............   Passed    1.36 sec
+      Start 31: audio_seek
+31/58 Test #31: audio_seek .......................   Passed    2.62 sec
+      Start 32: audio_ctr_stream
+32/58 Test #32: audio_ctr_stream .................   Passed    0.14 sec
+      Start 33: audio_spotify_header
+33/58 Test #33: audio_spotify_header .............   Passed    0.04 sec
+      Start 34: audio_range_cache
+34/58 Test #34: audio_range_cache ................   Passed    0.62 sec
+      Start 35: protocol_media_source
+35/58 Test #35: protocol_media_source ............   Passed    0.11 sec
+      Start 36: protocol_audio_key
+36/58 Test #36: protocol_audio_key ...............   Passed    0.05 sec
+      Start 37: protocol_mercury
+37/58 Test #37: protocol_mercury .................   Passed    0.07 sec
+      Start 38: api_tokens
+38/58 Test #38: api_tokens .......................   Passed    0.19 sec
+      Start 39: api_json_base
+39/58 Test #39: api_json_base ....................   Passed    0.04 sec
+      Start 40: api_http
+40/58 Test #40: api_http .........................   Passed    4.53 sec
+      Start 41: protocol_crypto
+41/58 Test #41: protocol_crypto ..................   Passed    0.14 sec
+      Start 42: protocol_shannon
+42/58 Test #42: protocol_shannon .................   Passed    0.43 sec
+      Start 43: protocol_ap_packet
+43/58 Test #43: protocol_ap_packet ...............   Passed    0.07 sec
+      Start 44: api_oauth
+44/58 Test #44: api_oauth ........................   Passed    0.17 sec
+      Start 45: protocol_credentials
+45/58 Test #45: protocol_credentials .............   Passed    0.17 sec
+      Start 46: protocol_ap_handshake
+46/58 Test #46: protocol_ap_handshake ............   Passed    2.19 sec
+      Start 47: protocol_proto
+47/58 Test #47: protocol_proto ...................   Passed    0.22 sec
+      Start 48: protocol_proto_codegen
+48/58 Test #48: protocol_proto_codegen ...........   Passed    3.34 sec
+      Start 49: smoke
+49/58 Test #49: smoke ............................   Passed    0.04 sec
+      Start 50: core_arena
+50/58 Test #50: core_arena .......................   Passed    0.04 sec
+      Start 51: core_spsc
+51/58 Test #51: core_spsc ........................   Passed    0.72 sec
+      Start 52: core_event_queue
+52/58 Test #52: core_event_queue .................   Passed    0.70 sec
+      Start 53: core_log
+53/58 Test #53: core_log .........................   Passed    0.05 sec
+      Start 54: core_metrics
+54/58 Test #54: core_metrics .....................   Passed    0.07 sec
+      Start 55: fixture_http
+55/58 Test #55: fixture_http .....................   Passed    0.08 sec
+      Start 56: core_arena_asan_reset
+56/58 Test #56: core_arena_asan_reset ............   Passed    0.13 sec
+      Start 57: core_arena_asan_rewind
+57/58 Test #57: core_arena_asan_rewind ...........   Passed    0.12 sec
+      Start 58: core_arena_asan_overrun
+58/58 Test #58: core_arena_asan_overrun ..........   Passed    0.12 sec
+
+100% tests passed, 0 tests failed out of 58
+
+Label Time Summary:
+desktop     =   6.60 sec*proc (1 test)
+gpu         =   6.60 sec*proc (1 test)
+optional    =   6.60 sec*proc (1 test)
+
+Total Test time (real) =  72.90 sec

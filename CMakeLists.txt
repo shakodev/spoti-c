@@ -24,6 +24,7 @@ option(ENABLE_LIVE_CDN_TEST "Enable public-network native CDN HTTPS compatibilit
 option(ENABLE_LIVE_CONNECT_TEST "Enable account/WASAPI/two-device Connect acceptance" OFF)
 option(ENABLE_RENDERER_GPU_TESTS "Enable optional WARP DX11 pixel/device tests" OFF)
 option(ENABLE_CAPTION_VISUAL_TEST "Enable visible desktop/DX11 caption capture test" OFF)
+option(ENABLE_VOLUME_NATIVE_TEST "Enable visible Release app volume pointer/keyboard/capture test" OFF)
 option(ENABLE_MEDIA_CONTROLS_NATIVE_TEST "Enable optional native HWND/WinRT SMTC smoke" OFF)
 option(ENABLE_LIVE_ARTWORK_TEST "Enable public-network bounded artwork HTTPS test" OFF)
 option(ENABLE_STARTUP_NATIVE_BENCH "Enable Release process-launch benchmark requiring a visible Windows desktop/DX11" OFF)
@@ -241,7 +242,7 @@ target_link_libraries(spotic_artwork PUBLIC spotic_core spotic_renderer
     PRIVATE windowscodecs ole32 uuid psapi winhttp)
 add_library(spotic_app STATIC src/ui/app.c src/ui/startup.c src/ui/startup_shell.c src/ui/app_model.c src/ui/app_input.c src/ui/app_text.c src/ui/app_account.c
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
-    src/ui/sidebar.c src/ui/now_playing.c src/ui/screens/home.c src/ui/screens/library.c
+    src/ui/sidebar.c src/ui/now_playing.c src/ui/app_volume.c src/ui/screens/home.c src/ui/screens/library.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
     src/ui/screens/catalog_view.c src/ui/screens/search.c src/ui/screens/album.c
     src/ui/screens/artist.c src/ui/screens/lyrics.c)
@@ -276,6 +277,14 @@ if(BUILD_TESTING)
         add_library(spotic_bench_process STATIC tests/bench_process.c)
         target_include_directories(spotic_bench_process PUBLIC tests)
         target_link_libraries(spotic_bench_process PUBLIC spotic_app)
+        if(ENABLE_VOLUME_NATIVE_TEST)
+            add_executable(test_volume_app tests/test_volume_app.c)
+            target_link_libraries(test_volume_app PRIVATE spotic_bench_process gdi32)
+            add_dependencies(test_volume_app spotic)
+            file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/volume-captures")
+            add_test(NAME app_volume_native COMMAND test_volume_app "$<TARGET_FILE:spotic>" "${CMAKE_BINARY_DIR}/volume-captures")
+            set_tests_properties(app_volume_native PROPERTIES TIMEOUT 60 RUN_SERIAL TRUE LABELS "desktop;gpu;optional")
+        endif()
         add_executable(bench_navigation tests/bench_navigation.c tests/bench_tracklist.c tests/playlist_fixture.c)
         target_compile_definitions(bench_navigation PRIVATE SPOTIC_NAVIGATION_RUNNER=1)
         target_link_libraries(bench_navigation PRIVATE spotic_bench_process)
@@ -347,7 +356,7 @@ if(BUILD_TESTING)
         add_test(NAME bench_tracklist COMMAND bench_tracklist)
         set_tests_properties(bench_tracklist PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
-    add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_support.c tests/app_shell_window.c
+    add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_support.c tests/app_shell_window.c
         tests/app_shell_resources.c tests/player_test_support.c)
     target_include_directories(test_app_shell PRIVATE tests)
     target_compile_definitions(test_app_shell PRIVATE
@@ -496,7 +505,7 @@ if(BUILD_TESTING)
         add_test(NAME audio_cdn_live COMMAND test_cdn_live)
         set_tests_properties(audio_cdn_live PROPERTIES TIMEOUT 30 LABELS "live;network")
     endif()
-    add_executable(test_headless tests/test_headless.c tests/headless_support.c)
+    add_executable(test_headless tests/test_headless.c tests/headless_support.c tests/headless_volume.c)
     target_include_directories(test_headless PRIVATE tests)
     target_compile_definitions(test_headless PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio"
         HEADLESS_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}")

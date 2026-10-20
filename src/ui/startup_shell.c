@@ -26,6 +26,9 @@ void startup_restore(App *a,const StateCache *s)
     }
     a->model.selected=a->model.location.entity; a->model.detail=s->detail!=0;
     a->model.player.volume=(float)s->volume/1000; a->model.status=APP_OFFLINE;
+    a->model.volume=(AppVolume){.value=(float)s->volume/1000,
+        .nonzero=(float)s->volume_nonzero/1000,.restore_pending=true};
+    a->widgets.seeks[1].value=a->model.volume.value;
     a->widgets.lists[0].scroll=s->scroll; a->model.location.scroll=s->scroll;
 }
 void startup_cached_view(App *a)
@@ -54,7 +57,8 @@ void startup_capture(StateCache *s,const App *a,HWND hwnd)
     }
     s->route=(uint32_t)a->model.location.screen; s->route_kind=(uint32_t)a->model.location.entity.kind;
     memcpy(s->route_id,a->model.location.entity.id,16); s->detail=a->model.detail ? 1u : 0;
-    s->volume=(uint32_t)(fmaxf(0,fminf(1,a->model.player.volume))*1000);
+    s->volume=(uint32_t)lroundf(fmaxf(0,fminf(1,a->model.volume.value))*1000);
+    s->volume_nonzero=(uint32_t)lroundf(fmaxf(0.001f,fminf(1,a->model.volume.nonzero))*1000);
     s->scroll=(uint32_t)fmax(0,fmin(100000000,a->widgets.lists[0].scroll));
     if (a->model.logged_in) { memcpy(s->track_id,a->model.player.track_id,16); }
     if (a->model.logged_in && a->model.location.screen==APP_LIBRARY && a->model.page) {

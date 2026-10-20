@@ -4,6 +4,7 @@
 static FILE *golden;
 static uint64_t compared;
 static atomic_uint state_edges;
+void headless_volume_receipts(void);
 static void state_changed(void *context) { atomic_fetch_add((atomic_uint *)context,1); }
 static void compare(void *ctx, const float *pcm, size_t frames)
 {
@@ -120,6 +121,7 @@ static void idle_listener(void)
 }
 int main(void)
 {
+    headless_volume_receipts();
     parser(); failed_startup(); idle_listener(); HeadlessFixture f; hf_open(&f);
     duration_and_gapless(&f); controls_and_cancel(&f); hf_close(&f); source_errors(); device_import_startup();
     puts("Encrypted HTTP/cache/CTR/header/Vorbis/gapless duration, commands and cancellation passed."); return 0;

@@ -17,7 +17,7 @@ AppResult app_init(App *a, const AppServices *services, UiScheduler *scheduler,
     a->model.generation = 1; a->model.status = APP_SIGNED_OUT;
     app_catalog_clear(a);
     if (ui_widgets_init(&a->widgets,clay,clay_bytes,scratch,scratch_bytes,failed,a) != UI_WIDGET_OK) { return APP_FULL; }
-    a->alive = true; return APP_OK;
+    a->alive = true; app_volume_init(a); return APP_OK;
 }
 AppResult app_geometry(float width, float height, float dpi, bool detail, AppGeometry *out)
 {
@@ -26,8 +26,9 @@ AppResult app_geometry(float width, float height, float dpi, bool detail, AppGeo
     float w = width * 96 / dpi, h = height * 96 / dpi;
     if (w < 400 || h < 320 || w > 16384 || h > 16384) { return APP_FULL; }
     float sidebar = w < 760 ? 64.0f : 184.0f, panel = detail && w >= 1180 ? 240.0f : 0.0f;
-    *out = (AppGeometry){.width=w,.height=h,.sidebar=sidebar,.detail=panel,.bar=88,
-        .main=w-24-sidebar-panel-(panel ? 8 : 0),.viewport=fmaxf(0,h-248),.compact=w<760};
+    float extra = w < 760 ? 32.0f : 0;
+    *out = (AppGeometry){.width=w,.height=h,.sidebar=sidebar,.detail=panel,.bar=88+extra,
+        .main=w-24-sidebar-panel-(panel ? 8 : 0),.viewport=fmaxf(0,h-248-extra),.compact=w<760};
     return APP_OK;
 }
 void app_label(Clay_String text, uint16_t size, Clay_Color color)
@@ -70,11 +71,11 @@ static void settings(App *a)
     app_label(CLAY_STRING("Playback volume"),16,(Clay_Color){235,235,235,255});
     CLAY_AUTO_ID({.layout={.childGap=8}}) {
         (void)app_button(a,CLAY_ID("VolumeDown"),CLAY_STRING("-"),40,
-            (AppAction){.type=APP_VOLUME,.value=a->model.player.volume - 0.1},!a->model.logged_in);
-        (void)snprintf(a->volume,sizeof(a->volume),"%u%%",(unsigned)(a->model.player.volume * 100 + 0.5f));
-        app_label((Clay_String){false,(int32_t)strlen(a->volume),a->volume},16,(Clay_Color){200,200,200,255});
+            (AppAction){.type=APP_VOLUME,.value=a->model.volume.value - 0.1},!app_volume_available(a));
+        (void)snprintf(a->volume,sizeof(a->volume),"%u%%",(unsigned)(a->model.volume.value * 100 + 0.5f));
+        app_label(app_text(a,(Clay_String){false,(int32_t)strlen(a->volume),a->volume}),16,(Clay_Color){200,200,200,255});
         (void)app_button(a,CLAY_ID("VolumeUp"),CLAY_STRING("+"),40,
-            (AppAction){.type=APP_VOLUME,.value=a->model.player.volume + 0.1},!a->model.logged_in);
+            (AppAction){.type=APP_VOLUME,.value=a->model.volume.value + 0.1},!app_volume_available(a));
     }
     (void)app_button(a,CLAY_ID("AppDetail"),a->model.detail ? CLAY_STRING("Hide details") : CLAY_STRING("Show details"),
         144,(AppAction){.type=APP_DETAIL},false);

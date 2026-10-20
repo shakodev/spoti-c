@@ -21,4 +21,5 @@ void shell_native(void);
 void shell_font_frames(void);
 void shell_account(void);
 void shell_artwork(void);
+void shell_volume(void);
 #endif

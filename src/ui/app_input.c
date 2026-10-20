@@ -52,6 +52,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
     }
     AppControl *control = &a->controls[focused];
     if (control->disabled) { return APP_CANCELLED; }
+    if (control->id.id==CLAY_ID("AppVolume").id) { return app_volume_key(a,key); }
     if (a->model.location.screen==APP_LYRICS && control->id.id==CLAY_ID("LyricsList").id) {
         if (key==APP_KEY_UP || key==APP_KEY_DOWN || key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN || key==APP_KEY_HOME || key==APP_KEY_END) {
             if (key==APP_KEY_HOME) { a->widgets.lists[0].scroll=0; }
