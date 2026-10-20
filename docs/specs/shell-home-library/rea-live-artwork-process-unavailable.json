@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"error\":{\"code\":\"capability_unavailable\",\"category\":\"unsupported_provider\",\"message\":\"Windows PTY process capture is unavailable because this adapter does not yet verify descendant cleanup. Use Linux (including WSL for Linux commands) or macOS. Reinstalling the PTY backend does not enable native Windows capture.\",\"retryable\":false,\"remediation\":{\"action\":\"Windows PTY process capture is unavailable because this adapter does not yet verify descendant cleanup. Use Linux (including WSL for Linux commands) or macOS. Reinstalling the PTY backend does not enable native Windows capture.\"},\"details\":{\"provider_id\":\"rea-process\",\"operation\":\"capture_process_scenario\",\"reason\":\"Windows PTY process capture is unavailable because this adapter does not yet verify descendant cleanup. Use Linux (including WSL for Linux commands) or macOS. Reinstalling the PTY backend does not enable native Windows capture.\"}}}"
+    }
+  ],
+  "isError": true
+}

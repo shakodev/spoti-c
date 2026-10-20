@@ -1,4 +1,5 @@
 #include "internal.h"
+#include "core/thread.h"
 
 static AudioResult fake_open(void *ctx, AudioSink *sink, AudioFormat *format, size_t *bytes)
 {
@@ -16,6 +17,7 @@ static SinkClock fake_clock(void *ctx)
 static const SinkBackend fake = {fake_open,fake_start,fake_stop,fake_close,fake_clock};
 DWORD WINAPI hl_decode(void *ctx)
 {
+    core_thread_register_background();
     Headless *h = ctx; crypto_init(&h->crypto);
     bool ok = sink_open_with_buffer(&h->sink,h->pcm,sizeof(h->pcm),h->config.wasapi ? NULL : &fake,h) == AUDIO_OK;
     if (ok) {

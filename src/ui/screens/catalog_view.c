@@ -170,7 +170,8 @@ static void row(void *context, uint32_t index, uint64_t key)
         AppImage *image=NULL;
         for (uint32_t n=0;n<a->image_count;++n) { if (!strcmp(a->images[n].entity.uri,entity.uri)) { image=&a->images[n]; break; } }
         CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(32),CLAY_SIZING_FIXED(32)}},
-            .backgroundColor={40,48,44,255},.cornerRadius=CLAY_CORNER_RADIUS(4),.custom={.customData=image}}) { }
+            .backgroundColor=image ? (Clay_Color){0} : (Clay_Color){40,48,44,255},
+            .cornerRadius=CLAY_CORNER_RADIUS(4),.custom={.customData=image}}) { }
         CLAY(CLAY_IDI("CatalogRowClip",slot),{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(44)},.layoutDirection=CLAY_TOP_TO_BOTTOM},
             .clip={.horizontal=true,.vertical=true}}) {
             (void)app_track_control(a,CLAY_IDI("CatalogItem",(uint32_t)(key^(key>>32))),

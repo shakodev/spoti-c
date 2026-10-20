@@ -149,6 +149,13 @@ static void expiry_and_binding(void)
 }
 int main(void)
 {
+    TokenManager lifetime={.now=1000};
+    CHECK(token_install(&lifetime,TOKEN_CLIENT,"synthetic",1216800,1209600)==TOKEN_OK);
+    CHECK(lifetime.slots[TOKEN_CLIENT].info.expires_at==UINT64_C(1216801000));
+    CHECK(lifetime.slots[TOKEN_CLIENT].info.refresh_at==UINT64_C(1209601000));
+    CHECK(token_install(&lifetime,TOKEN_CLIENT,"synthetic",31u*86400u+1,1)==TOKEN_MALFORMED);
+    CHECK(token_install(&lifetime,TOKEN_BEARER,"synthetic",86401,1)==TOKEN_MALFORMED);
+    SecureZeroMemory(&lifetime,sizeof(lifetime));
     grant_and_scope(); dedup_and_retry(); expiry_and_binding(); test_token_challenges(); test_token_errors();
     printf("Tokens: %zu arena bytes + %u validator scratch bytes; scoped refresh, hashcash and cleanup passed\n",
         sizeof(TokenManager), (unsigned)PROTO_MAX_BLOB); return 0;

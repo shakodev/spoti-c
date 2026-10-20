@@ -1,102 +1,185 @@
-# Shell, Home and Library implementation verification (#42)
+# Shell, Home and Library verification (#42)
 
-2026-10-20. Worktree `.cache/issue-42`, branch `feat/issue-42`, based on
-main `7a1dcb9` plus the #41 dependency cherry-pick `719688c`.
-This is a **partial implementation with acceptance still open**.
+2026-10-20. Isolated worktree `.cache/issue-42`, branch `feat/issue-42`,
+based on main `7a1dcb9` and the #41 dependency `719688c`. The user approved
+integrating the main worktree's existing live host and read-only account/GPU
+acceptance. The original worktree was preserved. **Issue #42 remains incomplete:
+reference comparison and several reference-dependent shell details are open.**
 
-## Implemented and checked
+## Implemented behavior
 
-The client has a separate global navigation header, expandable Library rail,
-larger Home shelf cards, and virtualized Library list/grid views. Loaded-page
-search and entity filters retain original item keys and immutable page
-ownership. History restores query, filter, grid and scroll state. Long display
-names truncate at UTF-8 scalar boundaries without changing entity identities.
-Keyboard selection receives the same card focus treatment as pointer focus.
+The client has a global navigation header, collapsible Library rail, larger
+Home shelf cards, and virtualized Library list/grid views. Loaded-page search
+and entity filters retain original keys and immutable page ownership. History
+restores query, filter, grid and scroll state. Keyboard selection has a visible
+focus treatment; long names truncate at UTF-8 scalar boundaries.
 
-Typed readers copy existing Home and Library HTTPS artwork metadata; no new
-Spotify endpoint or image-URI conversion was added. The existing artwork
-pipeline now cancels offscreen work, retains failures, crops covers, and wakes
-the UI through its event queue. Missing, pending and failed images have distinct
-icon treatments. An explicit route retry retires the generation and failures.
-The native host opens after the first useful present and joins its worker
-before releasing renderer/queue storage.
+Normal startup now installs the existing live service after the first useful
+present. State, live and artwork workers share the bounded core arena and join
+before their dependencies are released. The imported token-lifetime,
+background-thread classification and metadata-status fixes are documented in
+[the integration specification](../specs/live-host-integration.md). Unrelated
+audio/cache/stall changes from the main worktree were excluded.
 
-Reference findings were recorded before implementation in
-[the evidence specification](../specs/shell-home-library-evidence.md).
-The [implementation contract](../specs/shell-home-library.md) separates
-observations from native choices.
+REA evidence was recorded before implementation in
+[the shell evidence](../specs/shell-home-library-evidence.md) and
+[the live artwork specification](../specs/live-collection-artwork.md).
+The current native descriptor supplies `picture_size` target labels and URLs.
+The parser preserves one exact supplied candidate, preferring HTTPS `small`
+within eight candidates, then the first HTTPS candidate. This is a native
+bounded admission policy, not an assertion of Spotify's ranking algorithm.
+No new endpoint, URL rewrite or inferred image dimension was introduced.
 
-### Debug / ASan
+Home and Library now retain that source through their immutable projections.
+Visible images enter the existing asynchronous fetch/decode/cache path;
+offscreen cancellation, stale generations, terminal failures and deliberate
+placeholders remain bounded. A GPU capture found that Clay emitted a background
+rectangle after the custom image, hiding uploaded artwork. Browse and catalog
+cards now let the custom renderer own that background. The pixel assertion
+remains in place and verifies that uploaded artwork is actually visible.
 
-Configured with MSVC 19.51 x64, C17, `/W4 /WX`,
-`CMAKE_BUILD_TYPE=Debug`, `ENABLE_ASAN=ON`.
+## Debug / ASan
+
+MSVC 19.51 x64, C17, `/W4 /WX`, `CMAKE_BUILD_TYPE=Debug`, `ENABLE_ASAN=ON`.
+The separately approved renderer, parity, caption and message visual options
+were enabled; live account and physical-audio CTest options remained off.
 
 ```text
+cmake --build build --clean-first
 cmake --build build
 ctest --test-dir build --output-on-failure
-59/59 tests passed
+74/74 passed, 101.10 seconds
 ```
 
-[Full CTest log](shell-home-library/asan-ctest.txt).
-The existing expected-failure ASan arena probes also pass their harnesses.
-No unexpected sanitizer failure remains.
+[Full final CTest log](shell-home-library/asan-ctest.txt). The expected-failure
+ASan arena probes pass their harnesses; there were no unexpected sanitizer
+errors. The clean build prevents copied source timestamps from leaving old
+worker/token objects in the worktree.
 
-Coverage includes 400/1100/1800-DIP layouts at 96/120/144/192 DPI, dense Home
-and Library pages, RTL shaping roles, original keys after filtering, pagination,
-logout/navigation retirement, retained page replacement, stale results,
-worker cancellation/notification lifetime, negative-cache capacity, limited GPU
-slot simulation, malformed artwork metadata, and copied-source lifetimes.
-These deterministic tests use synthetic pages and injected GPU callbacks.
-They do not prove live account behavior or reference pixel parity.
+The shell cancellation test had a race: navigation could consume the artwork
+completion event before the test waited. It now waits for worker quiescence
+and still checks cancellation, no GPU allocation and handle balance. Both shell
+tests passed three consecutive repetitions before the final full run.
 
-`sizeof(App)` is 245,224 bytes within the existing 256-KiB state budget.
-The shared App/media-state compile-time budget still passes. Visible browse
-images are capped at 15, reserving one renderer texture slot for the font atlas.
-Staging remains 768 KiB and requested decode edges remain capped at 256 pixels.
-The heap guard passes 2,000 warm layouts and additional dense scrolling;
-600 route transitions keep page residency bounded. Unchanged visibility
-does not schedule recurring wakes.
+Coverage includes bounded protobuf/image metadata, source lifetime after
+wire-buffer reuse, shared state/live/artwork worker ownership and teardown,
+loopback HTTP retirement, token bounds, original keys after filtering,
+pagination/history, navigation/logout retirement, stale handles, negative
+cache limits, offscreen cancellation and keyboard/long/RTL names.
 
-### Release
+`sizeof(App)` remains 245,224 bytes within the shared 256-KiB App/media budget.
+Browse admits at most 15 images, reserving the sixteenth renderer slot for
+fonts. Artwork staging remains 768 KiB, compressed input 64 KiB, original edge
+512 pixels and decoded edge 256 pixels. The guard checks 2,000 warm layouts,
+dense scrolling, 600 route transitions and 100 warm layouts for each capture.
+Unchanged visibility does not schedule recurring wakes.
 
-Release is configured with ASan off and strict warnings. Native performance
-targets are compiled for the unchanged dependency/import audit; optional
-account, GPU and native performance acceptance is not executed by this report.
-The exact results and binary identities are retained alongside this report.
+## Native synthetic capture matrix
 
-- **18/18 selected Release tests passed**, including the unchanged
-  `bench_dependency_audit`: [CTest log](shell-home-library/release-ctest.txt).
-- The [audit](shell-home-library/release-audit.json) reports 390 pure-C
-  compilation units, six audited executables, all pinned dependencies valid,
-  strict warning flags, and no forbidden C++/ASan/compiler runtime imports.
-- `spotic.exe`: **1,054,720 bytes**, SHA-256
-  `3ac2efd09e9c99923460e99fcc74b876160ec2af7be8205ebe5ab0f538d32bd7`.
-  [REA's static PE receipt](../specs/shell-home-library/native-release-pe.json)
-  independently records that artifact identity. It does not execute the app.
+The real DX11 WARP renderer and DirectWrite fonts produced **36 captures**:
+Home, Library list and Library grid at 400/1100/1800 DIP and 96/120/144/192 DPI,
+each 900 DIP high. The injected 4x2 PNG, one corrupt source and missing
+metadata exercise ready/error/placeholder output. Pixel coverage detects
+overpaint, and each capture records dimensions, UTC and a pixel SHA-256.
 
-During worktree setup, the #41 LF attributes arrived after the initial
-checkout. Restoring the three yyjson files to their pinned LF bytes resolved
-the initial vendor-identity audit failure; no vendor-content change remains.
-The #40/#41 font test now warms separate measurement and rendering keys before
-asserting allocation-free reuse.
+The [capture index](shell-home-library/native-fixtures/index.json) and its
+adjacent PNG/JSON files are unresampled native output. Representative narrow
+Home and default Library list/grid captures were inspected for artwork,
+clipping, glyphs and RTL labels. These are explicitly synthetic fixtures.
+They establish rendering mechanics, not live data or Spotify pixel parity.
 
-## Acceptance gaps and discrepancies
+## Authorized live account and GPU acceptance
+
+The dedicated probe restored the existing protected session in memory, read
+Home/rootlist/playlist metadata, and fetched exact supplied image URLs.
+It did not launch login/logout, save credentials, submit playback commands,
+open an audio device or mutate Library. Its temporary playlist index was
+removed. The probe contains no audio execution path.
+
+- Home used the explicit personalized-Home refusal fallback, showing the
+  account's playlists in one application-owned shelf.
+- Library returned 16 rootlist rows: four supplied HTTPS image fields,
+  zero opaque image fields and twelve missing image fields.
+- The sampled selected image fetched 10,623 bytes and decoded to 64x64 with
+  balanced resources. Other sampled variants exceeded the existing cap;
+  the cap was preserved. This does not establish dimensions or success for
+  every URL labelled `small`.
+- A playlist returned 64 rows out of 101; all 64 metadata records hydrated,
+  and the complete 101-record temporary index was accepted.
+
+See [the read-only probe](shell-home-library/live-account-probe.txt) and
+[candidate measurements](shell-home-library/live-account-variants.txt).
+These native acceptance logs supplement the retained REA evidence; they are
+not presented as REA captures.
+
+`spotic-live-probe --capture` also rendered the actual retained pages through
+production App, fonts, HTTPS worker, decoder and DX11 WARP at 1100x900/96 DPI.
+All three captures settled and cleanup balanced:
+
+| Live initial viewport | Visible covers | Ready images | Failed/pending | Missing metadata |
+| --- | ---: | ---: | ---: | ---: |
+| Home fallback | 4 | 0 | 0 / 0 | 4 |
+| Library list | 6 | 0 | 0 / 0 | 6 |
+| Library grid | 8 | 1 | 0 / 0 | 7 |
+
+The supplied image is visibly rendered in the Library grid. The initial Home
+and list rows have no image metadata, so their entity-icon placeholders are
+expected. Home visibly states its fallback; the Library limitation is retained
+in the existing message transcript. Account pixels stay in ignored
+`build/live-captures/`; only status/counts/hashes are published in
+[the capture log](shell-home-library/live-account-capture.txt). These are native
+client-area renders, not automated interaction with the standalone window.
+
+## Release
+
+The clean MSVC Release build completed with `/W4 /WX`, ASan off and no compiler
+warnings. Verification:
+
+```text
+cmake --build build-rel --clean-first
+ctest --test-dir build-rel --output-on-failure -E '^bench_'
+60/60 functional tests passed, 33.26 seconds
+ctest --test-dir build-rel --output-on-failure -R '^(bench_dependency_audit|bench_idle)$'
+dependency audit passed; bench_idle FAILED its resident-memory limit
+```
+
+[Functional CTest log](shell-home-library/release-ctest.txt);
+[audit/idle CTest log](shell-home-library/release-idle-ctest.txt).
+The [dependency audit](shell-home-library/release-audit.json) passed 408 C
+translation units, pinned dependency identities/licenses and six executables,
+with no forbidden C++/ASan/runtime-shader-compiler imports. `spotic.exe` is
+**1,124,352 bytes**, SHA-256
+`4b861c29db242f73dad8577f159d0ee09abcb269e2013c24f21f14b74dd53475`.
+
+The unchanged native gate used the visible offline fixture with fake audio,
+on NVIDIA GeForce RTX 2070 / Windows build 26200. During each ten-second
+idle/paused interval it measured **0.000000000% machine CPU**, no additional
+renders/presents/timeouts, an infinite wait, and only the explicitly induced
+ending diagnostic wake. No input contaminated the sample; shutdown balanced.
+However, peak resident memory was **67,592,192 bytes idle** and
+**71,200,768 bytes paused**, both above the strict **20,000,000-byte** limit.
+[Raw measurements](shell-home-library/bench-idle.jsonl).
+
+This is a real gate failure. It is consistent with the previously failing
+resident gate in [#35's report](release-gate/README.md), but these runs are not
+a controlled attribution of the difference. The fixture excludes live service
+startup, so it does not establish live-service memory/CPU. The #35 thresholds,
+full release benchmark and cold/live requirements were not weakened or replaced.
+
+## Remaining acceptance gaps and discrepancies
 
 | Area | Current status |
 | --- | --- |
-| Live GUI service | Committed main installs no live GUI adapter. The main worktree's uncommitted live host and dependent fixes have not been absorbed into this isolated branch. Normal startup therefore cannot complete account browsing. |
-| Actual artwork | Reader/cache/host path is implemented and tested with injected data. Live Home/Library projection currently omits artwork and still requires integration with the live adapter. |
-| Home capability | The live host's personalized Home 403 and real-rootlist fallback require live validation. No fixture recommendations or invented endpoint were substituted. |
-| Library capability | Filters operate only on loaded supplied entities. They do not establish album/artist account support, which remains playlists-only in the pending live adapter. |
-| Sidebar and profile | Sidebar provides navigation/collapse, not a persistent populated Library sidebar. Header has search navigation, Settings and authentication actions, not the reference account/profile menu. |
-| Geometry | Header height, expanded/collapsed widths, 760-DIP breakpoint, card density and 560-DIP minimum outer height are documented native choices awaiting measurements. |
-| Typography / RTL | Existing DirectWrite roles shape RTL labels. The shell and directional grid remain left-to-right. Full RTL shell parity and exact Spotify typography are unverified. |
-| Image quality | The existing 256-pixel decode cap remains; large cards at high DPI may scale beyond native image resolution. |
-| Runtime states | Loading/empty/error/offline/signed-out behavior remains functional, but reference state visuals have not been captured and compared. |
-| Capture matrix | No reference/native side-by-side captures exist for the 3 sizes × 4 DPI scales. Synthetic geometry checks are not substitutes. |
-| Performance | #35 gates and thresholds are unchanged. Native idle/startup/RAM performance has not been rerun under the required separate opt-in. |
+| Reference access | Native computer-use inventory fails because its named pipe is unavailable; there is no running Spotify process or supplied CDP endpoint. REA native UI capture is unavailable on Windows. This is a tooling/runtime gap, not missing approval. [Receipt](shell-home-library/native-access.txt). |
+| Sidebar/profile | Navigation and collapse work, but there is no persistent populated Library sidebar or reference account/profile menu. Runtime measurements and behavior are still needed. |
+| Geometry and states | Header/rail widths, breakpoint, density and minimum height are documented native choices. Reference loading/empty/offline/signed-out/error/hover/focus visuals and resize transitions have not been measured and matched. |
+| Required comparisons | Native synthetic matrix and three real-data native renders exist. Actual pinned-reference/native side-by-side captures across three widths and four scales are still absent. |
+| Account capabilities | Personalized Home remains unavailable; the fallback and playlist-only Library scope are explicit. Saved albums/artists/folder navigation are not claimed. |
+| Image coverage/quality | Missing metadata stays a placeholder. Opaque image/mosaic conversion is not implemented. `small` avoids the sampled compressed-size failure but can look soft on larger/high-DPI cards; the 256-pixel decode cap remains. |
+| Keyboard/RTL | Deterministic navigation and shaped RTL labels are covered. Live keyboard interaction and reference typography are unverified; the shell remains left-to-right. |
+| Standalone live window | Native offscreen rendering and host lifecycle tests passed. User-visible standalone-window navigation, restart restoration and reference interaction remain unaccepted. |
+| Performance | The unchanged native idle gate fails RAM despite passing CPU/quiescence. The #35 full release gate, including controlled cold startup and live playback acceptance, is not replaced by these checks. |
 
-Issue #42 must remain open until the live adapter is integrated, the remaining
-shell details are implemented from runtime evidence, and the required opt-in
-account/GPU/reference acceptance is completed. The account/GPU opt-in request
-and the request to include the uncommitted live-host dependency are pending.
+The PR stays draft and #42 stays open until the reference-dependent behavior
+and comparison matrix are completed. No fixture result is used to claim
+reference parity or unsupported service capabilities.

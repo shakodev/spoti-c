@@ -86,7 +86,9 @@ void app_browse_cover(App *a, const CollectionItem *item, uint32_t shelf, uint32
     /* Custom image is emitted only when admitted; placeholder is always useful. */
     CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(edge),CLAY_SIZING_FIXED(edge)},
         .childAlignment={CLAY_ALIGN_X_CENTER,CLAY_ALIGN_Y_CENTER}},
-        .backgroundColor={40,40,40,255},.cornerRadius=CLAY_CORNER_RADIUS(4),
+        /* Clay emits this element's background after its custom command.
+         * The custom renderer supplies its own image/placeholder background. */
+        .backgroundColor=image ? (Clay_Color){0} : (Clay_Color){40,40,40,255},.cornerRadius=CLAY_CORNER_RADIUS(4),
         .custom={.customData=image}}) {
         if (!image || image->result!=ART_OK) {
             Clay_ElementId id=Clay__HashStringWithOffset(CLAY_STRING("CoverPlaceholder"),index,shelf);

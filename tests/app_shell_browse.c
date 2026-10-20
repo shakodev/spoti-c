@@ -42,7 +42,7 @@ static void append(CollectionRequest *r, size_t *bytes, const char *format, ...)
     va_end(arguments);
     CHECK(count>=0 && (size_t)count<r->capacity-*bytes); *bytes+=(size_t)count;
 }
-static void dense_page(bool home)
+void shell_dense_page(bool home)
 {
     CollectionRequest r;
     CHECK(collection_fetch(collection,latest.kind,latest.cursor,latest.generation,&r)==COLLECTION_PENDING);
@@ -57,9 +57,22 @@ static void dense_page(bool home)
             for (unsigned item=0;item<5;++item) {
                 const char *kind=item==1 ? "Playlist" : item==2 ? "Album" : item==3 ? "Artist" : "Track";
                 const char *uri=item==1 ? "playlist" : item==2 ? "album" : item==3 ? "artist" : "track";
+                unsigned identity=shelf*5+item+1;
                 append(&r,&bytes,"%s{\"content\":{\"data\":{\"__typename\":\"%s\","
-                    "\"uri\":\"spotify:%s:%022u\",\"name\":\"Card %u\"}}}",
-                    item ? "," : "",kind,uri,shelf*5+item+1,shelf*5+item);
+                    "\"uri\":\"spotify:%s:%022u\",\"name\":\"Card %u\"",
+                    item ? "," : "",kind,uri,identity,shelf*5+item);
+                /* Exact local synthetic sources; no network fetch is installed
+                 * by the CPU fixture. The visual fixture injects PNG bytes. */
+                if (item!=4) {
+                    const char *open=item==1 ? ",\"images\":{\"items\":[{\"sources\":[" :
+                        item==2 ? ",\"coverArt\":{\"sources\":[" :
+                        item==3 ? ",\"visuals\":{\"avatarImage\":{\"sources\":[" :
+                        ",\"albumOfTrack\":{\"coverArt\":{\"sources\":[";
+                    const char *close=item==1 ? "]}]}" : item==2 ? "]}" : "]}}";
+                    append(&r,&bytes,"%s{\"url\":\"https://example.test/shell-art-%u.png\","
+                        "\"width\":4,\"height\":2}%s",open,identity,close);
+                }
+                append(&r,&bytes,"}}}");
             }
             append(&r,&bytes,"]}}");
         }
@@ -69,8 +82,10 @@ static void dense_page(bool home)
         for (unsigned i=0;i<64;++i) {
             const char *kind=i%3==0 ? "playlist" : i%3==1 ? "album" : "artist";
             const char *title=i%3==0 ? "Playlist" : i%3==1 ? "Album" : "\\u05e9\\u05dc\\u05d5\\u05dd";
-            append(&r,&bytes,"%s{\"entityInfo\":{\"name\":\"%s %u\",\"uri\":\"spotify:%s:%022u\"},"
-                "\"%s\":{}}",i ? "," : "",title,i,kind,i+1,kind);
+            append(&r,&bytes,"%s{\"entityInfo\":{\"name\":\"%s %u\",\"uri\":\"spotify:%s:%022u\"",
+                i ? "," : "",title,i,kind,i+1);
+            if (i%5!=4) { append(&r,&bytes,",\"imageUri\":\"https://example.test/shell-art-%u.png\"",i+1); }
+            append(&r,&bytes,"},\"%s\":{}}",kind);
         }
         append(&r,&bytes,"],\"pinnedEntity\":[]}");
     }
@@ -92,7 +107,7 @@ static void image_bounds(void)
 }
 static void home_density(void)
 {
-    shell_open(NULL); CHECK(app_session(&app,true,true,0)==APP_PENDING); dense_page(true);
+    shell_open(NULL); CHECK(app_session(&app,true,true,0)==APP_PENDING); shell_dense_page(true);
     const float dpi[]={96,120,144,192}, widths[]={400,1100,1800};
     for (unsigned scale=0;scale<4;++scale) {
         for (unsigned size=0;size<3;++size) {
@@ -132,7 +147,7 @@ static void home_density(void)
 static void library_projection(void)
 {
     shell_open(NULL); CHECK(app_session(&app,true,true,0)==APP_PENDING);
-    shell_action(APP_GO_LIBRARY); dense_page(false);
+    shell_action(APP_GO_LIBRARY); shell_dense_page(false);
     const CollectionPage *page=app.model.page;
     (void)shell_layout(1100,900,96);
     CHECK(app.browse.count==64 && app.model.page==page && app.model.page->count==64);
@@ -162,7 +177,7 @@ static void library_projection(void)
 static void library_grid(void)
 {
     shell_open(NULL); CHECK(app_session(&app,true,true,0)==APP_PENDING);
-    shell_action(APP_GO_LIBRARY); dense_page(false); shell_action(APP_LIBRARY_GRID);
+    shell_action(APP_GO_LIBRARY); shell_dense_page(false); shell_action(APP_LIBRARY_GRID);
     CHECK(app.model.location.grid);
     const float dpi[]={96,120,144,192}, widths[]={400,1100,1800};
     for (unsigned scale=0;scale<4;++scale) {

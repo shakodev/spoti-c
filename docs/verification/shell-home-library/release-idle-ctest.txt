@@ -1,0 +1,41 @@
+Start testing: Oct 20 15:22 W. Europe Daylight Time
+----------------------------------------------------------
+10/69 Testing: bench_dependency_audit
+10/69 Test: bench_dependency_audit
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/proto-tools/Scripts/python.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/tools/release_audit.py" "--build" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"bench_dependency_audit" start time: Oct 20 15:22 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+Release audit: 408 C units, 6 artifacts, 0 failures
+<end of output>
+Test time =   0.46 sec
+----------------------------------------------------------
+Test Passed.
+"bench_dependency_audit" end time: Oct 20 15:22 W. Europe Daylight Time
+"bench_dependency_audit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/69 Testing: bench_idle
+12/69 Test: bench_idle
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/bench_idle.exe" "C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel/spotic.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/.cache/issue-42/build-rel
+"bench_idle" start time: Oct 20 15:22 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+bench_idle: FAIL (bench-idle.jsonl)
+<end of output>
+Test time =  29.72 sec
+----------------------------------------------------------
+Test Failed.
+"bench_idle" end time: Oct 20 15:22 W. Europe Daylight Time
+"bench_idle" time elapsed: 00:00:29
+----------------------------------------------------------
+
+End testing: Oct 20 15:22 W. Europe Daylight Time
+
+gpu =  29.72 sec*proc
+
+native =  29.72 sec*proc
+
+performance =  30.19 sec*proc

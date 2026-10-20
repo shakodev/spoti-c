@@ -125,9 +125,11 @@ The response contains `google.protobuf.Any`; descriptors establish its typed
 envelope, not a runtime-observed type_url string. Requiring the standard
 `type.googleapis.com/spotify.metadata.Track` or
 `type.googleapis.com/spotify.metadata.Episode` URL for the requested kind is the
-implementation's explicit admission policy. Likewise provider status 0 and
-entity status 200 are strict successful-response policy, rather than values
-proven by a captured successful service response. The implementation must match
+implementation's explicit admission policy. Provider status 0 was the original
+successful-response policy. The 2026-10-19 account probe observed provider status
+200 and entity status 200 on successful live playback; the resolver now admits
+provider 0 or 200 and requires entity 200 (see [live-app.md](live-app.md)).
+The implementation must match
 requested URI and kind, check both status layers, and validate Any before
 decoding the payload. It must not select the last unrelated array element.
 

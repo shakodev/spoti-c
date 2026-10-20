@@ -1,0 +1,14 @@
+Internal-service authorization accepted.
+Client token present: 1; service bearer present: 1; result: 0.
+Home result: 0; rows: 1; public diagnostic: Personalized Home is unavailable. Showing your playlists.
+HTTP status: 200; response bytes: 7295.
+Artwork metadata: 4 usable rows; 0 rejected rows.
+Artwork sample: fetch 0; bytes 10623; decode 0; dimensions 64 x 64; balanced 1.
+Library result: 0; rows: 16; public diagnostic: Your playlists. Saved albums, artists and folders are not included in this view.
+HTTP status: 200; response bytes: 7308.
+Rootlist image fields: HTTPS 4; opaque 0; missing 12.
+Artwork metadata: 4 usable rows; 0 rejected rows.
+Artwork sample: fetch 0; bytes 10623; decode 0; dimensions 64 x 64; balanced 1.
+Playlist page accepted: 1; HTTP 200; rows 64; total 101.
+Playlist metadata accepted: 1; hydrated rows 64; diagnostic:
+Playlist disk index accepted: 1; records 101; diagnostic:

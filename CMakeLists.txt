@@ -73,7 +73,7 @@ target_link_libraries(spotic_windows INTERFACE
 
 include(CTest)
 add_library(spotic_core STATIC
-    src/core/arena.c src/core/spsc_ring.c src/core/clock.c
+    src/core/arena.c src/core/spsc_ring.c src/core/clock.c src/core/thread.c
     src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c src/core/state_cache.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options PRIVATE psapi)
@@ -267,12 +267,35 @@ target_link_libraries(spotic_app_fixture PUBLIC spotic_app)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_app spotic_app_fixture)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_media_controls)
 add_executable(spotic WIN32 src/ui/main.c src/ui/benchmark.c)
-target_link_libraries(spotic PRIVATE spotic_ui_surface spotic_app_fixture spotic_headless spotic_headless_fixture)
+add_library(spotic_app_live STATIC src/ui/app_live.c src/ui/live_account.c src/ui/live_http.c
+    src/ui/live_pages.c src/ui/live_playlist.c src/ui/live_wire.c src/ui/live_metadata.c src/ui/live_lyrics.c src/ui/live_home.c)
+target_link_libraries(spotic_app_live PUBLIC spotic_app spotic_headless)
+add_executable(spotic-live-probe EXCLUDE_FROM_ALL tools/live_probe.c tools/live_capture.c)
+target_link_libraries(spotic-live-probe PRIVATE spotic_app_live)
+target_link_libraries(spotic PRIVATE spotic_ui_surface spotic_app_fixture spotic_app_live spotic_headless spotic_headless_fixture)
 target_compile_definitions(spotic PRIVATE
     APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
     APP_AUDIO_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio/synthetic.enc")
 
 if(BUILD_TESTING)
+    add_executable(test_live_wire tests/test_live_wire.c)
+    target_include_directories(test_live_wire PRIVATE tests)
+    target_link_libraries(test_live_wire PRIVATE spotic_app_live)
+    add_test(NAME app_live_wire COMMAND test_live_wire)
+    add_executable(test_live_artwork tests/test_live_artwork.c)
+    target_include_directories(test_live_artwork PRIVATE tests)
+    target_link_libraries(test_live_artwork PRIVATE spotic_app_live)
+    add_test(NAME app_live_artwork COMMAND test_live_artwork)
+    add_executable(test_app_live tests/test_app_live.c)
+    target_include_directories(test_app_live PRIVATE tests)
+    target_link_libraries(test_app_live PRIVATE spotic_app_live)
+    add_test(NAME app_live_host COMMAND test_app_live)
+    add_executable(test_live_http tests/test_live_http.c tests/support/http_server.c)
+    target_include_directories(test_live_http PRIVATE tests)
+    target_link_libraries(test_live_http PRIVATE spotic_app_live)
+    add_test(NAME app_live_http COMMAND test_live_http)
+    set_tests_properties(app_live_http PROPERTIES TIMEOUT 30)
+    set_tests_properties(app_live_wire app_live_host PROPERTIES TIMEOUT 45)
     add_test(NAME ui_parity_tools COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tests/test_parity_tools.py")
     set_tests_properties(ui_parity_tools PROPERTIES TIMEOUT 30)
     add_executable(test_icons tests/test_icons.c)
@@ -383,7 +406,7 @@ if(BUILD_TESTING)
         set_tests_properties(bench_tracklist PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
     add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_support.c tests/app_shell_window.c
-        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/player_test_support.c)
+        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/app_shell_visual.c tests/player_test_support.c)
     target_include_directories(test_app_shell PRIVATE tests)
     target_compile_definitions(test_app_shell PRIVATE
         APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "translation_units": 390,
+  "translation_units": 408,
   "dependencies": [
     {
       "name": "clay",
@@ -266,14 +266,16 @@
   "artifacts": [
     {
       "name": "spotic.exe",
-      "bytes": 1054720,
-      "sha256": "3ac2efd09e9c99923460e99fcc74b876160ec2af7be8205ebe5ab0f538d32bd7",
+      "bytes": 1124352,
+      "sha256": "4b861c29db242f73dad8577f159d0ee09abcb269e2013c24f21f14b74dd53475",
       "imports": [
+        "ADVAPI32.dll",
         "CRYPT32.dll",
         "DWrite.dll",
         "GDI32.dll",
         "IMM32.dll",
         "KERNEL32.dll",
+        "SHELL32.dll",
         "Secur32.dll",
         "USER32.dll",
         "VCRUNTIME140.dll",
@@ -298,8 +300,8 @@
     },
     {
       "name": "spotic-headless.exe",
-      "bytes": 528384,
-      "sha256": "445ffcc0f94fa85424a122b59f49855387221e44ece741434fde5330e6828ace",
+      "bytes": 528896,
+      "sha256": "3b3ed32fa4cb1496029e253a3bba08fcb57d035b862f9e3422570c3d99034697",
       "imports": [
         "CRYPT32.dll",
         "KERNEL32.dll",
@@ -323,8 +325,8 @@
     },
     {
       "name": "bench_release.exe",
-      "bytes": 26112,
-      "sha256": "9332bd177ed0aabe66037c0d263ca4fa5842ae459a14c84ec722afb4a60be9c1",
+      "bytes": 26624,
+      "sha256": "792998db982d0daf6e05662238a3faf4806abc5fca619ad55066b65817667406",
       "imports": [
         "KERNEL32.dll",
         "USER32.dll",
@@ -340,7 +342,7 @@
     {
       "name": "bench_idle.exe",
       "bytes": 21504,
-      "sha256": "98a8c1170bfe5488aa0396c9a6121d85c288229773c1b5b452643e0e331ab8a0",
+      "sha256": "42e325722c45f63b91bc38a8ca9ad94f20a9c86b99d3efe5b71402c8f9954544",
       "imports": [
         "KERNEL32.dll",
         "USER32.dll",
@@ -355,7 +357,7 @@
     {
       "name": "bench_navigation.exe",
       "bytes": 397824,
-      "sha256": "63b595a4c7ab75a4495cd79fcabd07cdaf107fa14901a30319d7c977a17d0e01",
+      "sha256": "72cc69587a1f76f99fe1ffad89ce5397df0d4b29225b6ff407811160a647bc7f",
       "imports": [
         "KERNEL32.dll",
         "VCRUNTIME140.dll",
@@ -373,7 +375,7 @@
     {
       "name": "bench_headless.exe",
       "bytes": 534016,
-      "sha256": "e21cdbb7e302b019fd9400986d06d6994978ca33720a2c7503bc16b0a8540e05",
+      "sha256": "9b0c96405d2036ad30a0c7cc70fd3562dce1279a83a21cb9bf990ae49ffea57d",
       "imports": [
         "CRYPT32.dll",
         "KERNEL32.dll",

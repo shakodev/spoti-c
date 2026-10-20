@@ -17,6 +17,7 @@ const CollectionPage *shell_page(AppRequest, const char *name);
 void shell_deliver(const char *name);
 Clay_RenderCommandArray shell_layout(float width, float height, float dpi);
 int shell_visual(void);
+void shell_dense_page(bool home);
 void shell_native(void);
 void shell_font_frames(void);
 void shell_account(void);

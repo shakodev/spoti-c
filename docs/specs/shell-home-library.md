@@ -110,3 +110,19 @@ language, viewport, DPI, zoom, artifact hashes and UTC timestamp. Fixture
 captures validate rendering mechanics only. Live Home/Library behavior and
 all reference discrepancies require separate records. The #35 release
 performance gate remains unchanged.
+
+## Authorized integration addendum (2026-10-20)
+
+The prerequisite paragraph above records the preimplementation state. The user
+subsequently approved integrating the existing live host and read-only
+account/GPU acceptance. The isolated branch now installs that host after the
+first useful frame. The scoped dependency import is specified in
+[live-host-integration.md](live-host-integration.md); supplied image fields and
+the bounded candidate policy are specified in
+[live-collection-artwork.md](live-collection-artwork.md).
+
+The live probe now accepts the real rootlist fallback and playlist-only Library,
+and the production artwork path renders a supplied image in a local native
+Library capture. Reference screenshot access remains unavailable on this host.
+The [current verification report](../verification/shell-home-library.md)
+separates those results from synthetic fixtures and the remaining parity gaps.
