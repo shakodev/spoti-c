@@ -83,6 +83,7 @@ static void menu_and_geometry(void)
     (void)shell_layout(1100,720,96); CHECK(app.control_count==7 && app.widgets.focus==CLAY_IDI("ProfileItem",0).id);
     CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,1);
     CHECK(!app.sidebar.profile && strstr(app.model.notice,"Account service is unavailable"));
+    (void)shell_layout(1100,720,96); CHECK(app.widgets.focus==CLAY_ID("NavAuth").id);
     shell_action(APP_PROFILE_TOGGLE); (void)shell_layout(1100,720,96);
     CHECK(app_key(&app,APP_KEY_UP,false)==APP_OK && app.widgets.focus==CLAY_IDI("ProfileItem",6).id);
     CHECK(app_key(&app,APP_KEY_ESCAPE,false)==APP_OK); (void)app_update(&app,2);

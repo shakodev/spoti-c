@@ -153,8 +153,15 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
     app_browse_end(a);
     app_sidebar_end(a);
     bool found = false;
-    for (uint32_t i = 0; i < a->control_count; ++i) { if (a->controls[i].id.id == a->widgets.focus) { found = true; } }
-    if (!found && a->control_count) { a->widgets.focus = a->controls[0].id.id; }
+    for (uint32_t i = 0; i < a->control_count; ++i) {
+        if (a->controls[i].id.id==a->widgets.focus && !a->controls[i].disabled) { found=true; }
+    }
+    if (!found) {
+        a->widgets.focus=0;
+        for (uint32_t i=0;i<a->control_count;++i) {
+            if (!a->controls[i].disabled) { a->widgets.focus=a->controls[i].id.id; break; }
+        }
+    }
     a->model.location.scroll = a->widgets.lists[0].scroll;
     return a->commands;
 }

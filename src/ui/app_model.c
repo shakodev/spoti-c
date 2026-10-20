@@ -221,7 +221,10 @@ AppResult app_enqueue(App *a, AppAction action)
 static AppResult apply(App *a, AppAction action, uint64_t now)
 {
     AppModel *m = &a->model;
-    if (action.type!=APP_PROFILE_TOGGLE) { a->sidebar.profile=false; }
+    if (action.type!=APP_PROFILE_TOGGLE) {
+        if (a->sidebar.profile) { a->widgets.focus=CLAY_ID("NavAuth").id; }
+        a->sidebar.profile=false;
+    }
     switch (action.type) {
     case APP_PROFILE_TOGGLE:
         a->sidebar.profile=!a->sidebar.profile;
