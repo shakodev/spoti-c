@@ -123,11 +123,17 @@ static bool save(const char *directory,const char *name,bool grid,bool complete,
     length=snprintf(path,sizeof(path),"%s/%s.json",directory,name);
     if (length<=0 || (size_t)length>=sizeof(path) || fopen_s(&file,path,"wb") || !file) { return false; }
     SYSTEMTIME now; GetSystemTime(&now);
+    Clay_BoundingBox header=Clay_GetElementData(CLAY_ID("AppTitle")).boundingBox;
+    Clay_BoundingBox sidebar=Clay_GetElementData(CLAY_ID("AppSidebar")).boundingBox;
+    Clay_BoundingBox main=Clay_GetElementData(CLAY_ID("AppMain")).boundingBox;
+    Clay_BoundingBox bar=Clay_GetElementData(CLAY_ID("AppNowPlaying")).boundingBox;
     const char *screen=app.model.location.screen==APP_HOME ? "home" : grid ? "library-grid" : "library-list";
     written=fprintf(file,"{\"width\":%u,\"height\":%u,\"logical_width\":%u,"
         "\"logical_height\":%u,\"dpi\":%u,\"scale\":%.2f,\"zoom_percent\":100,\"readback_bytes\":%zu,"
         "\"screen\":\"%s\",\"renderer\":\"DX11 WARP\",\"theme\":\"dark\","
         "\"font\":\"Segoe UI / DirectWrite fallback\",\"language\":\"service-provided labels\","
+        "\"geometry_dip\":{\"header_height\":%g,\"panel_y\":%g,\"sidebar_width\":%g,"
+        "\"panel_gap\":%g,\"player_y\":%g,\"player_height\":%g},"
         "\"source\":\"native client rendering retained live read-only service page\","
         "\"reference\":false,\"fixture\":false,\"resampled\":false,\"local_only\":true,"
         "\"artwork\":\"production bounded HTTPS/decode/cache; exact supplied sources\","
@@ -138,7 +144,9 @@ static bool save(const char *directory,const char *name,bool grid,bool complete,
         "\"sidebar_pending_artwork\":%u,\"sidebar_missing_artwork\":%u,"
         "\"pixels_sha256\":\"%s\",\"captured_utc\":\"%04u-%02u-%02uT%02u:%02u:%02uZ\"}\n",
         physical_width,physical_height,viewport.width,viewport.height,viewport.dpi,(double)viewport.dpi/96,pixel_bytes,
-        screen,complete ? "true" : "false",app.model.page->count,app.model.page->partial ? "true" : "false",
+        screen,(double)header.height,(double)main.y,(double)sidebar.width,
+        (double)(main.x-sidebar.x-sidebar.width),(double)bar.y,(double)bar.height,
+        complete ? "true" : "false",app.model.page->count,app.model.page->partial ? "true" : "false",
         image.visible,image.ready,image.failed,image.pending,image.missing,
         app.sidebar.page ? "retained live rootlist playlists" : "unavailable",app.sidebar.page ? app.sidebar.page->count : 0,
         image.sidebar_visible,image.sidebar_ready,image.sidebar_failed,image.sidebar_pending,image.sidebar_missing,
@@ -197,7 +205,7 @@ bool live_capture_page_at(const CollectionPage *page,AppRequest request,Collecti
     const char *notice,const char *directory,const char *name,bool grid,LiveCaptureViewport size,const AppRootlistPage *sidebar)
 {
     if (owner || !page || !directory || !name_valid(name) || !request.generation || request.sidebar ||
-        size.width<400 || size.width>1800 || size.height<320 || size.height>900 || size.dpi<96 || size.dpi>192 ||
+        size.width<400 || size.width>1920 || size.height<320 || size.height>1100 || size.dpi<96 || size.dpi>192 ||
         request.generation==UINT64_MAX || page->json.generation!=request.generation ||
         page->kind!=request.kind || page->offset!=request.cursor ||
         (request.screen!=APP_HOME && request.screen!=APP_LIBRARY) ||
@@ -243,7 +251,7 @@ bool live_capture_page_at(const CollectionPage *page,AppRequest request,Collecti
         size_t bytes=0;
         while (bytes<APP_NOTICE_BYTES && notice[bytes]) { ++bytes; }
         if (bytes==APP_NOTICE_BYTES ||
-            app_set_notice(&app,APP_WARNING,(Clay_String){false,(int32_t)bytes,notice})!=APP_OK) { goto done; }
+            app_set_notice(&app,APP_INFORMATION,(Clay_String){false,(int32_t)bytes,notice})!=APP_OK) { goto done; }
     }
     text=(FontMeasureContext){.cache=&fonts,.config={.dpi=(uint16_t)size.dpi,.weight=400,.max_width=260,.ellipsis=true}};
     app_bind_fonts(&app,&text);
@@ -287,6 +295,31 @@ bool live_capture_matrix(const CollectionPage *page,AppRequest request,Collectio
                 ok=captured && ok;
                 if (owner) { return false; } /* Preserve dependencies after incomplete cleanup. */
             }
+        }
+    }
+    return ok;
+}
+bool live_capture_reference(const CollectionPage *page,AppRequest request,CollectionResult result,
+    const char *notice,const char *directory,const char *name,const AppRootlistPage *sidebar)
+{
+    if (!name_valid(name) || !page || (request.screen!=APP_HOME && request.screen!=APP_LIBRARY)) { return false; }
+    static const LiveCaptureViewport sizes[]={
+        {1100,900,96},{1600,900,96},{1920,1033,96},
+        {800,816,120},{1100,816,120},{1536,817,120},
+        {800,672,144},{983,672,144},{1280,673,144}};
+    static const char *const widths[]={"narrow","default","wide"};
+    unsigned views=request.screen==APP_LIBRARY ? 2 : 1; bool ok=true;
+    for (unsigned view=0;view<views;++view) {
+        for (unsigned i=0;i<sizeof(sizes)/sizeof(sizes[0]);++i) {
+            char identity[64]; int n=snprintf(identity,sizeof(identity),"%s%s-reference-%s-%u",name,
+                request.screen==APP_LIBRARY ? view ? "-grid" : "-list" : "",widths[i%3],sizes[i].dpi);
+            if (n<=0 || (size_t)n>=sizeof(identity)) { return false; }
+            LiveCaptureViewport size=sizes[i];
+            /* The separately captured 150% default grid stopped at 976 DIP;
+             * Home/list stopped at 983. Preserve observed sizes exactly. */
+            if (view && i==7) { size.width=976; }
+            ok=live_capture_page_at(page,request,result,notice,directory,identity,view!=0,size,sidebar) && ok;
+            if (owner) { return false; }
         }
     }
     return ok;

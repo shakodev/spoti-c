@@ -59,7 +59,7 @@ static void search(App *a,float width)
 void app_header(App *a)
 {
     float group=fminf(602,a->geometry.width-200), side=(a->geometry.width-16-group)/2;
-    CLAY(CLAY_ID("AppTitle"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(56)},
+    CLAY(CLAY_ID("AppTitle"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(64)},
         .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
         CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(side),CLAY_SIZING_FIXED(48)},.childGap=4,
             .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {

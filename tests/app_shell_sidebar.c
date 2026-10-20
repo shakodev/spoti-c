@@ -160,6 +160,11 @@ static void menu_and_geometry(void)
         Clay_BoundingBox center=Clay_GetElementData(CLAY_ID("HeaderCenter")).boundingBox;
         Clay_BoundingBox avatar=Clay_GetElementData(CLAY_ID("NavAuth")).boundingBox;
         CHECK(fabsf(center.x+center.width/2-widths[i]/2)<0.01f && avatar.x+avatar.width<=widths[i]-8);
+        Clay_BoundingBox body=Clay_GetElementData(CLAY_ID("AppBody")).boundingBox;
+        Clay_BoundingBox bar=Clay_GetElementData(CLAY_ID("AppNowPlaying")).boundingBox;
+        CHECK(body.y==64 && body.x==8 && body.width==widths[i]-16);
+        CHECK(body.y+body.height==bar.y && bar.y+bar.height==900);
+        CHECK(bar.height==(widths[i]<760 ? 120 : 88));
     }
     shell_action(APP_PROFILE_TOGGLE); CHECK(app.sidebar.profile);
     Clay_RenderCommandArray menu=shell_layout(1100,720,96);

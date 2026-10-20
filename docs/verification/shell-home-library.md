@@ -1,5 +1,8 @@
 # Shell, Home and Library verification (#42)
 
+**Historical receipt.** The later [completion report](shell-home-library-completion.md)
+supersedes the incomplete status and unavailable-reference statements below.
+
 2026-10-20. Isolated worktree `.cache/issue-42`, branch `feat/issue-42`,
 based on main `7a1dcb9` and the #41 dependency `719688c`. The user approved
 integrating the main worktree's existing live host and read-only account/GPU

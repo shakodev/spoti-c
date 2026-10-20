@@ -95,14 +95,15 @@ static void probe_images(const CollectionPage *page, const CancelToken *cancel)
 
 int main(int argc, char **argv)
 {
-    bool variants=false,capture=false,matrix=false;
+    bool variants=false,capture=false,matrix=false,reference=false;
     for (int i=1;i<argc;++i) {
         if (!strcmp(argv[i],"--image-variants")) { variants=true; }
         else if (!strcmp(argv[i],"--capture")) { capture=true; }
         else if (!strcmp(argv[i],"--capture-matrix")) { matrix=true; }
+        else if (!strcmp(argv[i],"--capture-reference")) { reference=true; }
         else if (!strcmp(argv[i],"--help")) {
-            puts("Usage: spotic-live-probe [--image-variants] [--capture] [--capture-matrix]"); return 0;
-        } else { fputs("Usage: spotic-live-probe [--image-variants] [--capture] [--capture-matrix]\n",stderr); return 2; }
+            puts("Usage: spotic-live-probe [--image-variants] [--capture] [--capture-matrix] [--capture-reference]"); return 0;
+        } else { fputs("Usage: spotic-live-probe [--image-variants] [--capture] [--capture-matrix] [--capture-reference]\n",stderr); return 2; }
     }
     /* This diagnostic is a dedicated non-UI process/service owner. */
     core_thread_register_background();
@@ -152,7 +153,7 @@ int main(int argc, char **argv)
             collection_service_init(h->collection_storage,sizeof(h->collection_storage),h->pool,&h->collections)==COLLECTION_OK;
         if (ok) { h->rootlists=app_rootlist_store(h->collection_storage,sizeof(h->collection_storage)); ok=h->rootlists!=NULL; }
         strcpy_s(h->timezone,sizeof(h->timezone),"Europe/Amsterdam"); h->authenticated=true;
-        if (ok && (capture || matrix)) {
+        if (ok && (capture || matrix || reference)) {
             LiveSlot rootlist={.request={.kind=COLLECTION_LIBRARY,.screen=APP_LIBRARY,.generation=1,.serial=1,.sidebar=true}};
             live_request(h,&rootlist,&cancel); sidebar=rootlist.rootlist;
             bool accepted=rootlist.result==COLLECTION_OK && sidebar;
@@ -193,6 +194,10 @@ int main(int argc, char **argv)
                     bool captured=live_capture_matrix(slot.page,slot.request,slot.result,slot.message,
                         "build/live-captures",i ? "library" : "home",sidebar);
                     all_ok=captured && all_ok;
+                }
+                if (reference) {
+                    all_ok=live_capture_reference(slot.page,slot.request,slot.result,slot.message,
+                        "build/live-captures",i ? "library" : "home",sidebar) && all_ok;
                 }
                 (void)page_release((JsonPage *)&slot.page->json);
             }
