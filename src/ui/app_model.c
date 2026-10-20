@@ -17,6 +17,7 @@ static AppResult generation(App *a)
     if (a->model.generation == UINT64_MAX) { return APP_FULL; }
     if (a->model.pending && a->services.cancel) { a->services.cancel(a->services.context,&a->model.request); }
     a->model.pending = false; release_page(a); app_catalog_clear(a); ++a->model.generation;
+    if (!a->model.auth_pending) { a->model.notice[0]=0; }
     if (a->services.retire) { a->services.retire(a->services.context,a->model.generation); }
     if (a->services.playlist) { playlist_close(a->services.playlist); }
     (void)ui_text_set(&a->widgets.texts[0],"",0);
@@ -179,7 +180,7 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_MUTE ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_READ_MESSAGES ||
         (action.type==APP_VOLUME && !isfinite(action.value)) ||
         (action.type==APP_SELECT && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
@@ -193,6 +194,7 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
 {
     AppModel *m = &a->model;
     switch (action.type) {
+    case APP_READ_MESSAGES: return app_messages_request(a);
     case APP_GO_HOME: return navigate(a,(AppLocation){.screen=APP_HOME},false);
     case APP_GO_LIBRARY: return navigate(a,(AppLocation){.screen=APP_LIBRARY},false);
     case APP_GO_SETTINGS: return navigate(a,(AppLocation){.screen=APP_SETTINGS},false);

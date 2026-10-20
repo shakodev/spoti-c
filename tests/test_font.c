@@ -67,10 +67,11 @@ static void unicode(void)
     CHECK(long_metrics.trimmed && long_metrics.width <= 80 && long_metrics.glyphs < 100);
     CHECK(font_stats(&cache).com_objects == 1);
     k = config(); k.size = 96; k.dpi = 384; FontHandle full;
-    CHECK(font_prepare_text(&cache,text("WW"),&k,&full) == FONT_FULL);
+    CHECK(font_prepare_text(&cache,text("WW"),&k,&full) == FONT_OK); /* Tiled within existing budgets. */
+    CHECK(font_prepare_text(&cache,text(long_name),&k,&full) == FONT_FULL);
     CHECK(font_stats(&cache).com_objects == 1);
     uint32_t old_wakes = wakes;
-    for (unsigned i = 0; i < 1000; ++i) { CHECK(font_request_text(&cache,text("WW"),&k) == FONT_FULL); }
+    for (unsigned i = 0; i < 1000; ++i) { CHECK(font_request_text(&cache,text(long_name),&k) == FONT_FULL); }
     CHECK(wakes == old_wakes && font_stats(&cache).pending == 0);
     printf("advances: Hello=%.3f Arabic=%.3f emoji=%.3f ellipsis=%.3f\n",
         (double)ascii.width,(double)arabic.width,(double)emoji.width,(double)trimmed.width);
@@ -85,7 +86,8 @@ static void misses(void)
     CHECK(font_prepare_pending(&cache) == FONT_OK);
     CHECK(font_atlas_commit(&cache,257) == FONT_OK);
     Clay_Dimensions dims = font_measure(text("cached"),&clay,&ctx); CHECK(dims.width > 0 && ctx.last_result == FONT_OK);
-    FontHandle h; CHECK(font_lookup(&cache,text("cached"),&k,&h) == FONT_OK);
+    FontHandle h; CHECK(font_prepare_text(&cache,text("cached"),&k,&h) == FONT_OK);
+    CHECK(font_atlas_commit(&cache,257) == FONT_OK);
     const float white[4] = {1,1,1,1}; uint64_t prepared = font_stats(&cache).prepared;
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CrtSetAllocHook(allocation_hook); heap_calls = 0; watch_heap = true;
@@ -141,6 +143,9 @@ static void clay_binding(void)
     (void)Clay_EndLayout(0);
     CHECK(font_stats(&cache).pending > 0);
     CHECK(font_prepare_pending(&cache) == FONT_OK); CHECK(font_atlas_commit(&cache,257) == FONT_OK);
+    FontConfig drawing=config(); FontHandle glyphs;
+    CHECK(font_prepare_text(&cache,text("cached"),&drawing,&glyphs)==FONT_OK);
+    CHECK(font_atlas_commit(&cache,257)==FONT_OK);
     UiClayBridge bridge = {.custom=font_render_clay,.context=&ctx};
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CrtSetAllocHook(allocation_hook); heap_calls = 0; watch_heap = true;

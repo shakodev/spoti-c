@@ -15,7 +15,7 @@ static bool config_equal(const FontConfig *a, const FontConfig *b)
     return a->face == b->face && a->size == b->size && a->dpi == b->dpi && a->weight == b->weight &&
         a->letter_spacing == b->letter_spacing && a->line_height == b->line_height &&
         a->max_width == b->max_width && a->text_generation == b->text_generation &&
-        a->italic == b->italic && a->rtl == b->rtl && a->ellipsis == b->ellipsis;
+        a->italic == b->italic && a->rtl == b->rtl && a->ellipsis == b->ellipsis && a->measure_only == b->measure_only;
 }
 bool font_key(const FontRun *r, Clay_StringSlice text, const FontConfig *config)
 {
@@ -123,17 +123,19 @@ FontResult font_metrics(FontCache *c, FontHandle handle, FontMetrics *out)
     font_touch(c,&c->runs[handle.slot]); *out = c->runs[handle.slot].metrics; return FONT_OK;
 }
 
-static FontConfig clay_config(FontMeasureContext *context, uint16_t face, uint16_t size, uint16_t spacing, uint16_t height)
+FontConfig font_clay_config(const FontMeasureContext *context, uint16_t face, uint16_t size, uint16_t spacing, uint16_t height)
 {
     FontConfig config = context->config;
     config.face = face; config.size = size; config.letter_spacing = spacing; config.line_height = height;
+    if (face==FONT_FACE_NOTICE) { config.face=0; config.max_width=0; config.ellipsis=false; }
     return config;
 }
 Clay_Dimensions font_measure(Clay_StringSlice text, Clay_TextElementConfig *config, void *user_data)
 {
     FontMeasureContext *ctx = user_data;
     if (!ctx || !config) { return (Clay_Dimensions){0}; }
-    FontConfig key = clay_config(ctx,config->fontId,config->fontSize,config->letterSpacing,config->lineHeight);
+    FontConfig key = font_clay_config(ctx,config->fontId,config->fontSize,config->letterSpacing,config->lineHeight);
+    key.measure_only=true;
     FontHandle handle; FontMetrics metrics;
     ctx->last_result = font_lookup(ctx->cache,text,&key,&handle);
     if (ctx->last_result == FONT_OK) {
@@ -149,7 +151,7 @@ UiRenderResult font_render_clay(void *context, UiRenderFrame *frame, const Clay_
     FontMeasureContext *ctx = context;
     if (!ctx || !command || command->commandType != CLAY_RENDER_COMMAND_TYPE_TEXT) { return UI_RENDER_UNSUPPORTED; }
     const Clay_TextRenderData *text = &command->renderData.text;
-    FontConfig key = clay_config(ctx,text->fontId,text->fontSize,text->letterSpacing,text->lineHeight);
+    FontConfig key = font_clay_config(ctx,text->fontId,text->fontSize,text->letterSpacing,text->lineHeight);
     FontHandle handle; ctx->last_result = font_lookup(ctx->cache,text->stringContents,&key,&handle);
     if (ctx->last_result == FONT_OK) {
         const float color[4] = {text->textColor.r / 255,text->textColor.g / 255,text->textColor.b / 255,text->textColor.a / 255};

@@ -135,6 +135,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
         if (app_init(&desktop.app,&services,&window.scheduler,clay,sizeof(clay),scratch,sizeof(scratch)) == APP_OK) {
             startup_restore(&desktop.app,&startup.restored);
             desktop.surface.app=&desktop.app;
+            /* Compact labels may trim. FONT_FACE_NOTICE explicitly bypasses
+             * this policy in both Clay measurement and glyph rendering. */
             desktop.surface.text.config.weight=400; desktop.surface.text.config.max_width=260; desktop.surface.text.config.ellipsis=true;
             app_bind_fonts(&desktop.app,&desktop.surface.text);
             ShowWindow(window.hwnd,SW_SHOWNORMAL);

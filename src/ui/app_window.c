@@ -27,6 +27,13 @@ void app_desktop_prepare(void *context, UiWindow *window, uint32_t dirty)
         (void)app_update(&d->app,GetTickCount64());
     }
     app_desktop_media_prepare(d,GetTickCount64());
+    if (d->app.messages.requested) {
+        d->app.messages.requested=false;
+        if (!app_messages_dialog(window->hwnd,d->app.messages.details)) {
+            (void)app_set_notice(&d->app,APP_FAILURE,CLAY_STRING("Could not open message details. Try Read messages again."));
+        }
+        ui_scheduler_dirty(&window->scheduler,UI_DIRTY_STATE);
+    }
     (void)font_prepare_pending(&d->surface.fonts);
     (void)font_upload_renderer(&d->surface.fonts,&d->surface.renderer);
 }

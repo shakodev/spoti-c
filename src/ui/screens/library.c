@@ -28,6 +28,6 @@ void app_library(App *a)
     CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(28)},.childGap=8}}) {
         (void)app_button(a,CLAY_ID("AppMore"),a->model.pending ? CLAY_STRING("Loading...") : CLAY_STRING("Load more"),112,
             (AppAction){.type=APP_MORE},a->model.pending || a->model.page->next == COLLECTION_END);
-        if (a->model.page->partial) { app_label(CLAY_STRING("Some items unavailable"),14,(Clay_Color){180,180,180,255}); }
+        if (a->model.page->partial) { app_message(a,CLAY_STRING("Some items unavailable"),APP_WARNING); }
     }
 }

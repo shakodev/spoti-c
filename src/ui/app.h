@@ -15,6 +15,7 @@ struct PlaylistQueue;
 #define APP_IMAGES 16u
 #define APP_INPUTS 16u
 #include "app_result.h"
+#include "app_notice.h"
 #include "screens/catalog_view.h"
 typedef enum AppScreen { APP_HOME, APP_LIBRARY, APP_SETTINGS, APP_SHELF, APP_PLAYLIST,
     APP_SEARCH, APP_ALBUM, APP_ARTIST, APP_LYRICS } AppScreen;
@@ -53,11 +54,11 @@ typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_B
     APP_PREVIOUS, APP_NEXT, APP_SEEK, APP_VOLUME, APP_DETAIL,
     APP_TRACK_QUERY, APP_TRACK_SORT, APP_TRACK_PLAY, APP_TRACK_WINDOW,
     APP_GO_SEARCH, APP_GO_LYRICS, APP_CATALOG_QUERY, APP_CATALOG_SECTION,
-    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE } AppActionType;
+    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
 typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
-typedef struct AppMeasure { FontConfig config; Clay_Dimensions dimensions; char text[192]; uint32_t length; } AppMeasure;
+typedef struct AppMeasure { FontConfig config; Clay_Dimensions dimensions; char text[128]; uint32_t length; } AppMeasure;
 typedef struct AppGeometry { float width, height, sidebar, main, viewport, detail, bar; bool compact; } AppGeometry;
 
 typedef struct AppVolume {
@@ -80,6 +81,8 @@ typedef struct AppModel {
     uint8_t playing_artwork_id[16];
     AppStatus status;
     AppResult last_result;
+    char notice[APP_NOTICE_BYTES]; /* Public diagnostic only; never credentials. */
+    AppSeverity notice_severity;
     bool logged_in, online, pending, detail, auth_pending;
 } AppModel;
 typedef struct App {
@@ -105,6 +108,7 @@ typedef struct App {
     uint64_t measure_generation;
     uint16_t measure_dpi;
     AppGeometry geometry;
+    AppMessages messages;
     FontMeasureContext *fonts; /* Optional; caller prepares pending text. */
     Clay_RenderCommandArray commands;
     char time[64], volume[40];
