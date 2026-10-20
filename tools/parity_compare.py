@@ -101,6 +101,18 @@ def load(path, metadata):
     return info, pixels
 
 
+def check_output_paths(output, inputs, comparing):
+    names = ["native.png"]
+    if comparing:
+        names += ["reference.png", "comparison.png", "difference.png", "comparison.json"]
+    for name in names:
+        target = output / name
+        for source in inputs:
+            if source is not None and (target.resolve() == source.resolve() or
+                                       (target.exists() and source.samefile(target))):
+                raise ValueError(f"Output would overwrite an input: {target}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("native", type=Path)
@@ -111,24 +123,33 @@ def main():
     args = parser.parse_args()
     info, native = load(args.native, args.metadata)
     width, height = info["width"], info["height"]
+    if args.reference is not None:
+        if args.reference_metadata is None:
+            raise ValueError("Reference metadata is required for comparisons")
+        ref_info, reference = load(args.reference, args.reference_metadata)
+        if any(info[k] != ref_info[k] for k in ("width", "height", "dpi")):
+            raise ValueError("Compare identical pixel crop sizes and DPI; no implicit resize")
+    check_output_paths(args.output,
+                       [args.native, args.metadata, args.reference, args.reference_metadata],
+                       args.reference is not None)
     args.output.mkdir(parents=True, exist_ok=True)
     write_png(args.output / "native.png", width, height, native)
     if args.reference is None:
         return
-    if args.reference_metadata is None:
-        raise ValueError("Reference metadata is required for comparisons")
-    ref_info, reference = load(args.reference, args.reference_metadata)
-    if any(info[k] != ref_info[k] for k in ("width", "height", "dpi")):
-        raise ValueError("Compare identical pixel crop sizes and DPI; no implicit resize")
     rows, difference, changed, total = bytearray(), bytearray(), 0, 0
+    changed_alpha, total_alpha = 0, 0
     for y in range(height):
         start, end = y * width * 4, (y + 1) * width * 4
         rows.extend(reference[start:end] + native[start:end])
     for i in range(0, len(native), 4):
         delta = [abs(native[i + c] - reference[i + c]) for c in range(3)]
-        changed += any(delta)
+        alpha = abs(native[i + 3] - reference[i + 3])
+        changed += any(delta) or alpha != 0
+        changed_alpha += alpha != 0
         total += sum(delta)
-        difference.extend(bytes(delta) + b"\xff")
+        total_alpha += alpha
+        # Show alpha-only differences as grayscale in the opaque heatmap.
+        difference.extend(bytes(max(channel, alpha) for channel in delta) + b"\xff")
     write_png(args.output / "reference.png", width, height, reference)
     write_png(args.output / "comparison.png", width * 2, height, rows)
     write_png(args.output / "difference.png", width, height, difference)
@@ -136,6 +157,7 @@ def main():
               "reference_pixels_sha256": hashlib.sha256(reference).hexdigest(),
               "native_pixels_sha256": hashlib.sha256(native).hexdigest(),
               "changed_pixels": changed, "mean_absolute_rgb_error": total / (width * height * 3),
+              "changed_alpha_pixels": changed_alpha, "mean_absolute_alpha_error": total_alpha / (width * height),
               "interpretation": "Measurements only; review geometry, states, fonts and service differences separately."}
     (args.output / "comparison.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
