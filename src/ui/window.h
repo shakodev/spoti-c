@@ -52,7 +52,7 @@ bool ui_window_destroy(UiWindow *window);
  * is a harness bound; production passes INFINITE. False means closed or error. */
 bool ui_window_step(UiWindow *window, uint32_t max_wait_ms);
 void ui_window_set_occluded(UiWindow *window, bool occluded);
-/* Pure geometry helper: screen-relative coordinates translated by the caller. */
-LRESULT ui_window_hit_test(int x, int y, int width, int height, UINT dpi, bool maximized);
+/* Standard nonclient layout, painting and hit testing belong to Windows. The
+ * renderer and application input coordinates cover only GetClientRect(). */
 
 #endif

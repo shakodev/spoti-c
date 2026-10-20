@@ -56,10 +56,12 @@ nonblocking and must use preallocated storage. Dirty, wake, timeout, render and
 timer counters are inspectable for tests and release benchmarks.
 
 Keep WS_OVERLAPPEDWINDOW system semantics, DWM caption buttons, resize borders,
-drag/snap, system menu and default keyboard/IME/accessibility processing. Custom
-nonclient calculation extends the client under the caption; DWM hit testing runs
-before DPI-scaled resize/caption fallback. Device messages dirty one frame and
-notify the owner; no audio/network work runs in WndProc.
+drag/snap, system menu and default keyboard/IME/accessibility processing.
+Issue #37 restores the standard nonclient caption: the earlier client extension
+allowed the opaque DX11 surface to cover its glyphs. Native nonclient layout and
+hit testing replace the guessed caption geometry; see [window-caption.md](window-caption.md).
+Device messages dirty one frame and notify the owner; no audio/network work runs
+in WndProc.
 
 Platform references: Microsoft's [custom frame guidance](https://learn.microsoft.com/en-us/windows/win32/dwm/customframe)
 and [DwmDefWindowProc contract](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc)

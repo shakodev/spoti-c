@@ -1,5 +1,4 @@
 #include "window.h"
-#include <windowsx.h>
 #include <dwmapi.h>
 
 static const wchar_t window_class[] = L"SpoticWindow25";
@@ -16,31 +15,6 @@ static void render_dirty(UiWindow *w)
         metrics_count(w->config.metrics, METRIC_RENDER, 1);
         w->config.frame(w->config.context, w, reasons);
     }
-}
-
-LRESULT ui_window_hit_test(int x, int y, int width, int height, UINT dpi, bool maximized)
-{
-    if (x < 0 || y < 0 || x >= width || y >= height) { return HTNOWHERE; }
-    int border = GetSystemMetricsForDpi(SM_CXSIZEFRAME, dpi) +
-        GetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi);
-    if (!maximized) {
-        bool left = x < border, right = x >= width - border;
-        bool top = y < border, bottom = y >= height - border;
-        if (top) { return left ? HTTOPLEFT : right ? HTTOPRIGHT : HTTOP; }
-        if (bottom) { return left ? HTBOTTOMLEFT : right ? HTBOTTOMRIGHT : HTBOTTOM; }
-        if (left || right) { return left ? HTLEFT : HTRIGHT; }
-    }
-    int caption = GetSystemMetricsForDpi(SM_CYCAPTION, dpi) + border;
-    if (y < caption) {
-        if (x < scaled(32, dpi)) { return HTSYSMENU; }
-        /* DWM handles the actual button rectangles first. This fallback also
-         * preserves system commands if desktop composition is unavailable. */
-        if (x >= width - scaled(46, dpi)) { return HTCLOSE; }
-        if (x >= width - scaled(92, dpi)) { return HTMAXBUTTON; }
-        if (x >= width - scaled(138, dpi)) { return HTMINBUTTON; }
-        return HTCAPTION;
-    }
-    return HTCLIENT;
 }
 
 static void visibility(UiWindow *w)
@@ -64,6 +38,8 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
         SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)w);
     }
     if (!w) { return DefWindowProcW(hwnd, message, wp, lp); }
+    /* DWM owns caption hit testing and nonclient pointer tracking on composed
+     * desktops. Keep it ahead of the application's client-input router. */
     LRESULT dwm_result;
     if (DwmDefWindowProc(hwnd, message, wp, lp, &dwm_result)) {
         return dwm_result;
@@ -75,32 +51,13 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
         ui_window_set_occluded(w, false);
         ui_scheduler_dirty(&w->scheduler, UI_DIRTY_PAINT);
         return 0;
-    case WM_NCCALCSIZE:
-        if (wp) {
-            /* Keep the system resize frame on three sides and use the caption
-             * as client space. Maximized bounds retain the top resize inset. */
-            RECT original = ((NCCALCSIZE_PARAMS *)lp)->rgrc[0];
-            LRESULT result = DefWindowProcW(hwnd, message, wp, lp);
-            RECT *rect = &((NCCALCSIZE_PARAMS *)lp)->rgrc[0];
-            rect->top = original.top;
-            if (IsZoomed(hwnd)) {
-                UINT dpi = GetDpiForWindow(hwnd);
-                rect->top += GetSystemMetricsForDpi(SM_CYSIZEFRAME, dpi) +
-                    GetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi);
-            }
-            return result;
-        }
-        break;
-    case WM_NCHITTEST: {
-        RECT rect; GetWindowRect(hwnd, &rect);
-        return ui_window_hit_test(GET_X_LPARAM(lp) - rect.left, GET_Y_LPARAM(lp) - rect.top,
-            rect.right - rect.left, rect.bottom - rect.top, w->dpi, IsZoomed(hwnd) != FALSE);
-    }
     case WM_CREATE: {
         w->dpi = GetDpiForWindow(hwnd);
-        MARGINS margins = {0, 0, GetSystemMetricsForDpi(SM_CYCAPTION, w->dpi) +
-            GetSystemMetricsForDpi(SM_CYSIZEFRAME, w->dpi), 0};
-        (void)DwmExtendFrameIntoClientArea(hwnd, &margins);
+        /* Keep the caption outside the opaque DX11 client surface. Native
+         * layout/drawing/hit testing own the same button rectangles and states.
+         * Older Windows versions simply retain their default native theme. */
+        BOOL dark = TRUE;
+        (void)DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark, sizeof(dark));
         break;
     }
     case WM_DPICHANGED: {
@@ -108,9 +65,6 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT message, WPARAM wp, LPARAM l
         RECT *rect = (RECT *)lp;
         SetWindowPos(hwnd, NULL, rect->left, rect->top, rect->right - rect->left,
             rect->bottom - rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
-        MARGINS margins = {0, 0, GetSystemMetricsForDpi(SM_CYCAPTION, w->dpi) +
-            GetSystemMetricsForDpi(SM_CYSIZEFRAME, w->dpi), 0};
-        (void)DwmExtendFrameIntoClientArea(hwnd, &margins);
         ui_scheduler_dirty(&w->scheduler, UI_DIRTY_SIZE);
         return 0;
     }

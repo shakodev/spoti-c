@@ -6,6 +6,8 @@
 #include <process.h>
 #include <stdatomic.h>
 
+void window_caption_tests(UiWindow *window);
+
 typedef struct Harness {
     UiWindow window;
     EventQueue *queue;
@@ -43,26 +45,6 @@ static unsigned __stdcall producer(void *context)
         CHECK(result == CORE_OK);
     }
     return 0;
-}
-
-static void hit_tests(void)
-{
-    for (UINT dpi = 96; dpi <= 192; dpi += 48) {
-        CHECK(ui_window_hit_test(0, 0, 1200, 800, dpi, false) == HTTOPLEFT);
-        CHECK(ui_window_hit_test(1199, 0, 1200, 800, dpi, false) == HTTOPRIGHT);
-        CHECK(ui_window_hit_test(0, 799, 1200, 800, dpi, false) == HTBOTTOMLEFT);
-        CHECK(ui_window_hit_test(1199, 799, 1200, 800, dpi, false) == HTBOTTOMRIGHT);
-        CHECK(ui_window_hit_test(500, 0, 1200, 800, dpi, false) == HTTOP);
-        CHECK(ui_window_hit_test(0, 400, 1200, 800, dpi, false) == HTLEFT);
-        CHECK(ui_window_hit_test(500, 400, 1200, 800, dpi, false) == HTCLIENT);
-        int y = GetSystemMetricsForDpi(SM_CYSIZEFRAME, dpi) +
-            GetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi) + 2;
-        CHECK(ui_window_hit_test(500, y, 1200, 800, dpi, false) == HTCAPTION);
-        CHECK(ui_window_hit_test(1170, y, 1200, 800, dpi, false) == HTCLOSE);
-        CHECK(ui_window_hit_test(1200 - MulDiv(70, (int)dpi, 96), y, 1200, 800, dpi, false) == HTMAXBUTTON);
-        CHECK(ui_window_hit_test(500, 0, 1200, 800, dpi, true) == HTCAPTION);
-        CHECK(ui_window_hit_test(-1, 0, 1200, 800, dpi, false) == HTNOWHERE);
-    }
 }
 
 static void geometry(Harness *h)
@@ -158,7 +140,7 @@ int main(int argc, char **argv)
     config.metrics = &metrics; config.frame = frame; config.worker = worker;
     config.device = device; config.context = &h;
     CHECK(ui_window_create(&h.window, &config));
-    hit_tests(); geometry(&h);
+    window_caption_tests(&h.window); geometry(&h);
     idle_trace(&h, argc == 2 && strcmp(argv[1], "--bench") == 0 ? 3000u : 100u);
     ui_window_set_occluded(&h.window, true);
     CHECK(ui_scheduler_wait(&h.window.scheduler, GetTickCount64()) == INFINITE);
@@ -195,7 +177,7 @@ int main(int argc, char **argv)
     CHECK(ui_window_destroy(&h.window)); CHECK(event_queue_destroy(h.queue) == CORE_OK);
     CHECK(event_queue_create(&arena, 2, &h.queue) == CORE_OK); config.workers = h.queue;
     CHECK(ui_window_create(&h.window, &config));
-    SendMessageW(h.window.hwnd, WM_CLOSE, 0, 0);
+    SendMessageW(h.window.hwnd, WM_SYSKEYDOWN, VK_F4, (LPARAM)1 << 29);
     CHECK(!ui_window_step(&h.window, 0)); CHECK(ui_window_destroy(&h.window));
     CHECK(event_queue_close(h.queue) == CORE_OK); CHECK(event_queue_destroy(h.queue) == CORE_OK);
     arena_dispose(&arena); CHECK(metrics_balanced(&metrics));
