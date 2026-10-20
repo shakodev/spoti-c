@@ -61,9 +61,18 @@ static void status(App *a)
         "Your session expired. Sign in again." : a->model.status == APP_OFFLINE ?
         "You are offline." : a->model.status == APP_SIGNED_OUT ? "Sign in to see your music." :
         "Couldn't load this page. Try again.";
-    app_message(a,(Clay_String){true,(int32_t)strlen(s),s},
-        a->model.status==APP_ERROR || a->model.status==APP_AUTH_EXPIRED ? APP_FAILURE :
-        a->model.status==APP_OFFLINE ? APP_WARNING : APP_INFORMATION);
+    AppSeverity severity=a->model.status==APP_ERROR || a->model.status==APP_AUTH_EXPIRED ? APP_FAILURE :
+        a->model.status==APP_OFFLINE ? APP_WARNING : APP_INFORMATION;
+    if (a->messages.length) {
+        /* An existing notice already explains the route. Retain the generic
+         * status in Read messages without spending a second preview row. */
+        const char *label=severity==APP_FAILURE ? "Error" : severity==APP_WARNING ? "Warning" : "Information";
+        AppMessages *m=&a->messages; size_t capacity=sizeof(m->text)-m->length;
+        if (strlen(label)+strlen(s)+6<capacity) {
+            int bytes=snprintf(m->text+m->length,capacity,"%s: %s\r\n\r\n",label,s);
+            if (bytes>0) { m->length+=(uint32_t)bytes; }
+        } else { m->full=true; }
+    } else { app_message(a,(Clay_String){true,(int32_t)strlen(s),s},severity); }
     if (a->model.status == APP_ERROR || a->model.status == APP_OFFLINE) {
         (void)app_button(a,CLAY_ID("AppRetry"),CLAY_STRING("Try again"),108,(AppAction){.type=APP_RETRY},a->model.pending);
     }
@@ -96,13 +105,13 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
     a->sidebar.visible_count=0;
     a->messages.length=0; a->messages.text[0]=0; a->messages.full=false;
     CLAY(CLAY_ID("AppRoot"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
-        .padding=CLAY_PADDING_ALL(8),.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},.backgroundColor={8,8,8,255}}) {
+        .padding={8,8,0,0},.layoutDirection=CLAY_TOP_TO_BOTTOM},.backgroundColor={0,0,0,255}}) {
         app_header(a);
         CLAY(CLAY_ID("AppBody"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},.childGap=8}}) {
             app_sidebar(a);
             CLAY(CLAY_ID("AppMain"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
                 .padding=CLAY_PADDING_ALL(12),.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},
-                .backgroundColor={20,20,20,255},.cornerRadius=CLAY_CORNER_RADIUS(8),.clip={.horizontal=true,.vertical=true}}) {
+                .backgroundColor={18,18,18,255},.cornerRadius=CLAY_CORNER_RADIUS(8),.clip={.horizontal=true,.vertical=true}}) {
                 CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(28)},.childGap=8}}) {
                     (void)app_button(a,CLAY_ID("AppBack"),CLAY_STRING("Back"),56,(AppAction){.type=APP_BACK},!a->model.history_count);
                     CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(fmaxf(0,g->main-224)),CLAY_SIZING_FIXED(28)}},.clip={.horizontal=true,.vertical=true}}) {

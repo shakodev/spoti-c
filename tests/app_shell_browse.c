@@ -420,9 +420,10 @@ static void visible_admission(void)
     dense_art_all=false; CHECK(artwork_stop(art)==ART_OK);
     CHECK(worker_stop(worker)==CORE_OK && worker_join(worker,5000)==CORE_OK); arena_dispose(&core);
 }
+void shell_pagination(void);
 void shell_browse(void)
 {
-    home_density(); library_projection(); library_grid(); playlist_cards(); visible_admission();
+    home_density(); library_projection(); library_grid(); playlist_cards(); visible_admission(); shell_pagination();
     printf("browse state=%zu; app + media=%zu / %u bytes\n",sizeof(App),
         sizeof(App)+sizeof(MediaControls)+sizeof(MediaWinrt),(unsigned)MEMORY_BUDGET_UI_STATE);
 }

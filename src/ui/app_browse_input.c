@@ -14,7 +14,7 @@ AppResult app_browse_key(App *a, AppKey key, const AppControl *control)
     uint32_t columns=a->model.location.grid ? app_browse_columns(a) : 1;
     float width=(a->geometry.main-32-(columns-1)*12)/(float)columns;
     double height=a->model.location.grid ? width+52 : 64;
-    double viewport=fmin(a->model.location.grid ? 2*height : 384,fmax(0,a->geometry.viewport-90));
+    double viewport=fmin(a->model.location.grid ? 2*height : 384,app_browse_viewport(a,true));
     uint32_t step=(uint32_t)fmax(1,floor(viewport/height))*columns;
     uint32_t next=position;
     switch (key) {
@@ -35,7 +35,7 @@ AppResult app_browse_key(App *a, AppKey key, const AppControl *control)
     }
     list->focus=list->selection=(uint64_t)offset+a->browse.order[next]+1;
     double top=(next/columns)*height;
-    if (top<list->scroll) { list->scroll=top; }
+    if (viewport<height || top<list->scroll) { list->scroll=top; }
     else if (top+height>list->scroll+viewport) { list->scroll=fmax(0,top+height-viewport); }
     a->widgets.focus=CLAY_ID("AppList").id; return APP_OK;
 }

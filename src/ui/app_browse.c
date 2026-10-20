@@ -38,6 +38,29 @@ uint32_t app_browse_columns(const App *a)
 {
     return (uint32_t)fminf(6,fmaxf(1,floorf((a->geometry.main-20)/172)));
 }
+static float viewport_base(const App *a,bool library)
+{
+    /* Reserve the actual shell, main header, query controls and pagination.
+     * A notice can use its full90-DIP preview. Footer actions must remain
+     * reachable in the560-DIP minimum native window, including after errors. */
+    bool notice=a->model.notice[0] || a->model.last_result==APP_FULL ||
+        a->model.last_result==APP_FAILED || a->model.last_result==APP_UNAVAILABLE;
+    bool status=a->model.page && (a->model.status==APP_ERROR || !a->model.page->count);
+    bool footer=library || (a->model.page && a->model.page->next!=COLLECTION_END);
+    bool retry=status && (a->model.status==APP_ERROR || a->model.status==APP_OFFLINE);
+    return fmaxf(0,a->geometry.height-64-a->geometry.bar-24-36-
+        (footer ? 36 : 0)-((notice || status) ? 98 : 0)-(retry ? 36 : 0));
+}
+bool app_browse_queries(const App *a)
+{
+    /* In a short error window, recovery and the retained results take priority
+     * over optional loaded-page search/view controls. Preserve their state. */
+    return a->model.status!=APP_ERROR || viewport_base(a,true)>=104+64;
+}
+float app_browse_viewport(const App *a,bool library)
+{
+    return fmaxf(0,viewport_base(a,library)-(library && app_browse_queries(a) ? 104 : 0));
+}
 void app_browse_restore(App *a)
 {
     (void)ui_text_set(&a->widgets.texts[1],a->model.location.query,(uint32_t)strlen(a->model.location.query));

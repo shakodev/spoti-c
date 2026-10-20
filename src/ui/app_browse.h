@@ -16,6 +16,8 @@ typedef struct AppBrowse {
 struct App;
 void app_browse_project(struct App *);
 uint32_t app_browse_columns(const struct App *);
+float app_browse_viewport(const struct App *,bool library);
+bool app_browse_queries(const struct App *);
 void app_browse_cover(struct App *, const CollectionItem *, uint32_t shelf, uint32_t index, float edge);
 void app_browse_card(struct App *, Clay_ElementId, const CollectionItem *, uint32_t shelf,
     uint32_t index, float width, float edge, bool list);

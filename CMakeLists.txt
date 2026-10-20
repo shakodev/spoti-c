@@ -406,7 +406,7 @@ if(BUILD_TESTING)
         set_tests_properties(bench_tracklist PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
     add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_now.c tests/app_shell_support.c tests/app_shell_window.c
-        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/app_shell_sidebar.c tests/app_shell_visual.c tests/player_test_support.c)
+        tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_pagination.c tests/app_shell_visibility.c tests/app_shell_sidebar.c tests/app_shell_visual.c tests/player_test_support.c)
     target_include_directories(test_app_shell PRIVATE tests)
     target_compile_definitions(test_app_shell PRIVATE
         APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
@@ -414,7 +414,7 @@ if(BUILD_TESTING)
     target_link_libraries(test_app_shell PRIVATE spotic_app spotic_app_fixture spotic_ui_surface)
     add_test(NAME app_shell COMMAND test_app_shell)
     add_test(NAME app_shell_persistent COMMAND test_app_shell --persistent)
-    add_executable(test_app_browse tests/app_shell_browse.c tests/app_shell_support.c)
+    add_executable(test_app_browse tests/app_shell_browse.c tests/app_shell_pagination.c tests/app_shell_support.c)
     target_include_directories(test_app_browse PRIVATE tests)
     target_compile_definitions(test_app_browse PRIVATE APP_BROWSE_TEST_MAIN
         APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app")

@@ -60,7 +60,7 @@ void app_home(App *a)
      * These native density choices are recorded in shell-home-library.md. */
     UiListRange range;
     (void)ui_virtual_list(&a->widgets,CLAY_ID("AppList"),&a->widgets.lists[0],
-        a->model.page->count,layout.height,fminf(a->geometry.viewport,2*layout.height),
+        a->model.page->count,layout.height,fminf(app_browse_viewport(a,false),2*layout.height),
         0,key_at,shelf,&layout,&range);
     if (a->model.page->next!=COLLECTION_END) {
         (void)app_button(a,CLAY_ID("AppMore"),

@@ -34,14 +34,14 @@ static void row(void *context, uint32_t index, uint64_t key)
 void app_library(App *a)
 {
     app_browse_project(a);
-    app_browse_query(a);
+    if (app_browse_queries(a)) { app_browse_query(a); }
     bool grid=a->model.location.grid;
     uint32_t columns=grid ? app_browse_columns(a) : 1;
     float width=(fmaxf(1,a->geometry.main-32)-(float)(columns-1)*12)/(float)columns;
     LibraryLayout layout={.app=a,.columns=columns,.width=width,.grid=grid,
         .edge=grid ? fmaxf(1,width-16) : 48};
     layout.height=grid ? layout.edge+68 : 64;
-    float viewport=fminf(fmaxf(0,a->geometry.viewport-90),grid ? 2*layout.height : 384);
+    float viewport=fminf(app_browse_viewport(a,true),grid ? 2*layout.height : 384);
     if (a->browse.count) {
         UiListRange range;
         uint32_t rows=(a->browse.count+columns-1)/columns;
@@ -49,7 +49,7 @@ void app_library(App *a)
             rows,layout.height,viewport,0,key_at,row,&layout,&range);
     } else {
         a->widgets.lists[0].scroll=0;
-        CLAY(CLAY_ID("AppList"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(48)},
+        CLAY(CLAY_ID("AppList"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(fminf(48,viewport))},
             .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.clip={.horizontal=true,.vertical=true}}) {
             ui_component_label(CLAY_STRING("No matches on this loaded page."),
                 FONT_ROLE_BODY,ui_theme()->body,ui_theme()->subdued,false);
