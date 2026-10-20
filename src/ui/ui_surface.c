@@ -14,7 +14,7 @@ UiRenderResult ui_surface_create(UiSurface *s, UiWindow *w, bool warp)
     s->last_result = ui_renderer_create(&s->renderer, &config);
     s->ready = s->last_result == UI_RENDER_OK;
     if (s->ready) {
-        s->text = (FontMeasureContext){.cache=&s->fonts,.config={.size=20,.dpi=(uint16_t)w->dpi,.weight=700}};
+        s->text = (FontMeasureContext){.cache=&s->fonts,.config={.size=20,.dpi=(uint16_t)w->dpi,.weight=400}};
         s->text.last_result = font_cache_create(&s->fonts,text_wake,w);
         s->fonts_ready = s->text.last_result == FONT_OK;
         if (!s->fonts_ready) { ui_surface_destroy(s); s->last_result = UI_RENDER_OS_ERROR; }
@@ -56,8 +56,9 @@ void ui_surface_prepare(void *context, UiWindow *w, uint32_t dirty)
         }
         s->text.last_result = font_prepare_pending(&s->fonts);
         if (s->text.last_result == FONT_OK) {
+            FontConfig caption_style = s->text.config; caption_style.weight = 700;
             s->text.last_result = font_prepare_text(&s->fonts,(Clay_StringSlice){sizeof(caption)-1,caption,caption},
-                &s->text.config,&s->caption);
+                &caption_style,&s->caption);
         }
         if (s->text.last_result == FONT_OK) { s->text.last_result = font_upload_renderer(&s->fonts,&s->renderer); }
     }

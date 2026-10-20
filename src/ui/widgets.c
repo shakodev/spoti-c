@@ -1,4 +1,5 @@
 #include "widgets.h"
+#include "components.h"
 #include <math.h>
 #include <string.h>
 
@@ -93,7 +94,7 @@ void ui_widgets_focus(UiWidgets *ui, Clay_ElementId id)
 {
     if (ui) { ui->focus = id.id; }
 }
-static bool declare(UiWidgets *ui, Clay_ElementId id)
+bool ui_widgets_declare(UiWidgets *ui, Clay_ElementId id)
 {
     if (!ui || !ui->in_frame || ui->error != UI_WIDGET_OK) { return false; }
     if (!id.id) { ui_widgets_fail(ui,UI_WIDGET_INVALID); return false; }
@@ -104,8 +105,9 @@ static bool hovered(UiWidgets *ui, Clay_ElementId id)
 {
     bool over = Clay_PointerOver(id); if (over) { ui->hover = id.id; } return over;
 }
-static bool button_event(UiWidgets *ui, Clay_ElementId id, bool disabled)
+bool ui_widgets_button_event(UiWidgets *ui, Clay_ElementId id, bool disabled)
 {
+    if (!ui || !ui->in_frame || !id.id) { return false; }
     bool over = hovered(ui,id), activated = false;
     if (disabled) { if (ui->active == id.id) { ui->active = 0; } return false; }
     if (over && ui->input.pressed && !ui->active) { ui->active = ui->focus = id.id; }
@@ -114,25 +116,12 @@ static bool button_event(UiWidgets *ui, Clay_ElementId id, bool disabled)
 }
 bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, float height, bool disabled)
 {
-    if (!declare(ui,id)) { return false; }
-    if (!isfinite(width) || !isfinite(height) || width <= 0 || height <= 0) {
-        ui_widgets_fail(ui,UI_WIDGET_INVALID); return false;
-    }
-    bool activated = button_event(ui,id,disabled);
-    Clay_Color color = disabled ? (Clay_Color){45,45,45,255} :
-        ui->active == id.id ? (Clay_Color){35,110,60,255} :
-        ui->hover == id.id ? (Clay_Color){70,70,70,255} : (Clay_Color){50,50,50,255};
-    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(height)},
-        .childAlignment={CLAY_ALIGN_X_CENTER,CLAY_ALIGN_Y_CENTER}},.backgroundColor=color,
-        .cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color={220,220,220,255},
-        .width=CLAY_BORDER_ALL(ui->focus == id.id ? 1 : 0)}}) {
-        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor={240,240,240,255},.wrapMode=CLAY_TEXT_WRAP_NONE}));
-    }
-    return activated;
+    return ui_component_button(ui,id,label,UI_ICON_NONE,UI_COMPONENT_SECONDARY,
+        (UiControl){.width=width,.height=height,.state=disabled ? UI_CONTROL_DISABLED : 0});
 }
 void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width)
 {
-    if (!declare(ui,id)) { return; }
+    if (!ui_widgets_declare(ui,id)) { return; }
     if (!slider || !isfinite(slider->value) || !isfinite(width) || width <= 0) {
         ui_widgets_fail(ui,UI_WIDGET_INVALID); return;
     }
@@ -158,7 +147,7 @@ void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, floa
 }
 void ui_level_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width, bool disabled)
 {
-    if (!declare(ui,id)) { return; }
+    if (!ui_widgets_declare(ui,id)) { return; }
     if (!slider || !isfinite(slider->value) || !isfinite(width) || width<16) {
         ui_widgets_fail(ui,UI_WIDGET_INVALID); return;
     }
@@ -208,7 +197,7 @@ static void caret(void)
 }
 void ui_text_input(UiWidgets *ui, Clay_ElementId id, UiTextInput *text, float width)
 {
-    if (!declare(ui,id)) { return; }
+    if (!ui_widgets_declare(ui,id)) { return; }
     if (!text || text->length >= UI_TEXT_BYTES || text->caret > text->length || text->anchor > text->length ||
         text->composition_length >= UI_COMPOSITION_BYTES || text->composition_caret > text->composition_length ||
         !isfinite(width) || width <= 0) {

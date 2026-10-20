@@ -1,4 +1,5 @@
 #include "app.h"
+#include "font_roles.h"
 #include <string.h>
 
 static bool same(FontConfig a, FontConfig b)
@@ -10,8 +11,8 @@ static bool same(FontConfig a, FontConfig b)
 static Clay_Dimensions measure(Clay_StringSlice text, Clay_TextElementConfig *style, void *context)
 {
     App *a=context; FontMeasureContext *font=a->fonts;
-    FontConfig key=font->config;
-    key.face=style->fontId; key.size=style->fontSize; key.letter_spacing=style->letterSpacing; key.line_height=style->lineHeight;
+    FontConfig key=font_config_for_clay(font->config,style->fontId,style->fontSize,
+        style->letterSpacing,style->lineHeight);
     if (a->measure_generation!=a->model.generation || a->measure_dpi!=key.dpi) {
         a->measure_generation=a->model.generation; a->measure_dpi=key.dpi; a->measure_count=a->measure_next=0;
     }

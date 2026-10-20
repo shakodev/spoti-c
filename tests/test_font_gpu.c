@@ -77,7 +77,7 @@ int main(void)
     UiRenderResult result = ui_renderer_create(&renderer,&config);
     if (result == UI_RENDER_UNSUPPORTED) { puts("SKIP: WARP unavailable for font fixtures"); return 77; }
     CHECK(result == UI_RENDER_OK); CHECK(font_cache_create(&cache,NULL,NULL) == FONT_OK);
-    visual(96); visual(144); visual(192);
+    visual(96); visual(120); visual(144); visual(192);
     UiTexture old = cache.texture;
     ui_renderer_invalidate(&renderer); CHECK(ui_renderer_recover(&renderer) == UI_RENDER_OK);
     CHECK(font_upload_renderer(&cache,&renderer) == FONT_OK && cache.texture != old);
