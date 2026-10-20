@@ -183,3 +183,37 @@ full release benchmark and cold/live requirements were not weakened or replaced.
 The PR stays draft and #42 stays open until the reference-dependent behavior
 and comparison matrix are completed. No fixture result is used to claim
 reference parity or unsupported service capabilities.
+
+## PR #46 review follow-up (2026-10-20)
+
+The isolated review starts from `1631da4`; the original worktree is preserved.
+Two reauthentication regressions were reproduced before fixing the UI delivery
+path. A failed replacement login left the previous account marked signed in,
+including its displayed playing track. A successful replacement retained the
+previous player's generation, rejecting snapshots from the new player when its
+generation restarted at one. Accepted auth completions now retire the old UI
+session before publishing success or failure. A stale auth serial still leaves
+the newer session intact. These checks use invalid OAuth configuration or a
+synthetic completed delivery; no account, browser login or audio device is used.
+
+The comparison-tool fixes from PR #45 are also included: reject output paths
+that alias source images/metadata (including hardlinks), read and validate both
+captures before exporting, count alpha-only changes, and display alpha deltas
+in the difference image. All seven evidence-tool tests pass.
+
+Both strict `/W4 /WX` builds pass with zero warnings. The final Debug/ASan suite
+passes **72/72 tests** (125.43 s); Release passes **69/69 functional tests**
+(45.89 s) and the dependency audit. Renderer/parity WARP options are enabled;
+caption and native-message-dialog options are off, explaining the difference
+from the earlier 74-test run. Nine deterministic GPU tests pass in each build.
+The audit finds 414 C translation units, six executables and zero failures.
+`spotic.exe` remains **1,124,352 bytes**. Raw results:
+[ASan](shell-home-library/pr46-asan-ctest.txt),
+[Release](shell-home-library/pr46-release-ctest.txt),
+[audit test](shell-home-library/pr46-audit-ctest.txt),
+[audit record](shell-home-library/pr46-release-audit.json).
+
+No live account, physical audio or performance workload was repeated during
+review. The reference-dependent shell behavior and comparison matrix remain
+incomplete, and the earlier RAM gate failure remains open. The PR stays draft;
+passing correctness tests does not establish issue #42 or release acceptance.
