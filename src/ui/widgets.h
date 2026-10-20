@@ -70,6 +70,7 @@ void *ui_widgets_scratch(UiWidgets *ui, size_t bytes, size_t alignment);
 void ui_widgets_fail(UiWidgets *ui, UiWidgetResult error);
 void ui_widgets_focus(UiWidgets *ui, Clay_ElementId id);
 bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, float height, bool disabled);
+bool ui_button_behavior(UiWidgets *, Clay_ElementId, bool disabled);
 bool ui_track_button(UiWidgets *, Clay_ElementId, Clay_String, float width, bool disabled, bool current);
 void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width);
 void ui_level_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width, bool disabled);

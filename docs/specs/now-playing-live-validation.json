@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "issue": 44,
+  "date": "2026-10-20",
+  "language": "C",
+  "strict_warnings": "/W4 /WX",
+  "debug": {
+    "configuration": "Debug",
+    "asan": true,
+    "command": "ctest --test-dir build --output-on-failure",
+    "passed": 55,
+    "failed": 0,
+    "seconds": 64.19,
+    "log_sha256": "0482b330a3f90b50e3e1f4c1bd7b34d34e2c008fbfc92eea388a190fe74f561b"
+  },
+  "release": {
+    "configuration": "Release",
+    "asan": false,
+    "translation_units": 387,
+    "audit_artifacts": 6,
+    "audit_failures": [],
+    "audit_sha256": "821123b06549af0f75eda6d1d2c9547761ca53fa472fa5bb969729c21d80bfd1",
+    "executable_bytes": 1051648,
+    "executable_sha256": "c0bb51760206b81005b24e1544ca8392ba8777da332b22378f1c98964a74ecf0",
+    "regression_tests_passed": [
+      "app_media_controls",
+      "app_shell",
+      "ui_renderer",
+      "audio_player",
+      "audio_seek",
+      "protocol_media_source",
+      "api_tokens",
+      "core_thread"
+    ]
+  },
+  "explicit_opt_in": true,
+  "account_wasapi_hardware_dx11": {
+    "passed": true,
+    "seconds": 6.24,
+    "warp": false,
+    "warp_fallback": false,
+    "offscreen": true,
+    "normal_width": 1100,
+    "narrow_width": 400,
+    "balanced_shutdown": true,
+    "cover_uploads": 2,
+    "log_sha256": "9d9b2e86b8ff949262f768b49de4ba9f372c0778703fdfb215b42147af8a61dd"
+  },
+  "native_desktop": {
+    "passed": true,
+    "seconds": 6.65,
+    "host": "offline demo",
+    "dpi": 96,
+    "client_sizes": [
+      [
+        1084,
+        681
+      ],
+      [
+        404,
+        681
+      ]
+    ],
+    "checks": [
+      "click",
+      "continuous drag",
+      "mute/restore",
+      "Home/End/arrows",
+      "Settings",
+      "compact width",
+      "process restart persistence"
+    ],
+    "balanced_shutdown": true,
+    "log_sha256": "0443ee406162062a90aa518e98c83de71dd460bf9acb761e8140a59da747d8e3"
+  },
+  "native_smtc": {
+    "passed": true,
+    "scope": [
+      "HWND/WinRT publication",
+      "metadata replacement",
+      "playing/paused status",
+      "timeline",
+      "callback and COM teardown"
+    ],
+    "physical_media_keys_observed": false
+  },
+  "boundaries": [
+    "#35 full release performance gate remains independent",
+    "#41 full visual foundation and #42 shell routes remain open",
+    "Offscreen live artwork and visible offline desktop checks are distinct",
+    "Global SMTC flyout and physical media-key observation remain manual"
+  ],
+  "captures": [
+    {
+      "path": "docs/specs/images/issue44/live-narrow-hardware.png",
+      "sha256": "01692d9044511e08808eecd64752e1fe51ded45b5b58f1fc3450cb336aa6545e"
+    },
+    {
+      "path": "docs/specs/images/issue44/live-next-hardware.png",
+      "sha256": "ea45b8ac4258a43ff736b0ab30b1b87b1482a9b7a8cc8e42d67cca074c0fc949"
+    },
+    {
+      "path": "docs/specs/images/issue44/live-paused-hardware.png",
+      "sha256": "79842f4ecb6c4659bf5523a22d0da4f16169713f2f51bf6fdb51c115254672f6"
+    },
+    {
+      "path": "docs/specs/images/issue44/native-default-37.png",
+      "sha256": "60474fdae690f16344ba76ff49ca1e8c5ddeff9c7acfe4123926b90a05bcb241"
+    },
+    {
+      "path": "docs/specs/images/issue44/native-muted.png",
+      "sha256": "45763dac6a5b07fb309d44152dff69f4d826525c98356f20678abdf3bbe61bc5"
+    },
+    {
+      "path": "docs/specs/images/issue44/native-narrow-24.png",
+      "sha256": "64f85d0f939096c2376438cd283e3130db9a33c44bce58e64ff5e3999f3b44e2"
+    },
+    {
+      "path": "docs/specs/images/issue44/native-restart-24.png",
+      "sha256": "b96a0c6522c804ca88d31011e3f11224c04d62517964ac38a0745a12e57081d7"
+    },
+    {
+      "path": "docs/specs/images/issue44/native-settings-58.png",
+      "sha256": "e2c0531680edfc3f636026cacf1888b2d53f2f1844cac2ad9c7b9e0a341e87f2"
+    }
+  ]
+}

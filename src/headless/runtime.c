@@ -1,8 +1,10 @@
 #include "internal.h"
+#include "core/thread.h"
 #include <wchar.h>
 
 static DWORD WINAPI network(void *ctx)
 {
+    core_thread_register_background();
     Headless *h = ctx; bool ok = hl_network_open(h);
     if (ok) {
         h->decode_thread = CreateThread(NULL, 0, hl_decode, h, 0, NULL);

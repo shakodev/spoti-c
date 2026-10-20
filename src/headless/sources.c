@@ -42,6 +42,8 @@ static bool retire(Headless *h, HeadlessSource *s)
     if (s->stream.active && decrypt_stream_finish(&s->stream, &s->operation) != DECRYPT_OK) { return false; }
     if (s->stream.media) { (void)decrypt_stream_retire(&s->stream); }
     if (s->range.generation) { (void)range_cancel_generation(h->ranges, s->range); }
+    /* Cancellation completes reservations; release them before slot reuse. */
+    consume(h, &s->prefix); consume(h, &s->payload);
     if (s->media_id.generation) {
         MediaResult r = media_source_retire(h->media, s->media_id);
         if (r != MEDIA_OK && r != MEDIA_STALE) { return false; }
@@ -57,20 +59,24 @@ static bool prepare_read(Headless *h, HeadlessSource *s)
     }
     if (s->prefix.value || s->payload.value) {
         RangeResult a = status(h, s->prefix), b = status(h, s->payload);
-        if ((a != RANGE_OK && a != RANGE_PENDING) || (b != RANGE_OK && b != RANGE_PENDING)) { return false; }
+        if ((a != RANGE_OK && a != RANGE_PENDING) || (b != RANGE_OK && b != RANGE_PENDING)) {
+            fprintf(stderr,"headless read status prefix=%u payload=%u\n",(unsigned)a,(unsigned)b); return false;
+        }
         if (a == RANGE_PENDING || b == RANGE_PENDING) { return true; }
         DecryptResult r = decrypt_stream_prepare(&s->stream, s->offset, s->capacity, &s->operation);
-        if (r != DECRYPT_OK) { return false; }
+        if (r != DECRYPT_OK) { fprintf(stderr,"headless read prepare=%u\n",(unsigned)r); return false; }
         consume(h, &s->prefix); consume(h, &s->payload);
         atomic_store_explicit(&s->phase, HL_PREPARED, memory_order_release);
         return hl_reply(h, (PlayerCommand){.type = PLAYER_DATA_READY, .ticket = s->request.ticket});
     }
-    if (range_request(h->ranges, s->range, 0, SPOTIFY_OGG_PROBE, RANGE_CURRENT, &s->prefix) != RANGE_OK) { return false; }
+    RangeResult prefix=range_request(h->ranges, s->range, 0, SPOTIFY_OGG_PROBE, RANGE_CURRENT, &s->prefix);
+    if (prefix!=RANGE_OK) { fprintf(stderr,"headless prefix admission=%u\n",(unsigned)prefix); return false; }
     uint64_t encrypted = s->offset + SPOTIFY_OGG_PREFIX;
     if (encrypted < s->bytes + SPOTIFY_OGG_PREFIX && s->capacity) {
         size_t n = s->capacity;
         if (n > s->bytes - s->offset) { n = (size_t)(s->bytes - s->offset); }
-        if (range_request(h->ranges, s->range, encrypted, n, s->request.prefetch ? RANGE_PREFETCH : RANGE_CURRENT, &s->payload) != RANGE_OK) { return false; }
+        RangeResult payload=range_request(h->ranges, s->range, encrypted, n, s->request.prefetch ? RANGE_PREFETCH : RANGE_CURRENT, &s->payload);
+        if (payload!=RANGE_OK) { fprintf(stderr,"headless payload admission=%u\n",(unsigned)payload); return false; }
     }
     return true;
 }
@@ -100,9 +106,12 @@ bool hl_sources(Headless *h)
         if (!s->failed && !s->ready) {
             MediaResult mr = media_source_get(h->media, s->media_id, &s->media);
             if (mr == MEDIA_PENDING || mr == MEDIA_EXPIRED) { continue; }
-            if (mr != MEDIA_OK) { fprintf(stderr,"headless media result=%u\n",(unsigned)mr); s->failed = true; }
+            if (mr != MEDIA_OK) {
+                fprintf(stderr,"headless media result=%u token=%u\n",(unsigned)mr,(unsigned)token_result(h->tokens)); s->failed = true;
+            }
             else {
                 if (!s->range.generation) {
+                    hl_publish_display(h,s->request.track_id,&s->media.track.display);
                     RangeResult open = range_source_open(h->ranges, &s->media, &s->range);
                     DecryptResult init = decrypt_stream_init(&s->stream, h->media, h->ranges, &s->media, s->range);
                     RangeResult request = range_request(h->ranges, s->range, 0, SPOTIFY_OGG_PROBE, RANGE_CURRENT, &s->prefix);
@@ -121,7 +130,8 @@ bool hl_sources(Headless *h)
                     consume(h, &s->prefix);
                     s->bytes = total - SPOTIFY_OGG_PREFIX; s->ready = true;
                     if (!hl_reply(h, (PlayerCommand){.type = PLAYER_SOURCE_READY, .ticket = s->request.ticket,
-                        .source = {s->bytes, hl_read, s}})) { return false; }
+                        .source = {.bytes=s->bytes,.read_at=hl_read,.context=s,.duration_ms=s->media.track.duration_ms,
+                            .trailing_zero_limit=h->config.fixture_url ? 0 : 15}})) { return false; }
                 }
             }
         }

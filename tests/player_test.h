@@ -15,6 +15,7 @@ typedef struct PlayerTest {
     PtFixture files[3];
     uint64_t output_frames;
     uint32_t latency;
+    uint32_t source_duration_ms;
     unsigned starts, stops, closes, resolved, retired, peak_readers;
     bool hold_network, hold_retire, fail_prefetch, clock_valid;
     PlayerRequest held[16]; size_t held_count;

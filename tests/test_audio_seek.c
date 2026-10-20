@@ -77,8 +77,46 @@ static void linear_and_boundaries(size_t corpus)
     CHECK(decoder_info(vt.decoder).generation == vt.expected_generation);
     vt_close(); vt_heap_stop();
 }
+static void trailing_padding(void)
+{
+    const size_t sizes[]={1,2,15};
+    for (size_t i=0;i<sizeof(sizes)/sizeof(sizes[0]);++i) {
+        vt_load(2); size_t end=vt.file_bytes;
+        memset(vt.ogg+end,0,sizes[i]); vt.file_bytes+=sizes[i];
+        vt_heap_start(); vt_open(vt.rate,vt.channels,true,DECODER_CODEC_BYTES);
+        vt.decoder->config.trailing_zero_limit=15;
+        CHECK(read_some(1000)==1000 && !decoder_info(vt.decoder).length_known);
+        vt.max_chunk=137; check_seek(220000,false);
+        CHECK(vt.decoder->config.source_bytes==end);
+        vt_close(); vt.max_chunk=137; vt_open(vt.rate,vt.channels,true,DECODER_CODEC_BYTES);
+        vt.decoder->config.trailing_zero_limit=15;
+        CHECK(vt_decode(vt.actual,VT_PCM_MAX/vt.channels)==vt.frames);
+        vt_compare(vt.actual,vt.golden,vt.frames*vt.channels);
+        CHECK(vt.decoder->config.source_bytes==end);
+        vt_close(); vt_heap_stop();
+    }
+    for (unsigned fault=0;fault<3;++fault) {
+        vt_load(2); size_t padding=fault==1 ? 16 : 2;
+        memset(vt.ogg+vt.file_bytes,0,padding);
+        if (fault==2) { vt.ogg[vt.file_bytes+1]=1; }
+        vt.file_bytes+=padding;
+        vt_heap_start(); vt_open(vt.rate,vt.channels,true,DECODER_CODEC_BYTES);
+        vt.decoder->config.trailing_zero_limit=fault==0 ? 0 : 15;
+        CHECK(read_some(1000)==1000); ++vt.expected_generation;
+        CHECK(decoder_seek(vt.decoder,vt.expected_generation,220000)==AUDIO_OK);
+        size_t got=99; AudioResult r=decoder_read_frames(vt.decoder,vt.expected_generation,output,511,&got);
+        CHECK(r==(fault==2 ? AUDIO_CORRUPT : AUDIO_UNSUPPORTED) && got==0);
+        vt_close(); vt_open(vt.rate,vt.channels,true,DECODER_CODEC_BYTES);
+        vt.decoder->config.trailing_zero_limit=fault==0 ? 0 : 15;
+        do { r=decoder_read_frames(vt.decoder,vt.expected_generation,output,511,&got); }
+        while (r==AUDIO_OK || r==AUDIO_NEED_MORE);
+        CHECK(r==(fault==2 ? AUDIO_CORRUPT : AUDIO_UNSUPPORTED));
+        vt_close(); vt_heap_stop();
+    }
+}
 int main(void)
 {
+    trailing_padding();
     cold_refinement_and_cancel();
     for (size_t i = 0; i < 3; ++i) { linear_and_boundaries(i); }
     vt_ogg_tests(); puts("audio_seek passed (range refinement, pre-roll, page boundaries, stale epochs)"); return 0;

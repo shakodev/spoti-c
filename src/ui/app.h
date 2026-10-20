@@ -3,11 +3,13 @@
 #include "widgets.h"
 #include "font.h"
 #include "artwork.h"
+#include "icons.h"
 #include "ui_scheduler.h"
 #include "api/collection_api.h"
 #include "audio/player.h"
 struct Playlist;
 struct PlaylistQueue;
+struct MediaDisplay;
 
 #define APP_HISTORY 16u
 #define APP_ACTIONS 32u
@@ -40,6 +42,8 @@ typedef struct AppServices {
     AppResult (*auth)(void *, AppAuth);
     PlayerResult (*submit)(void *, const PlayerCommand *);
     PlayerSnapshot (*snapshot)(void *);
+    bool (*track_info)(void *, const uint8_t id[16], struct MediaDisplay *);
+    bool (*queue_snapshot)(void *, PlayerQueueSnapshot *);
     PlayerResult (*refresh_clock)(void *); /* Nonblocking owner sample on timer wakes. */
     void (*wake)(void *);
     void *context;
@@ -54,10 +58,29 @@ typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_B
     APP_PREVIOUS, APP_NEXT, APP_SEEK, APP_VOLUME, APP_DETAIL,
     APP_TRACK_QUERY, APP_TRACK_SORT, APP_TRACK_PLAY, APP_TRACK_WINDOW,
     APP_GO_SEARCH, APP_GO_LYRICS, APP_CATALOG_QUERY, APP_CATALOG_SECTION,
-    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES } AppActionType;
-typedef struct AppAction { AppActionType type; AppEntity entity; double value; } AppAction;
+    APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES,
+    APP_SHUFFLE, APP_REPEAT, APP_QUEUE, APP_PLAYER_INFO, APP_QUEUE_PAGE } AppActionType;
+typedef struct AppAction { AppActionType type; AppEntity entity; double value; uint64_t generation; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
-typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
+enum { APP_CUSTOM_IMAGE=0x41525431, APP_CUSTOM_ICON=0x49434f31 };
+typedef struct AppImage { uint32_t tag; AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
+typedef struct AppGlyph { uint32_t tag; UiIcon icon; float color[4]; } AppGlyph;
+typedef struct AppTrack {
+    AppEntity entity;
+    char artist[192], artwork[512];
+    uint64_t used;
+} AppTrack;
+typedef struct AppNow {
+    AppTrack tracks[8]; /* ID-keyed, independent of route/page ownership. */
+    AppImage cover;
+    PlayerQueueSnapshot queue;
+    AppGlyph glyphs[24];
+    uint64_t serial;
+    uint32_t glyph_count, queue_page;
+    const char *tooltip;
+    Clay_ElementId tooltip_id;
+    bool queue_open;
+} AppNow;
 typedef struct AppMeasure { FontConfig config; Clay_Dimensions dimensions; char text[128]; uint32_t length; } AppMeasure;
 typedef struct AppGeometry { float width, height, sidebar, main, viewport, detail, bar; bool compact; } AppGeometry;
 
@@ -88,6 +111,7 @@ typedef struct AppModel {
 typedef struct App {
     const struct StateCache *cached; /* Borrowed startup snapshot; never authorizes playback. */
     AppModel model;
+    AppNow now;
     CatalogView catalog;
     /* Fixed route-controller storage charged to UI state, used exclusively by
      * the bound serialized network owner; it outlives its cancellation ack. */
@@ -152,6 +176,12 @@ void app_sidebar(App *);
 void app_home(App *);
 void app_library(App *);
 void app_now_playing(App *);
+void app_now_prepare(App *);
+AppResult app_track_remember(App *, const AppEntity *, const char *artist, const char *artwork);
+void app_player_icon(App *, Clay_ElementId, UiIcon, AppAction, const char *label,
+    const char *unavailable, bool selected, bool primary);
+void app_player_tooltip(App *);
+void app_queue_panel(App *);
 void app_volume_init(App *);
 bool app_volume_available(const App *);
 void app_volume_snapshot(App *, PlayerSnapshot);

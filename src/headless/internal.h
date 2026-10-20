@@ -34,6 +34,9 @@ struct Headless {
     char fixture_url[MEDIA_URL_BYTES], country[3], catalogue[33];
     HANDLE ready, decode_ready, read_wake, network_thread, decode_thread;
     SRWLOCK lifecycle;
+    SRWLOCK display_lock;
+    struct { uint8_t id[16]; MediaDisplay display; uint64_t used; } displays[4];
+    uint64_t display_serial;
     _Atomic bool failed, closing, decode_finished;
     bool resources_released;
     Player *player;
@@ -86,4 +89,5 @@ bool hl_live_poll(Headless *);
 bool hl_live_close(Headless *);
 bool hl_fixture_media(Headless *, HeadlessSource *);
 bool hl_reply(Headless *, PlayerCommand);
+void hl_publish_display(Headless *, const uint8_t id[16], const MediaDisplay *);
 #endif

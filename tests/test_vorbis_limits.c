@@ -49,5 +49,7 @@ void vt_limit_tests(void)
     config.output.channels = 3;
     CHECK(arena_init(&codec, next_codec, sizeof(next_codec)) && arena_init(&work, next_work, sizeof(next_work)));
     CHECK(decoder_open(&codec, &work, &config, &next) == AUDIO_UNSUPPORTED && next == NULL);
+    config.output.channels=vt.channels; config.trailing_zero_limit=16;
+    CHECK(decoder_open(&codec,&work,&config,&next)==AUDIO_INVALID && next==NULL);
     CHECK(codec.used == 0 && work.used == 0); arena_dispose(&codec); arena_dispose(&work);
 }

@@ -54,7 +54,7 @@ void shell_artwork(void)
     CHECK(WaitForSingleObject(started,5000)==WAIT_OBJECT_0);
     shell_action(APP_GO_LIBRARY); CHECK(app.image_count==0);
     CHECK(app_image(&app,old,&entity,id,&source,1)==APP_STALE);
-    CHECK(WaitForSingleObject(artwork_wait_handle(art),5000)==WAIT_OBJECT_0);
+    if (!artwork_stats(art).cancelled) { CHECK(WaitForSingleObject(artwork_wait_handle(art),5000)==WAIT_OBJECT_0); }
     (void)app_update(&app,0); CHECK(artwork_stats(art).cancelled==1 && artwork_stats(art).gpu_bytes==0);
     shell_close();
     CHECK(artwork_stop(art)==ART_OK); CHECK(worker_stop(worker)==CORE_OK && worker_join(worker,5000)==CORE_OK);

@@ -1,3 +1,4 @@
+#include "icons.hlsl"
 cbuffer View : register(b0) { float2 surface; float scale; float reserved; };
 Texture2D image : register(t0);
 SamplerState linearClamp : register(s0);
@@ -48,7 +49,11 @@ float4 ps_main(Pixel p) : SV_Target {
         coverage = p.effect.y > 0 ? pow(saturate(1 - max(d,0) / p.effect.y),2) : coverage;
     }
     float4 color = p.color;
-    if (p.effect.x >= 3) {
+    if (p.effect.x == 5) {
+        float distance=iconDistance(p.local*16/p.box.zw,(int)p.effect.y);
+        coverage=saturate(0.5-distance*min(p.box.z,p.box.w)*scale/16);
+    }
+    if (p.effect.x == 3 || p.effect.x == 4) {
         float2 uv = lerp(p.uv.xy, p.uv.zw, p.local / p.box.zw);
         float4 texel = image.Sample(linearClamp, uv);
         if (p.effect.x == 4) { coverage *= texel.r; }

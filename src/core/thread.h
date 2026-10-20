@@ -4,8 +4,14 @@
 #include <string.h>
 #include <windows.h>
 
+/* OS audio/network initialization can create a USER32 queue on a blocking
+ * owner. Register only at a dedicated worker's entry, never on a UI thread. */
+bool core_thread_background_owner(void);
+void core_thread_register_background(void);
+
 static inline bool core_thread_is_gui(void)
 {
+    if (core_thread_background_owner()) { return false; }
     /* A headless process need not initialize USER32 to check its owner.
      * Loading USER32 here can itself turn the calling thread into a GUI thread. */
     HMODULE module = GetModuleHandleW(L"user32.dll");

@@ -58,7 +58,7 @@ static MediaResult array_header(MetadataSpan span)
             uint64_t value;
             if (!metadata_once(&r, &seen, tag) || !metadata_uint(&r, wire, &value)) break;
             if (value > INT64_MAX || (tag == 1 && value > INT32_MAX)) return MEDIA_MALFORMED;
-            if (tag == 1 && value != 0) return MEDIA_HTTP_ERROR;
+            if (tag == 1 && value != 0 && value != 200) return MEDIA_HTTP_ERROR;
             if (tag == 4 && value > 1) return MEDIA_MALFORMED;
         } else if (!metadata_skip(&r, wire)) break;
     }

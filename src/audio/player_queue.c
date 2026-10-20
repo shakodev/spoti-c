@@ -96,13 +96,18 @@ void player_publish(Player *p)
 {
     unsigned index = p->marker_count ? p->markers[p->marker_head].index : p->desired_index;
     p->view.duration_frames = index < p->queue_count ? p->durations[index] : 0;
+    p->view.repeat=p->repeat; p->view.shuffled=p->shuffle!=0;
+    p->view.queue_count=p->queue_count; p->view.queue_index=0;
+    for (unsigned i=0;i<p->queue_count;++i) { if (p->order[i]==index) { p->view.queue_index=i; break; } }
     AcquireSRWLockExclusive(&p->lock);
     bool changed = p->view.generation != p->published.generation || p->view.state != p->published.state ||
         p->view.clock_serial != p->published.clock_serial ||
         p->view.position_frames != p->published.position_frames || p->view.duration_frames != p->published.duration_frames ||
         p->view.volume != p->published.volume || p->view.volume_ticket != p->published.volume_ticket ||
         p->view.rate != p->published.rate || p->view.error != p->published.error ||
-        p->view.timeline_valid != p->published.timeline_valid || p->queue_count != p->published_queue.count;
+        p->view.timeline_valid != p->published.timeline_valid || p->queue_count != p->published_queue.count ||
+        p->view.queue_index!=p->published.queue_index || p->view.repeat!=p->published.repeat ||
+        p->view.shuffled!=p->published.shuffled;
     p->published = p->view;
     p->published_queue.player = p->view; p->published_queue.count = p->queue_count; p->published_queue.index = 0;
     for (unsigned i = 0; i < p->queue_count; ++i) {

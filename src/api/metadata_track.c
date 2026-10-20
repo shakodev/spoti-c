@@ -48,6 +48,8 @@ static MediaResult track_node(MetadataSpan span, unsigned depth, TrackSet *set)
     if (depth > METADATA_MAX_TRACK_DEPTH || set->count == METADATA_MAX_TRACKS) return MEDIA_LIMIT;
     size_t index = set->count++;
     TrackCandidate *candidate = &set->tracks[index];
+    MediaResult display=metadata_display(span,&candidate->track.display);
+    if (display!=MEDIA_OK) { return display; }
     MetadataSpan alternatives[METADATA_MAX_ALTERNATIVES]; size_t alternate_count = 0;
     MetadataReader r = {span, MEDIA_OK, 0};
     uint32_t tag; pb_wire_type_t wire; uint64_t seen = 0;

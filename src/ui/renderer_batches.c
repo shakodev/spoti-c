@@ -69,9 +69,10 @@ UiRenderResult ui_frame_quad(UiRenderFrame *f, const QuadInstance *input, UiText
         q.radii[i] = fminf(q.radii[i], fminf(box.w, box.h) * 0.5f);
         q.border[i] = fminf(q.border[i], (i == 0 || i == 2) ? box.w : box.h);
     }
-    if (q.effect[0] < UI_QUAD_SOLID || q.effect[0] > UI_QUAD_GLYPH ||
+    bool sampled=q.effect[0]==UI_QUAD_IMAGE || q.effect[0]==UI_QUAD_GLYPH;
+    if (q.effect[0] < UI_QUAD_SOLID || q.effect[0] > UI_QUAD_ICON ||
         floorf(q.effect[0]) != q.effect[0] || q.effect[1] < 0 || q.effect[1] > 64 ||
-        (q.effect[0] >= UI_QUAD_IMAGE ? texture == 0 : texture != 0)) {
+        (sampled ? texture == 0 : texture != 0)) {
         return fail(f, UI_RENDER_INVALID);
     }
     UiRect clip = f->clips[f->clip_count - 1];

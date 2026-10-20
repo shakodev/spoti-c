@@ -18,6 +18,7 @@ typedef struct DecoderConfig {
     uint64_t generation, source_bytes; /* 1..UINT32_MAX logical bytes, excluding prefix */
     DecoderReadAt read_at; /* Optional for caller-push streaming. Required for seek. */
     void *context;
+    uint8_t trailing_zero_limit; /* 0: strict; <=15 checked bytes after a valid final page. */
 } DecoderConfig;
 typedef struct DecoderInfo {
     AudioFormat native, output;

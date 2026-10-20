@@ -55,7 +55,14 @@ AudioResult vorbis_seek_drive(VorbisDecoder *d)
     if (d->seek_state == SEEK_TAIL) {
         uint64_t start = d->config.source_bytes > DECODER_WINDOW_BYTES ? d->config.source_bytes - DECODER_WINDOW_BYTES : 0;
         AudioResult r = probe(d, start); if (r != AUDIO_OK) { return r; }
-        if (!d->index.final_known || d->index.file_bytes != d->config.source_bytes) { return AUDIO_TRUNCATED; }
+        if (!d->index.final_known) { return AUDIO_TRUNCATED; }
+        if (d->index.file_bytes!=d->config.source_bytes) {
+            if (d->index.file_bytes<d->probe_offset || d->index.file_bytes>d->config.source_bytes) { return AUDIO_CORRUPT; }
+            size_t tail=(size_t)(d->index.file_bytes-d->probe_offset);
+            if (tail>DECODER_WINDOW_BYTES) { return AUDIO_TRUNCATED; }
+            r=vorbis_end_trim(d,d->index.file_bytes,d->window+tail,(size_t)(d->config.source_bytes-d->index.file_bytes));
+            if (r!=AUDIO_OK) { return r; }
+        }
         d->seek_state = SEEK_REFINE;
     }
     uint64_t length;
