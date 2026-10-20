@@ -8,7 +8,8 @@ foreach(STAGE IN ITEMS vs ps)
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/generated"
         COMMAND "${UI_FXC}" /nologo /WX /O3 /T ${STAGE}_5_0 /E ${STAGE}_main
             /Vn ui_${STAGE} /Fh "${HEADER}" "${PROJECT_SOURCE_DIR}/src/ui/shaders/ui.hlsl"
-        DEPENDS "${PROJECT_SOURCE_DIR}/src/ui/shaders/ui.hlsl" VERBATIM)
+        DEPENDS "${PROJECT_SOURCE_DIR}/src/ui/shaders/ui.hlsl"
+            "${PROJECT_SOURCE_DIR}/src/ui/shaders/icons.hlsl" VERBATIM)
     list(APPEND UI_SHADER_HEADERS "${HEADER}")
 endforeach()
 add_library(spotic_renderer STATIC src/ui/renderer.c src/ui/renderer_device.c

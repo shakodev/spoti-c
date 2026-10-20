@@ -1,0 +1,6 @@
+Internal-service authorization accepted.
+Client token present: 1; service bearer present: 1; result: 0.
+route=5 result=10 http=403 bytes=0 rows=0
+route=6 result=10 http=403 bytes=0 rows=0
+route=7 result=10 http=403 bytes=0 rows=0
+Lyrics not requested: no accepted live track/artwork pair.

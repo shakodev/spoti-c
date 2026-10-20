@@ -115,6 +115,7 @@ static void envelope_tests(void)
     e.kind = 12; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.status = 404; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();
     e.provider = 500; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();
+    e.provider = 200; (void)decode(&root,e,MEDIA_OK); e=defaults();
     e.uri = other_uri; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.type = "type.googleapis.com/spotify.metadata.Episode"; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.omit_header = true; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
@@ -255,9 +256,32 @@ static void relink_tests(void)
     CHECK(memcmp(&alternatives, &unchanged, sizeof(alternatives)) == 0);
 }
 
+static void display_tests(void)
+{
+    Wire artist={0}, album={0}, image={0}, group={0}; uint8_t cover[20]; memset(cover,0x31,20);
+    track(&root,0,0); text(&root,2,"Track title"); text(&artist,2,"First artist"); message(&root,4,&artist);
+    artist.bytes=0; text(&artist,2,"Second artist"); message(&root,4,&artist);
+    blob(&image,1,cover,20); number(&image,2,0); message(&album,9,&image);
+    memset(cover,0x42,20); image.bytes=0; blob(&image,1,cover,20); number(&image,2,1);
+    message(&group,1,&image); message(&album,17,&group); message(&root,3,&album);
+    MediaTrack output=decode(&root,defaults(),MEDIA_OK);
+    CHECK(!strcmp(output.display.title,"Track title") && !strcmp(output.display.artist,"First artist"));
+    CHECK(output.display.has_cover && output.display.cover_id[0]==0x42);
+    /* Display truncates only at scalar boundaries; validation covers the tail. */
+    uint8_t long_name[300]; memset(long_name,'a',190); long_name[190]=0xd7; long_name[191]=0x90;
+    memset(long_name+192,'b',108); track(&root,0,0); blob(&root,2,long_name,sizeof(long_name));
+    output=decode(&root,defaults(),MEDIA_OK); CHECK(strlen(output.display.title)==190);
+    long_name[299]=0xff; track(&root,0,0); blob(&root,2,long_name,sizeof(long_name));
+    (void)decode(&root,defaults(),MEDIA_MALFORMED);
+    track(&root,0,0); text(&root,2,"A"); text(&root,2,"B"); (void)decode(&root,defaults(),MEDIA_MALFORMED);
+    track(&root,0,0); const char embedded[]={'a',0,'b'}; blob(&root,2,embedded,sizeof(embedded));
+    (void)decode(&root,defaults(),MEDIA_MALFORMED);
+    track(&root,0,0); image.bytes=album.bytes=0; blob(&image,1,cover,19); message(&album,9,&image); message(&root,3,&album);
+    (void)decode(&root,defaults(),MEDIA_MALFORMED);
+}
 void metadata_tests(void)
 {
-    encoding_tests(); envelope_tests(); file_tests(); policy_tests(); availability_tests(); alternative_tests(); relink_tests();
+    encoding_tests(); envelope_tests(); file_tests(); policy_tests(); availability_tests(); alternative_tests(); relink_tests(); display_tests();
     /* Country lists may contain every two-letter market, exceeding the generic
      * 256-byte text bound. Their separate static cap is 512 bytes. */
     char markets[301];

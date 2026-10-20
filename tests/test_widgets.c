@@ -188,9 +188,36 @@ static void layout(void)
     CHECK(ui_widgets_dispose(&ui) == UI_WIDGET_OK && Clay_GetCurrentContext() == NULL);
     puts("2000 widget layout/measurement/render frames; Debug allocation hooks and bounded visible failures passed");
 }
+static bool track_frame(UiWidgetInput input, bool disabled, bool current)
+{
+    CHECK(ui_widgets_begin(&ui,800,600,input)==UI_WIDGET_OK);
+    bool hit=ui_track_button(&ui,CLAY_ID("track"),CLAY_STRING("Track"),200,disabled,current);
+    Clay_RenderCommandArray commands=ui_widgets_end(&ui); CHECK(ui.error==UI_WIDGET_OK);
+    bool text=false;
+    for (int32_t i=0;i<commands.length;++i) {
+        Clay_RenderCommand *c=Clay_RenderCommandArray_Get(&commands,i);
+        if (c->commandType==CLAY_RENDER_COMMAND_TYPE_TEXT) {
+            text=true;
+            CHECK(c->renderData.text.textColor.g==(disabled ? 145 : current ? 215 : 245));
+        }
+    }
+    CHECK(text); return hit;
+}
+static void track_button(void)
+{
+    errors=0; CHECK(ui_widgets_init(&ui,clay,sizeof(clay),scratch,sizeof(scratch),error,&errors)==UI_WIDGET_OK);
+    CHECK(!track_frame((UiWidgetInput){.x=5,.y=5},false,true));
+    CHECK(!track_frame((UiWidgetInput){.x=5,.y=5,.down=true,.pressed=true},false,true));
+    CHECK(track_frame((UiWidgetInput){.x=5,.y=5,.released=true},false,true));
+    CHECK(track_frame((UiWidgetInput){.activate=true},false,false));
+    CHECK(!track_frame((UiWidgetInput){.activate=true},true,true));
+    ui_heap_begin();
+    for (unsigned i=0;i<1000;++i) { CHECK(!track_frame((UiWidgetInput){0},false,i%2!=0)); }
+    ui_heap_end(); CHECK(!errors && ui_widgets_dispose(&ui)==UI_WIDGET_OK);
+}
 int main(void)
 {
-    text_editing(); clipboard_ime(); seeks(); layout();
+    text_editing(); clipboard_ime(); seeks(); layout(); track_button();
     puts("ui_widgets: Unicode selection, IME, clipboard, seeks, focus/capture, arenas and allocation checks passed");
     return 0;
 }

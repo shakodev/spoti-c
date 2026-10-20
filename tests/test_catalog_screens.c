@@ -10,6 +10,7 @@ static void flow(void)
     CHECK(cs_app.catalog.debounce==290 && !cs_app.model.pending);
     cs_tick(289); CHECK(!cs_app.model.pending && !cs_app.catalog.page);
     cs_tick(290); cs_settle(); CHECK(cs_app.catalog.page && cs_app.catalog.page->count==7);
+    CHECK(cs_app.widgets.lists[0].focus==app_catalog_key(&cs_app,0));
     CHECK(json_page_pool_dispose(cs_host.pool)==JSON_INVALID); /* A live reader prevents reuse. */
     (void)cs_layout(1100,720,96);
     CHECK(cs_app.catalog.rendered<=7 && cs_app.control_count<APP_CONTROLS);
@@ -36,13 +37,31 @@ static void flow(void)
     cs_action(APP_CATALOG_SELECT,0); cs_settle();
     CHECK(cs_app.model.location.screen==APP_ALBUM && cs_app.catalog.page->count==2);
     CHECK(strlen(cs_app.catalog.title)<=191 && cs_app.catalog.title[0]);
+    CHECK(!strcmp(cs_app.catalog.artwork,"https://fixture.invalid/cover.png"));
+    CHECK(strstr(cs_app.catalog.subtitle,"Synthetic artist"));
+    CHECK(app_catalog_play_index(&cs_app)==0);
+    const float hero_dpi[]={96,120,144,192};
+    for (unsigned i=0;i<4;++i) {
+        (void)cs_layout(1100*hero_dpi[i]/96,720*hero_dpi[i]/96,hero_dpi[i]);
+        Clay_ElementData hero=Clay_GetElementData(CLAY_ID("CatalogHero"));
+        Clay_ElementData list=Clay_GetElementData(CLAY_ID("CatalogList"));
+        Clay_ElementData bar=Clay_GetElementData(CLAY_ID("AppNowPlaying"));
+        CHECK(hero.found && list.found && bar.found);
+        CHECK(hero.boundingBox.y+hero.boundingBox.height<=list.boundingBox.y);
+        CHECK(list.boundingBox.y+list.boundingBox.height<=bar.boundingBox.y);
+    }
+    (void)cs_layout(1100,720,96);
+    CHECK(Clay_GetElementData(CLAY_ID("CatalogHero")).found && Clay_GetElementData(CLAY_ID("CatalogPlay")).found);
     cs_action(APP_CATALOG_SELECT,1); CHECK(cs_app.model.last_result==APP_UNAVAILABLE && cs_commands==0);
-    cs_action(APP_CATALOG_SELECT,0);
+    cs_app.widgets.focus=CLAY_ID("CatalogPlay").id;
+    CHECK(app_key(&cs_app,APP_KEY_ENTER,false)==APP_OK); cs_tick(cs_now); cs_tick(cs_now);
     CHECK(cs_commands==1 && cs_command.type==PLAYER_LOAD && cs_command.track_id[15]==1);
     CHECK(cs_app.model.playing.id[15]==1 && cs_app.model.playing_artwork[0]);
-    cs_action(APP_MORE,0); cs_settle();
+    char artwork[512]; strcpy_s(artwork,sizeof(artwork),cs_app.catalog.artwork);
+    cs_action(APP_MORE,0); CHECK(app_catalog_play_index(&cs_app)==CATALOG_END); cs_settle();
     CHECK(cs_app.catalog.page->offset==2 && cs_app.catalog.page->next==CATALOG_END);
     CHECK(cs_app.catalog.page->items[0].id.bytes[15]==5 && cs_app.catalog.title[0]);
+    CHECK(!strcmp(artwork,cs_app.catalog.artwork));
     cs_action(APP_GO_LYRICS,0); cs_settle(); cs_tick(300);
     CHECK(cs_app.catalog.timeline.document && cs_app.catalog.lyric.line==0 && cs_app.catalog.lyric.valid);
     CHECK(cs_app.catalog.lyric.deadline_ms==800);
@@ -83,6 +102,22 @@ static void scheduling(void)
     CHECK(ui_scheduler_wait(&cs_scheduler,2251)==UINT32_MAX);
     cs_close();
 }
+static void play_admission(void)
+{
+    cs_open(false); cs_query("music"); cs_tick(250); cs_fixture("search");
+    CHECK(app_catalog_play_index(&cs_app)==2); /* Artist and album results are navigation, not playback. */
+    bool online=cs_app.model.online; cs_app.model.online=false;
+    CHECK(app_catalog_play_index(&cs_app)==CATALOG_END); cs_app.model.online=online;
+    cs_app.model.logged_in=false; CHECK(app_catalog_play_index(&cs_app)==CATALOG_END); cs_app.model.logged_in=true;
+    cs_action(APP_CATALOG_SELECT,1); cs_fixture("album");
+    cs_action(APP_MORE,0);
+    /* Real continuation contracts may contain only tracks, without a repeated hero. */
+    cs_response("{\"data\":{\"albumUnion\":{\"__typename\":\"Album\",\"uri\":\"spotify:album:0000000000000000000003\","
+        "\"tracksV2\":{\"items\":[],\"totalCount\":2,\"pagingInfo\":{\"nextOffset\":null}}}}}",200);
+    CHECK(cs_app.catalog.title[0] && !strcmp(cs_app.catalog.artwork,"https://fixture.invalid/cover.png"));
+    CHECK(app_catalog_play_index(&cs_app)==CATALOG_END);
+    cs_action(APP_GO_SETTINGS,0); cs_close();
+}
 static void soak(void)
 {
     cs_open(true); cs_query("music"); cs_tick(250); cs_settle();
@@ -103,7 +138,7 @@ static void soak(void)
 static DWORD WINAPI run(void *context)
 {
     bool visual=*(bool *)context;
-    flow(); scheduling(); soak(); cs_faults();
+    flow(); scheduling(); play_admission(); soak(); cs_faults();
     if (visual) { return (DWORD)cs_visual(); }
     puts("app_catalog_screens: fixture routes, stable IDs, debounce, pages, lyrics, keyboard and ownership passed"); return 0;
 }

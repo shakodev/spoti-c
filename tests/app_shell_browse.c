@@ -123,7 +123,7 @@ static void home_density(void)
                 CHECK(image.shelf<3 && image.index<columns);
                 CHECK(control(CLAY_IDI("HomeCard",image.shelf*8+image.index)));
             }
-            if (size==2) { CHECK(app.browse.visible_count==15); }
+            if (size==2) { CHECK(app.browse.visible_count==3*app_browse_columns(&app)); }
         }
     }
     (void)shell_layout(1800,1400,96);

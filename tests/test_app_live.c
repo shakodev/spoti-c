@@ -88,6 +88,9 @@ int main(void)
     AppServices empty={0}; CHECK(app_init(&app,&empty,&scheduler,clay,sizeof(clay),scratch,sizeof(scratch))==APP_OK);
     AppLive *host; CHECK(app_live_open(&core,queue,&app,directory,&host)==APP_OK);
     app.services=app_live_services(host); settle(host,queue);
+    MediaDisplay display={0}; PlayerQueueSnapshot published_queue={0}; uint8_t no_track[16]={0};
+    CHECK(app.services.track_info && !app.services.track_info(host,no_track,&display));
+    CHECK(app.services.queue_snapshot && !app.services.queue_snapshot(host,&published_queue));
     CHECK(!app.model.logged_in && !app.model.auth_pending && !app.model.notice[0]);
     ArenaMark live_prefix=arena_mark(&core);
     CHECK(app_artwork_open(&artwork_host,&core,&renderer,queue,&metrics));

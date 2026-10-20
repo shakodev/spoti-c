@@ -152,7 +152,7 @@ target_include_directories(spotic_ap PUBLIC src)
 target_link_libraries(spotic_ap PUBLIC spotic_audio_key spotic_mercury spotic_proto spotic_crypto spotic_shannon spotic_http spotic_json_base spotic_credentials ws2_32)
 
 add_library(spotic_media STATIC src/protocol/media_source.c src/protocol/media_http.c src/protocol/media_ids.c
-    src/api/metadata.c src/api/metadata_wire.c src/api/metadata_policy.c src/api/metadata_track.c src/api/storage_resolve.c)
+    src/api/metadata.c src/api/metadata_wire.c src/api/metadata_policy.c src/api/metadata_track.c src/api/metadata_display.c src/api/storage_resolve.c)
 target_include_directories(spotic_media PUBLIC src)
 target_link_libraries(spotic_media PUBLIC spotic_audio_key spotic_tokens spotic_proto winhttp)
 
@@ -171,7 +171,7 @@ target_include_directories(spotic_decrypt PUBLIC src)
 target_link_libraries(spotic_decrypt PUBLIC spotic_range spotic_media spotic_crypto)
 
 add_library(spotic_vorbis STATIC src/audio/vorbis_codec.c src/audio/vorbis_decoder.c
-    src/audio/vorbis_input.c src/audio/vorbis_seek.c src/audio/ogg_index.c src/audio/audio_convert.c)
+    src/audio/vorbis_input.c src/audio/vorbis_seek.c src/audio/vorbis_padding.c src/audio/ogg_index.c src/audio/audio_convert.c)
 target_include_directories(spotic_vorbis PUBLIC src PRIVATE vendor)
 target_link_libraries(spotic_vorbis PUBLIC spotic_core)
 
@@ -188,7 +188,7 @@ add_library(spotic_player STATIC src/audio/player.c src/audio/player_commands.c 
 target_include_directories(spotic_player PUBLIC src)
 target_link_libraries(spotic_player PUBLIC spotic_vorbis spotic_audio_sink)
 
-add_library(spotic_headless STATIC src/headless/runtime.c src/headless/network.c
+add_library(spotic_headless STATIC src/headless/runtime.c src/headless/network.c src/headless/display.c
     src/headless/sources.c src/headless/decode.c src/headless/commands.c
     src/headless/diagnostics.c src/headless/fixture_media.c src/headless/live.c)
 target_include_directories(spotic_headless PUBLIC src)
@@ -247,7 +247,7 @@ add_library(spotic_app STATIC src/ui/app.c src/ui/startup.c src/ui/startup_shell
     src/ui/app_notice.c src/ui/notice_dialog.c src/ui/app_browse.c src/ui/app_browse_input.c
     src/ui/app_header.c src/ui/collection_artwork.c
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
-    src/ui/sidebar.c src/ui/now_playing.c src/ui/app_volume.c src/ui/screens/home.c src/ui/screens/library.c
+    src/ui/sidebar.c src/ui/now_playing.c src/ui/now_metadata.c src/ui/player_controls.c src/ui/player_queue_view.c src/ui/app_volume.c src/ui/screens/home.c src/ui/screens/library.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
     src/ui/screens/catalog_view.c src/ui/screens/search.c src/ui/screens/album.c
     src/ui/screens/artist.c src/ui/screens/lyrics.c)
@@ -405,7 +405,7 @@ if(BUILD_TESTING)
         add_test(NAME bench_tracklist COMMAND bench_tracklist)
         set_tests_properties(bench_tracklist PROPERTIES TIMEOUT 60 LABELS "performance")
     endif()
-    add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_support.c tests/app_shell_window.c
+    add_executable(test_app_shell tests/test_app_shell.c tests/app_shell_volume.c tests/app_shell_now.c tests/app_shell_support.c tests/app_shell_window.c
         tests/app_shell_resources.c tests/app_shell_browse.c tests/app_shell_visibility.c tests/app_shell_visual.c tests/player_test_support.c)
     target_include_directories(test_app_shell PRIVATE tests)
     target_compile_definitions(test_app_shell PRIVATE
@@ -413,6 +413,10 @@ if(BUILD_TESTING)
         VORBIS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/vorbis")
     target_link_libraries(test_app_shell PRIVATE spotic_app spotic_app_fixture spotic_ui_surface)
     add_test(NAME app_shell COMMAND test_app_shell)
+    add_executable(capture_player_bar EXCLUDE_FROM_ALL tests/capture_player_bar.c tests/app_shell_support.c)
+    target_include_directories(capture_player_bar PRIVATE tests)
+    target_compile_definitions(capture_player_bar PRIVATE APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app")
+    target_link_libraries(capture_player_bar PRIVATE spotic_app)
     set_tests_properties(app_shell PROPERTIES TIMEOUT 60)
     if(ENABLE_RENDERER_GPU_TESTS)
         add_test(NAME app_shell_visual COMMAND test_app_shell --visual)
@@ -583,7 +587,7 @@ if(BUILD_TESTING)
         add_test(NAME audio_cdn_live COMMAND test_cdn_live)
         set_tests_properties(audio_cdn_live PROPERTIES TIMEOUT 30 LABELS "live;network")
     endif()
-    add_executable(test_headless tests/test_headless.c tests/headless_support.c tests/headless_volume.c)
+    add_executable(test_headless tests/test_headless.c tests/headless_support.c tests/headless_volume.c tests/headless_display.c)
     target_include_directories(test_headless PRIVATE tests)
     target_compile_definitions(test_headless PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio"
         HEADLESS_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}")
@@ -591,6 +595,12 @@ if(BUILD_TESTING)
     add_test(NAME audio_headless_smoke COMMAND test_headless)
     set_tests_properties(audio_headless_smoke PROPERTIES TIMEOUT 120)
     if(ENABLE_LIVE_HEADLESS_TEST)
+        if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT ENABLE_ASAN)
+            add_executable(test_player_bar_live tests/test_player_bar_live.c tests/player_bar_live_gpu.c)
+            target_link_libraries(test_player_bar_live PRIVATE spotic_app spotic_headless)
+            add_test(NAME app_player_bar_live COMMAND test_player_bar_live)
+            set_tests_properties(app_player_bar_live PROPERTIES TIMEOUT 240 LABELS "live;account;hardware" SKIP_RETURN_CODE 77)
+        endif()
         add_executable(test_headless_live tests/test_headless_live.c)
         target_include_directories(test_headless_live PRIVATE tests)
         target_link_libraries(test_headless_live PRIVATE spotic_headless)
@@ -811,6 +821,10 @@ if(BUILD_TESTING)
     set_tests_properties(smoke PROPERTIES TIMEOUT 10)
 
     add_executable(test_arena tests/test_arena.c)
+    add_executable(test_thread tests/test_thread.c)
+    target_include_directories(test_thread PRIVATE tests)
+    target_link_libraries(test_thread PRIVATE spotic_core user32)
+    add_test(NAME core_thread COMMAND test_thread)
     target_link_libraries(test_arena PRIVATE spotic_core)
     add_test(NAME core_arena COMMAND test_arena)
     set_tests_properties(core_arena PROPERTIES TIMEOUT 10)

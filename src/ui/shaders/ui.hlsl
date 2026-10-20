@@ -116,6 +116,53 @@ float iconDistance(float2 p, uint icon) {
         d = min(d,boxDistance(p,float2(12,11),float2(0.9,3)));
         d = min(d,length(p-float2(12,17))-1);
     }
+    else if (icon >= 18) {
+        p *= 16.0 / 24.0;
+        if (icon == 18) {
+            d=min(segmentDistance(p,float2(2,4),float2(5,4)),segmentDistance(p,float2(5,4),float2(11,12)));
+            d=min(d,segmentDistance(p,float2(11,12),float2(14,12)));
+            d=min(d,segmentDistance(p,float2(2,12),float2(5,12)));
+            d=min(d,segmentDistance(p,float2(5,12),float2(11,4)));
+            d=min(d,segmentDistance(p,float2(11,4),float2(14,4)));
+            d=min(d,segmentDistance(p,float2(12,2),float2(14,4)));
+            d=min(d,segmentDistance(p,float2(12,6),float2(14,4)));
+            d=min(d,segmentDistance(p,float2(12,10),float2(14,12)));
+            d=min(d,segmentDistance(p,float2(12,14),float2(14,12)))-0.7;
+        } else if (icon == 19 || icon == 20) {
+            d=min(segmentDistance(p,float2(4,4),float2(13,4)),segmentDistance(p,float2(13,4),float2(13,9)));
+            d=min(d,segmentDistance(p,float2(12,12),float2(3,12)));
+            d=min(d,segmentDistance(p,float2(3,12),float2(3,7)));
+            d=min(d,segmentDistance(p,float2(4,2),float2(2,4)));
+            d=min(d,segmentDistance(p,float2(4,6),float2(2,4)));
+            d=min(d,segmentDistance(p,float2(12,10),float2(14,12)));
+            d=min(d,segmentDistance(p,float2(12,14),float2(14,12)));
+            if (icon == 20) { d=min(d,segmentDistance(p,float2(8,6),float2(8,10))); }
+            d-=0.7;
+        } else if (icon == 21) {
+            float2 q=abs(p-float2(8,6))-float2(2,3);
+            d=abs(length(max(q,0))+min(max(q.x,q.y),0))-0.6;
+            if (p.y>=7) { d=min(d,abs(length(p-float2(8,7))-4)-0.6); }
+            d=min(d,segmentDistance(p,float2(8,11),float2(8,14))-0.7);
+            d=min(d,segmentDistance(p,float2(5,14),float2(11,14))-0.7);
+        } else if (icon == 22) {
+            d=min(segmentDistance(p,float2(2,3),float2(14,3)),segmentDistance(p,float2(7,7),float2(14,7)));
+            d=min(d,segmentDistance(p,float2(7,11),float2(14,11)))-0.7;
+            d=min(d,triangleDistance(p,float2(2,7),float2(5,10),float2(2,13)));
+        } else if (icon == 23 || icon == 24) {
+            float2 q=abs(p-float2(7,7))-float2(5,4);
+            d=abs(max(q.x,q.y))-0.6;
+            if (icon == 23) {
+                d=min(d,segmentDistance(p,float2(6,12),float2(9,12))-0.7);
+                d=min(d,max(abs(p.x-13)-1.5,abs(p.y-10)-4));
+            } else { d=min(d,max(abs(p.x-10)-3,abs(p.y-9)-2)); }
+        } else {
+            d=min(segmentDistance(p,float2(2,6),float2(2,2)),segmentDistance(p,float2(2,2),float2(6,2)));
+            d=min(d,min(segmentDistance(p,float2(10,2),float2(14,2)),segmentDistance(p,float2(14,2),float2(14,6))));
+            d=min(d,min(segmentDistance(p,float2(2,10),float2(2,14)),segmentDistance(p,float2(2,14),float2(6,14))));
+            d=min(d,min(segmentDistance(p,float2(10,14),float2(14,14)),segmentDistance(p,float2(14,14),float2(14,10))))-0.7;
+        }
+        d *= 24.0 / 16.0;
+    }
     return d;
 }
 float4 ps_main(Pixel p) : SV_Target {

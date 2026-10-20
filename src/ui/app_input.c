@@ -62,7 +62,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
         default: nav=(UiNav)-1; break;
         }
         if ((int)nav>=0) {
-            (void)ui_virtual_navigate(list,a->catalog.page->count,APP_CATALOG_ROW,fmin(336,fmax(48,a->geometry.viewport-120)),nav,true,
+            (void)ui_virtual_navigate(list,a->catalog.page->count,APP_CATALOG_ROW,app_catalog_viewport(a),nav,true,
                 app_catalog_key,app_catalog_index,a);
             a->widgets.focus=CLAY_ID("CatalogList").id; return APP_OK;
         }
@@ -89,6 +89,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
         if (key==APP_KEY_ENTER) { return app_enqueue(a,(AppAction){.type=APP_TRACK_PLAY,.value=(double)list->focus}); }
     }
     if (control->id.id == CLAY_ID("AppSeek").id) {
+        if (a->widgets.seeks[0].dragging) { return APP_CANCELLED; }
         double value = a->widgets.seeks[0].value;
         double step = a->model.player.duration_frames ? 5.0 * a->model.player.rate / (double)a->model.player.duration_frames : 0;
         if (key == APP_KEY_HOME) { value = 0; } else if (key == APP_KEY_END) { value = 1; }

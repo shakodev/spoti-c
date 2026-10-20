@@ -23,7 +23,7 @@ typedef struct Playlist {
     char strings[24u*1024u];
     uint32_t row_count, string_bytes;
     char query[TRACK_QUERY_BYTES], uri[192], summary[192];
-    uint64_t route, generation, cache_generation, selected, play_key, play_generation, stale_jobs;
+    uint64_t route, generation, cache_generation, selected, play_key, play_generation, stale_jobs, first_playable;
     TrackCoverage coverage;
     TrackSort sort;
     TrackResult result;
@@ -42,6 +42,7 @@ TrackResult playlist_window(Playlist *, bool next);
 TrackResult playlist_prepare(Playlist *, UiVirtualList *, float viewport);
 const TrackRow *playlist_row(const Playlist *, uint32_t ordinal);
 TrackResult playlist_select(Playlist *, uint64_t key, bool play);
+uint64_t playlist_play_target(const Playlist *);
 TrackResult playlist_queue(const Playlist *, uint64_t key, PlaylistQueue *);
 TrackResult playlist_take_play(Playlist *, PlaylistQueue *);
 bool playlist_index(void *, uint64_t, uint32_t *);

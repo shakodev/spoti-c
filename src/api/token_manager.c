@@ -63,8 +63,8 @@ TokenResult token_install(TokenManager *m, TokenKind kind, const char *text, uin
 {
     size_t cap = kind == TOKEN_CLIENT ? TOKEN_TEXT_CAP - 1 : TOKEN_TEXT_CAP - 8;
     if (!token_text_valid(text, 4096, cap)) { return TOKEN_FULL; }
-    /* Client tokens outlive Login5 bearers: the live desktop grant uses
-     * 1,216,800 s expiry / 1,209,600 s refresh. Keep distinct finite caps. */
+    /* Client grants outlive Login5 bearers; bounded live evidence is in
+     * docs/specs/now-playing-live-acceptance.md. */
     uint32_t maximum=kind==TOKEN_CLIENT ? 31u*24u*60u*60u : 86400u;
     if (expiry == 0 || expiry > maximum || refresh == 0 || refresh > expiry) { return TOKEN_MALFORMED; }
     if (m->sequence == UINT64_MAX) { return TOKEN_EXHAUSTED; }

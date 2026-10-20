@@ -97,7 +97,12 @@ AppResult app_publish_player(App *a, PlayerSnapshot snapshot, uint64_t now)
 {
     if (!a || !a->alive || snapshot.generation < a->model.player.generation) { return APP_STALE; }
     if (!isfinite(snapshot.volume) || snapshot.volume < 0 || snapshot.volume > 1 ||
-        snapshot.state > PLAYER_ERROR || snapshot.rate > 384000) { return APP_INVALID; }
+        snapshot.state > PLAYER_ERROR || snapshot.rate > 384000 || snapshot.repeat>PLAYER_REPEAT_ALL ||
+        snapshot.queue_count>PLAYER_QUEUE_CAP || (snapshot.queue_count && snapshot.queue_index>=snapshot.queue_count)) { return APP_INVALID; }
+    if (snapshot.generation!=a->model.player.generation && a->widgets.seeks[0].dragging) {
+        (void)ui_seek_cancel(&a->widgets.seeks[0]);
+        if (a->widgets.active==CLAY_ID("AppSeek").id) { a->widgets.active=0; }
+    }
     if (memcmp(snapshot.track_id,a->model.player.track_id,16)) {
         if (memcmp(snapshot.track_id,a->model.playing.id,16)) {
             a->model.playing = (AppEntity){0}; a->model.playing_artwork[0]=0; a->model.playing_artist[0]=0;
@@ -108,12 +113,13 @@ AppResult app_publish_player(App *a, PlayerSnapshot snapshot, uint64_t now)
     app_volume_snapshot(a,snapshot);
     a->model.player = snapshot;
     if (!a->widgets.seeks[0].dragging) {
-        a->widgets.seeks[0].value = (snapshot.timeline_valid || snapshot.state == PLAYER_PAUSED) && snapshot.duration_frames ?
+        a->widgets.seeks[0].value = snapshot.duration_frames ?
             fmin(1,(double)snapshot.position_frames / (double)snapshot.duration_frames) : 0;
     }
     if (a->scheduler) { ui_scheduler_playing(a->scheduler,snapshot.state == PLAYER_PLAYING,now); }
     if (before.state!=snapshot.state || before.generation!=snapshot.generation || before.volume!=snapshot.volume ||
-        before.volume_ticket!=snapshot.volume_ticket ||
+        before.volume_ticket!=snapshot.volume_ticket || before.repeat!=snapshot.repeat || before.shuffled!=snapshot.shuffled ||
+        before.queue_count!=snapshot.queue_count || before.queue_index!=snapshot.queue_index ||
         before.rate!=snapshot.rate || before.duration_frames!=snapshot.duration_frames || before.error!=snapshot.error ||
         before.timeline_valid!=snapshot.timeline_valid || memcmp(before.track_id,snapshot.track_id,16)) { dirty(a); }
     return APP_OK;
@@ -143,6 +149,7 @@ AppResult app_session(App *a, bool logged_in, bool online, uint64_t now)
     if (r != APP_OK) { return r; }
     if (!logged_in) {
         a->cached=NULL;
+        memset(&a->now,0,sizeof(a->now));
         a->model.history_count = 0; memset(a->model.history,0,sizeof(a->model.history));
         a->model.selected = a->model.playing = (AppEntity){0};
         memset(a->model.playing_artwork,0,sizeof(a->model.playing_artwork));
@@ -195,12 +202,16 @@ AppResult app_deliver(App *a, AppRequest delivery, CollectionResult result, cons
 }
 AppResult app_enqueue(App *a, AppAction action)
 {
-    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_LIBRARY_FOCUS ||
+    if (!a || !a->alive || action.type < APP_GO_HOME || action.type > APP_QUEUE_PAGE ||
         (action.type==APP_VOLUME && !isfinite(action.value)) ||
-        (action.type==APP_SELECT && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
+        ((action.type==APP_SELECT || action.type==APP_PLAYER_INFO) && (!memchr(action.entity.uri,0,sizeof(action.entity.uri)) ||
         !memchr(action.entity.title,0,sizeof(action.entity.title))))) { return APP_INVALID; }
     if (action.type==APP_VOLUME && a->action_count && a->actions[a->action_count-1].type==APP_VOLUME) {
         a->actions[a->action_count-1]=action; dirty(a); return APP_OK;
+    }
+    if (action.type==APP_SEEK) {
+        action.generation=a->model.player.generation;
+        memcpy(action.entity.id,a->model.player.track_id,16);
     }
     if (a->action_count == APP_ACTIONS) { a->model.last_result = APP_FULL; dirty(a); return APP_FULL; }
     a->actions[a->action_count++] = action; dirty(a); return APP_OK;
@@ -209,6 +220,16 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
 {
     AppModel *m = &a->model;
     switch (action.type) {
+    case APP_SHUFFLE: return command(a,(PlayerCommand){.type=PLAYER_SHUFFLE,.value=m->player.shuffled ? 0 : 1});
+    case APP_REPEAT: return command(a,(PlayerCommand){.type=PLAYER_REPEAT,.value=(m->player.repeat+1u)%3u});
+    case APP_QUEUE:
+        if (!m->logged_in || (!a->services.player && !a->services.queue_snapshot)) { return APP_UNAVAILABLE; }
+        a->now.queue_open=!a->now.queue_open; a->now.queue_page=0; return APP_OK;
+    case APP_QUEUE_PAGE:
+        if (!isfinite(action.value) || action.value<0 || action.value>=PLAYER_QUEUE_CAP || floor(action.value)!=action.value) { return APP_INVALID; }
+        a->now.queue_page=(uint32_t)action.value; return APP_OK;
+    case APP_PLAYER_INFO:
+        return app_set_notice(a,APP_INFORMATION,(Clay_String){false,(int32_t)strlen(action.entity.title),action.entity.title});
     case APP_READ_MESSAGES: return app_messages_request(a);
     case APP_SIDEBAR_TOGGLE: a->browse.collapsed=!a->browse.collapsed; return APP_OK;
     case APP_LIBRARY_FOCUS: a->widgets.focus=CLAY_ID("LibraryQuery").id; return APP_OK;
@@ -260,13 +281,20 @@ static AppResult apply(App *a, AppAction action, uint64_t now)
         }
         if (action.entity.playable) {
             PlayerCommand c = {.type=PLAYER_LOAD,.play=true}; memcpy(c.track_id,action.entity.id,16);
-            AppResult r = command(a,c); if (r == APP_OK) { m->playing = action.entity; } return r;
+            AppResult r = command(a,c);
+            if (r == APP_OK) {
+                m->playing = action.entity;
+                (void)app_track_remember(a,&action.entity,"","");
+            }
+            return r;
         }
         m->detail = true; return APP_OK;
-    case APP_TOGGLE_PLAY: return command(a,(PlayerCommand){.type=m->player.state == PLAYER_PLAYING ? PLAYER_PAUSE : PLAYER_PLAY});
+    case APP_TOGGLE_PLAY: return command(a,(PlayerCommand){.type=m->player.state==PLAYER_PLAYING ||
+        m->player.state==PLAYER_LOADING || m->player.state==PLAYER_BUFFERING || m->player.state==PLAYER_SEEKING ? PLAYER_PAUSE : PLAYER_PLAY});
     case APP_PREVIOUS: return command(a,(PlayerCommand){.type=PLAYER_PREVIOUS});
     case APP_NEXT: return command(a,(PlayerCommand){.type=PLAYER_NEXT});
     case APP_SEEK:
+        if (action.generation!=m->player.generation || memcmp(action.entity.id,m->player.track_id,16)) { return APP_STALE; }
         if (!isfinite(action.value) || !m->player.duration_frames ||
             (!m->player.timeline_valid && m->player.state != PLAYER_PAUSED)) { return APP_INVALID; }
         if (action.value >= 1) { return command(a,(PlayerCommand){.type=PLAYER_SEEK,.position_frames=m->player.duration_frames}); }
@@ -313,6 +341,11 @@ AppResult app_update(App *a, uint64_t now)
     if (!a || !a->alive || a->widgets.in_frame) { return APP_INVALID; }
     a->catalog.now=now;
     app_volume_prepare(a);
+    /* Retire gestures against external changes before dispatching queued input. */
+    if (a->model.logged_in) {
+        if (a->services.player) { (void)app_publish_player(a,player_snapshot(a->services.player),now); }
+        else if (a->services.snapshot) { (void)app_publish_player(a,a->services.snapshot(a->services.context),now); }
+    }
     AppAction batch[APP_ACTIONS]; uint32_t count=a->action_count;
     memcpy(batch,a->actions,(size_t)count*sizeof(batch[0]));
     a->action_count=0; memset(a->actions,0,sizeof(a->actions));
@@ -328,6 +361,7 @@ AppResult app_update(App *a, uint64_t now)
     }
     if (a->services.artwork) { (void)artwork_begin_visible(a->services.artwork); }
     app_catalog_prepare(a,now);
+    app_now_prepare(a);
     app_browse_prepare(a);
     if (a->services.artwork) {
         for (uint32_t i = 0; i < a->image_count; ++i) {

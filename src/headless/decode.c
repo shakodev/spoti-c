@@ -19,14 +19,17 @@ DWORD WINAPI hl_decode(void *ctx)
 {
     core_thread_register_background();
     Headless *h = ctx; crypto_init(&h->crypto);
-    bool ok = sink_open_with_buffer(&h->sink,h->pcm,sizeof(h->pcm),h->config.wasapi ? NULL : &fake,h) == AUDIO_OK;
+    AudioResult opened=sink_open_with_buffer(&h->sink,h->pcm,sizeof(h->pcm),h->config.wasapi ? NULL : &fake,h);
+    PlayerResult created=PLAYER_BAD_STATE;
+    bool ok = opened==AUDIO_OK;
     if (ok) {
         PlayerConfig pc = {.sink = &h->sink, .codec = {&h->arenas[7],&h->arenas[8]}, .work = {&h->arenas[9],&h->arenas[10]}};
-        ok = player_create(&h->arenas[0], &pc, &h->player) == PLAYER_OK;
+        created=player_create(&h->arenas[0], &pc, &h->player); ok=created==PLAYER_OK;
     }
     if (!ok) {
         if (h->sink.opened) { (void)sink_close(&h->sink); }
-        fprintf(stderr,"headless startup: decode/device\n"); atomic_store(&h->failed, true); SetEvent(h->decode_ready); return 1;
+        fprintf(stderr,"headless startup: sink=%u player=%u\n",(unsigned)opened,(unsigned)created);
+        atomic_store(&h->failed, true); SetEvent(h->decode_ready); return 1;
     }
     SetEvent(h->decode_ready);
     uint64_t next = GetTickCount64();
@@ -41,7 +44,9 @@ DWORD WINAPI hl_decode(void *ctx)
                 view.clock_serial != previous.clock_serial ||
                 view.volume != previous.volume || view.volume_ticket != previous.volume_ticket || view.rate != previous.rate ||
                 view.duration_frames != previous.duration_frames || view.timeline_valid != previous.timeline_valid ||
-                view.error != previous.error || memcmp(view.track_id,previous.track_id,16)) {
+                view.error != previous.error || view.repeat!=previous.repeat || view.shuffled!=previous.shuffled ||
+                view.queue_count!=previous.queue_count || view.queue_index!=previous.queue_index ||
+                memcmp(view.track_id,previous.track_id,16)) {
                 h->config.state_changed(h->config.state_context); previous = view;
             }
         }

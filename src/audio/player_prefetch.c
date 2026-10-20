@@ -65,7 +65,8 @@ AudioResult player_slot_read(Player *p, unsigned at)
     if (s->eof) { return AUDIO_EOF; }
     if (!s->decoder) {
         DecoderConfig dc = {.output = p->config.sink->format, .generation = s->decoder_generation,
-            .source_bytes = s->source.bytes, .read_at = source_read, .context = s};
+            .source_bytes = s->source.bytes, .read_at = source_read, .context = s,
+            .trailing_zero_limit=s->source.trailing_zero_limit};
         AudioResult r = decoder_open(p->config.codec[at], p->config.work[at], &dc, &s->decoder);
         if (r != AUDIO_OK) { return r; }
     }

@@ -56,7 +56,7 @@ void app_home(App *a)
     float width=(fmaxf(1,a->geometry.main-32)-(float)(columns-1)*12)/(float)columns;
     HomeLayout layout={.app=a,.columns=columns,.width=width,.edge=fmaxf(1,width-16)};
     layout.height=layout.edge+104;
-    /* At most two complete shelves plus one partial shelf: 3 * 5 images.
+    /* At most two complete shelves plus one partial shelf: 3 * 4 images, leaving capacity for the persistent player cover.
      * These native density choices are recorded in shell-home-library.md. */
     UiListRange range;
     (void)ui_virtual_list(&a->widgets,CLAY_ID("AppList"),&a->widgets.lists[0],

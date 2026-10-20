@@ -39,5 +39,14 @@ void app_playlist_prepare(App *a)
         const char *artist=row ? p->strings+row->artist : "";
         strcpy_s(a->model.playing_artist,sizeof(a->model.playing_artist),artist);
         memcpy(a->model.playing_artist_id,a->model.playing.id,16);
+        for (uint32_t remaining=queue.transfer.count;remaining;--remaining) {
+            uint32_t i=remaining-1; /* Keep the current and nearest upcoming IDs in the bounded cache. */
+            const TrackRow *item=playlist_row(p,queue.ordinals[i]);
+            if (!item) { continue; }
+            AppEntity entity={.kind=COLLECTION_TRACK,.playable=true};
+            memcpy(entity.id,queue.transfer.ids[i],16);
+            strcpy_s(entity.title,sizeof(entity.title),p->strings+item->title);
+            (void)app_track_remember(a,&entity,p->strings+item->artist,"");
+        }
     }
 }

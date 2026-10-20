@@ -1,4 +1,5 @@
 #include "ui/renderer_clay.h"
+#include "ui/icons.h"
 #include "support/test_check.h"
 #include <math.h>
 #include <string.h>
@@ -126,12 +127,24 @@ static void test_clay(void)
     CHECK(ui_frame_clay(&frame, commands, NULL) == UI_RENDER_UNSUPPORTED);
 }
 
+static void test_icons(void)
+{
+    const float color[4]={1,1,1,1}; UiRect box={0,0,16,16};
+    CHECK(ui_frame_begin(&frame,100,100,1)==UI_RENDER_OK);
+    for (int icon=UI_ICON_PLAY;icon<=UI_ICON_FULLSCREEN;++icon) {
+        CHECK(ui_icon_draw(&frame,(UiIcon)icon,box,color,false)==UI_RENDER_OK);
+    }
+    CHECK(frame.quad_count==UI_ICON_FULLSCREEN-UI_ICON_PLAY+1 && frame.batch_count==1 && !frame.batches[0].texture);
+    CHECK(ui_icon_draw(&frame,(UiIcon)-1,box,color,false)==UI_RENDER_INVALID);
+    CHECK(ui_icon_draw(&frame,UI_ICON_COUNT,box,color,false)==UI_RENDER_INVALID);
+    CHECK(ui_icon_draw(&frame,UI_ICON_PLAY,box,NULL,false)==UI_RENDER_INVALID);
+}
 int main(void)
 {
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CrtSetAllocHook(allocation_hook); watch_heap = true;
 #endif
-    test_clips_order(); test_limits(); test_clay();
+    test_clips_order(); test_limits(); test_clay(); test_icons();
 #if defined(_MSC_VER) && defined(_DEBUG)
     watch_heap = false; CHECK(heap_calls == 0); _CrtSetAllocHook(NULL);
 #endif

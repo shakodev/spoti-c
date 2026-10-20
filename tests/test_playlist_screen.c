@@ -84,8 +84,12 @@ static void filters_and_identity(void)
 {
     CHECK(playlist.count==10000 && playlist.coverage==TRACK_FULL_INDEX && playlist.row_count<=16);
     CHECK(sizeof(Playlist)+sizeof(TrackFilter)+COLLECTION_MODEL_BUDGET<=512u*1024u);
+    CHECK(!playlist.selected && playlist_play_target(&playlist)==2);
+    CHECK(playlist_select(&playlist,1,false)==TRACK_OK); /* Unavailable selection cannot strand primary Play. */
+    CHECK(playlist_play_target(&playlist)==2);
     CHECK(playlist_select(&playlist,2,false)==TRACK_OK);
     CHECK(playlist_select(&playlist,3,false)==TRACK_OK); /* Same song ID, distinct occurrence. */
+    CHECK(playlist_play_target(&playlist)==3);
     PlaylistQueue a,b;
     CHECK(playlist_queue(&playlist,3,&a)==TRACK_OK && a.ordinals[0]==2 && a.more);
     CHECK(playlist_queue(&playlist,4,&b)==TRACK_OK && b.ordinals[0]==3);
@@ -94,9 +98,14 @@ static void filters_and_identity(void)
     query("sOnG 000",TRACK_SOURCE_ORDER); CHECK(playlist.count==100 && playlist.coverage==TRACK_FULL_INDEX);
     CHECK(playlist.selected==3);
     query("Artist 16",TRACK_SOURCE_ORDER); CHECK(playlist.count>500 && playlist.selected==3);
+    CHECK(!playlist.selected_visible && playlist_play_target(&playlist)!=3);
+    PlaylistQueue target;
+    CHECK(playlist_queue(&playlist,playlist_play_target(&playlist),&target)==TRACK_OK);
+    CHECK(target.ordinals[0]==playlist_play_target(&playlist)-1);
     query("\xe6\x97\xa5\xe6\x9c\xac",TRACK_SOURCE_ORDER); CHECK(playlist.count==1 && playlist.map[0]==777);
     query("Bj\xc3\xb6rk",TRACK_SOURCE_ORDER); CHECK(playlist.count==1);
     query("BJ\xc3\x96RK",TRACK_SOURCE_ORDER); CHECK(playlist.count==0); /* Only ASCII folds. */
+    CHECK(!playlist_play_target(&playlist));
     query("Song 000",TRACK_TITLE_ORDER);
     for (uint32_t i=1;i<playlist.count;++i) { CHECK(playlist.map[i-1]<playlist.map[i]); }
     query("",TRACK_DURATION_ORDER);
@@ -118,6 +127,11 @@ static void filters_and_identity(void)
 }
 static void scroll_keyboard_play(void)
 {
+    playlist.selected=0; playlist.selected_visible=playlist.selected_playable=false; layout();
+    app.widgets.focus=CLAY_ID("PlaylistPlay").id;
+    CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,0);
+    CHECK(queues==1 && copied.ordinals[0]==1);
+    pt_drive(); queues=0;
     app.widgets.lists[0].scroll=40.0*5000; settle(); layout();
     CHECK(playlist_row(&playlist,5000) && !playlist_row(&playlist,0));
     CHECK(playlist_select(&playlist,5001,false)==TRACK_OK);
@@ -156,6 +170,7 @@ static void generations_and_coverage(void)
     CHECK(playlist_source(&playlist,&source,app.model.generation)==TRACK_PENDING);
     (void)app_update(&app,0); CHECK(WaitForSingleObject(blocked,5000)==WAIT_OBJECT_0);
     CHECK(playlist_query(&playlist,"Song 099",TRACK_SOURCE_ORDER)==TRACK_PENDING);
+    CHECK(!playlist_play_target(&playlist));
     CHECK(playlist_query(&playlist,"Song 009",TRACK_SOURCE_ORDER)==TRACK_PENDING);
     CHECK(SetEvent(unblock)); settle(); CHECK(playlist.stale_jobs>0 && playlist.count==100);
     CHECK(CloseHandle(blocked) && CloseHandle(unblock));

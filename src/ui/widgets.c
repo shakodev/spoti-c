@@ -114,10 +114,30 @@ bool ui_widgets_button_event(UiWidgets *ui, Clay_ElementId id, bool disabled)
     if (ui->input.released && ui->active == id.id) { activated = over && !ui->input.cancel; ui->active = 0; }
     return activated || (ui->focus == id.id && ui->input.activate && !ui->input.cancel);
 }
+bool ui_button_behavior(UiWidgets *ui, Clay_ElementId id, bool disabled)
+{
+    return ui_widgets_declare(ui,id) && ui_widgets_button_event(ui,id,disabled);
+}
 bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, float height, bool disabled)
 {
     return ui_component_button(ui,id,label,UI_ICON_NONE,UI_COMPONENT_SECONDARY,
         (UiControl){.width=width,.height=height,.state=disabled ? UI_CONTROL_DISABLED : 0});
+}
+bool ui_track_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, bool disabled, bool current)
+{
+    if (!ui_widgets_declare(ui,id)) { return false; }
+    if (!isfinite(width) || width<=0) { ui_widgets_fail(ui,UI_WIDGET_INVALID); return false; }
+    bool activated=ui_widgets_button_event(ui,id,disabled);
+    Clay_Color color=disabled ? (Clay_Color){145,145,145,255} : current ?
+        (Clay_Color){30,215,96,255} : (Clay_Color){245,245,245,255};
+    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)},
+        .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.clip={.horizontal=true,.vertical=true},
+        .backgroundColor=ui->hover==id.id ? (Clay_Color){55,55,55,255} : (Clay_Color){0},
+        .cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color={220,220,220,255},
+        .width=CLAY_BORDER_ALL(!disabled && ui->focus==id.id ? 1 : 0)}}) {
+        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor=color,.wrapMode=CLAY_TEXT_WRAP_NONE}));
+    }
+    return activated;
 }
 void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width)
 {
@@ -167,7 +187,7 @@ void ui_level_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, flo
         }
     }
     float fill=(float)fmin(1,fmax(0,slider->value))*width;
-    Clay_Color color=disabled ? (Clay_Color){100,100,100,255} : (Clay_Color){30,200,95,255};
+    Clay_Color color=disabled ? (Clay_Color){80,80,80,255} : over || slider->dragging ? (Clay_Color){30,215,96,255} : (Clay_Color){200,200,200,255};
     CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)},
         .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.border={.color={220,220,220,255},
         .width=CLAY_BORDER_ALL(!disabled && ui->focus==id.id ? 1 : 0)}}) {
@@ -176,11 +196,13 @@ void ui_level_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, flo
             CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(fill),CLAY_SIZING_FIXED(4)}},
                 .backgroundColor=color,.cornerRadius=CLAY_CORNER_RADIUS(2)}) { }
         }
+        if (!disabled && (over || slider->dragging || ui->focus==id.id)) {
         CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(12),CLAY_SIZING_FIXED(12)}},
             .floating={.attachTo=CLAY_ATTACH_TO_PARENT,.attachPoints={.element=CLAY_ATTACH_POINT_LEFT_CENTER,
                 .parent=CLAY_ATTACH_POINT_LEFT_CENTER},.offset={(float)fmin(width-12,fmax(0,fill-6)),0},
                 .pointerCaptureMode=CLAY_POINTER_CAPTURE_MODE_PASSTHROUGH},
-            .backgroundColor=disabled ? color : (Clay_Color){235,235,235,255},.cornerRadius=CLAY_CORNER_RADIUS(6)}) { }
+            .backgroundColor={235,235,235,255},.cornerRadius=CLAY_CORNER_RADIUS(6)}) { }
+        }
     }
 }
 static void span(const char *s, uint32_t n, bool selected)

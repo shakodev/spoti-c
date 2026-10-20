@@ -112,6 +112,20 @@ static PlayerSnapshot snapshot(void *context)
     if (h->player) { result=headless_snapshot(h->player); }
     ReleaseSRWLockShared(&h->player_lock); return result;
 }
+static bool track_info(void *context,const uint8_t id[16],MediaDisplay *out)
+{
+    AppLive *h=context; bool result=false;
+    AcquireSRWLockShared(&h->player_lock);
+    if (h->player) { result=headless_track_info(h->player,id,out); }
+    ReleaseSRWLockShared(&h->player_lock); return result;
+}
+static bool queue_snapshot(void *context,PlayerQueueSnapshot *out)
+{
+    AppLive *h=context; bool result=false;
+    AcquireSRWLockShared(&h->player_lock);
+    if (h->player) { result=headless_queue_snapshot(h->player,out); }
+    ReleaseSRWLockShared(&h->player_lock); return result;
+}
 static PlayerResult refresh(void *context)
 {
     AppLive *h=context; PlayerResult result=PLAYER_OK;
@@ -126,7 +140,7 @@ static PlayerResult queue(void *context, const PlaylistQueue *queue)
 AppServices app_live_services(AppLive *h)
 {
     return (AppServices){.context=h,.request=request,.catalog=catalog,.cancel=cancel,.retire=retire,.auth=auth,
-        .submit=submit,.snapshot=snapshot,.refresh_clock=refresh,.playlist=&h->playlist,.playlist_queue=queue};
+        .submit=submit,.snapshot=snapshot,.track_info=track_info,.queue_snapshot=queue_snapshot,.refresh_clock=refresh,.playlist=&h->playlist,.playlist_queue=queue};
 }
 static bool environment(const char *name, char *out, DWORD cap, const char *fallback)
 {

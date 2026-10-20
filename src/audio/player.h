@@ -16,10 +16,13 @@ typedef struct PlayerSnapshot {
     uint64_t volume_ticket; /* Echo of the latest PLAYER_VOLUME ticket; 0 for external controls. */
     uint8_t track_id[16];
     uint64_t position_frames;
-    uint64_t duration_frames; /* Zero until decoder length is known. */
+    uint64_t duration_frames; /* Optional metadata bound, replaced by exact decoder length. */
     uint32_t rate;
     float volume;
     PlayerState state;
+    PlayerRepeat repeat;
+    uint32_t queue_count, queue_index;
+    bool shuffled;
     AudioResult error;
     bool timeline_valid;
 } PlayerSnapshot;
@@ -33,7 +36,11 @@ typedef struct PlayerQueueSnapshot {
  * logical decrypted Vorbis bytes or return NEED_MORE. It receives the source
  * ticket (not the public generation). Never call network-owner APIs here.
  * After preparing data, submit DATA_READY with that ticket to wake the owner. */
-typedef struct PlayerSource { uint64_t bytes; DecoderReadAt read_at; void *context; } PlayerSource;
+typedef struct PlayerSource {
+    uint64_t bytes; DecoderReadAt read_at; void *context;
+    uint32_t duration_ms; /* Optional metadata hint; exact decoder length supersedes it. */
+    uint8_t trailing_zero_limit; /* Explicit source policy, 0 keeps strict Ogg bounds. */
+} PlayerSource;
 typedef enum PlayerCommandType {
     PLAYER_LOAD, PLAYER_PLAY, PLAYER_PAUSE, PLAYER_STOP, PLAYER_SEEK, PLAYER_VOLUME,
     PLAYER_QUEUE_APPEND, PLAYER_QUEUE_CLEAR, PLAYER_NEXT, PLAYER_PREVIOUS,

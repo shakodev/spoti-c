@@ -3,7 +3,7 @@
 #include "api/collection_api.h"
 #include "components.h"
 
-#define APP_BROWSE_VISIBLE 15u /* Leaves one renderer texture slot for the font atlas. */
+#define APP_BROWSE_VISIBLE 14u /* Reserves renderer slots for font atlas and persistent player cover. */
 typedef struct AppVisibleImage { uint32_t shelf, index, size; } AppVisibleImage;
 typedef struct AppBrowse {
     uint16_t order[COLLECTION_ROW_CAP];

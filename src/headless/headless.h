@@ -1,6 +1,7 @@
 #ifndef SPOTIC_HEADLESS_H
 #define SPOTIC_HEADLESS_H
 #include "audio/player.h"
+#include "protocol/media_display.h"
 #include <stdio.h>
 
 typedef struct Headless Headless;
@@ -31,6 +32,8 @@ typedef struct HeadlessMetrics {
 bool headless_open(const HeadlessConfig *, Headless **);
 PlayerResult headless_submit(Headless *, const PlayerCommand *);
 PlayerSnapshot headless_snapshot(Headless *);
+bool headless_track_info(Headless *, const uint8_t id[16], MediaDisplay *);
+bool headless_queue_snapshot(Headless *, PlayerQueueSnapshot *);
 PlayerResult headless_refresh_clock(Headless *);
 /* Commands: play, pause, seek <milliseconds>, volume <0..1>, next, stop.
  * Reject trailing input, nonfinite/overflow and out-of-range values. */

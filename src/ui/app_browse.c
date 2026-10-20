@@ -36,7 +36,7 @@ void app_browse_project(App *a)
 }
 uint32_t app_browse_columns(const App *a)
 {
-    return (uint32_t)fminf(5,fmaxf(1,floorf((a->geometry.main-20)/172)));
+    return (uint32_t)fminf(4,fmaxf(1,floorf((a->geometry.main-20)/172)));
 }
 void app_browse_restore(App *a)
 {

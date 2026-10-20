@@ -4,8 +4,8 @@
 #include <string.h>
 #include <windows.h>
 
-/* Blocking owners can acquire a USER32 queue through OS networking/crypto
- * without becoming the application's UI owner. Register only at worker entry. */
+/* OS audio/network initialization can create a USER32 queue on a blocking
+ * owner. Register only at a dedicated worker's entry, never on a UI thread. */
 bool core_thread_background_owner(void);
 void core_thread_register_background(void);
 

@@ -91,7 +91,7 @@ void pt_reply(const PlayerRequest *r)
     unsigned active = pt.readers[0].used + pt.readers[1].used;
     if (active > pt.peak_readers) { pt.peak_readers = active; }
     pt_command((PlayerCommand){.type = PLAYER_SOURCE_READY, .ticket = r->ticket,
-        .source = {pt.files[fixture].bytes, read_source, &pt.readers[i]}});
+        .source = {pt.files[fixture].bytes, read_source, &pt.readers[i],pt.source_duration_ms}});
 }
 void pt_network(void)
 {
