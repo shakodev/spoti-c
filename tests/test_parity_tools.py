@@ -37,7 +37,7 @@ class ParityTools(unittest.TestCase):
             root = Path(directory)
             native = root / "capture.rgba"
             native.write_bytes(bytes([255, 0, 0, 255]))
-            # Both output filenames may already be source captures.
+            # Output filenames may already be source captures.
             for name in ("native.png", "reference.png", "difference.png", "comparison.png"):
                 with self.subTest(name=name):
                     reference = root / name

@@ -150,3 +150,36 @@ Original procedural icons also require silhouette comparison.
 The #35 release performance thresholds and harness are unchanged. Existing
 aggregate RAM/startup/CPU failures are not waived by these correctness tests.
 GPU/account/device/cold-start acceptance remains separate.
+
+## PR #45 review follow-up (2026-10-20)
+
+Two comparison-tool defects were reproduced with failing regression tests and
+fixed. Output paths could overwrite source captures or metadata, including a
+reference named `native.png` that was overwritten before being read, producing
+a false zero-difference result. The tool now validates inputs and rejects all
+output/input aliases, including hardlinks, before writing any files.
+
+Alpha-only differences previously reported zero changed pixels. Changed pixels
+now include all four channels; the JSON also reports `changed_alpha_pixels`
+and `mean_absolute_alpha_error`. The opaque difference image displays alpha
+deltas as grayscale combined with the RGB deltas. The existing RGB error
+metric retains its meaning. All seven Python tool tests pass.
+
+The branch now includes main commit `7a1dcb9` (#40). Font conflicts were resolved
+with one shared role resolver while preserving untrimmed status notices and
+separate measurement-only cache entries. Font tests cover the combined behavior;
+the optional component capture harness also uses the updated measurement keys.
+
+The combined branch passes the full **57/57 Debug/ASan** suite (61.21 s) and
+**15/15 selected Release checks** (5.22 s), including status-message coverage
+and the dependency audit. Both builds pass `/W4 /WX` without warnings. The
+audit reports 386 C translation units, six artifacts and zero failures; the
+Release GUI is 1,027,584 bytes. Raw results:
+[ASan](spotify-desktop-parity/pr45-asan-ctest.txt),
+[Release](spotify-desktop-parity/pr45-release-ctest.txt),
+[audit](spotify-desktop-parity/pr45-release-audit.json).
+
+The PR remains a draft. The missing runtime reference captures, responsive
+measurements and 100/125/150/200% comparisons listed above still block full
+issue #41 acceptance and merge. Optional GPU/account acceptance and native
+performance workloads were not run during this review.
