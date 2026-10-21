@@ -96,6 +96,22 @@ static void random_seeks(void)
     }
     CHECK(range_stats(rt.fetcher).network_attempts == plan.count); rt_close();
 }
+static void cached_read_during_prefetch(void)
+{
+    RangePlan plan = {0};
+    rt_plan(&plan, 0, 0, 2 * RANGE_BLOCK_BYTES, RANGE_BLOCK_BYTES, 1);
+    rt_plan(&plan, 1, RANGE_BLOCK_BYTES, 2 * RANGE_BLOCK_BYTES, RANGE_BLOCK_BYTES, 2);
+    plan.replies[1].hold_body = true; rt_open(&plan, false, 0, 0, 0);
+    RangeId first = rt_request(0, 1, RANGE_CURRENT); CHECK(rt_finish(first) == RANGE_OK);
+    CHECK(range_status(rt.fetcher, first, true) == RANGE_OK);
+    CHECK(ResetEvent(rt.server.headers_sent));
+    RangeId ahead = rt_request(RANGE_BLOCK_BYTES, 1, RANGE_PREFETCH); CHECK(range_poll(rt.fetcher) == RANGE_OK);
+    CHECK(WaitForSingleObject(rt.server.headers_sent, 5000) == WAIT_OBJECT_0);
+    RangeId cached = rt_request(0, 1, RANGE_CURRENT); CHECK(rt_finish(cached) == RANGE_OK);
+    CHECK(range_stats(rt.fetcher).preemptions == 0);
+    CHECK(SetEvent(rt.server.release_body) && rt_finish(ahead) == RANGE_OK);
+    CHECK(range_stats(rt.fetcher).network_attempts == 2); rt_close();
+}
 static void admission(void)
 {
     rt_open(NULL, false, 0, 0, 0); RangeId ids[RANGE_REQUESTS], sentinel = {91};
@@ -119,7 +135,7 @@ static void admission(void)
 }
 int main(void)
 {
-    ranges_and_pins(); priorities(); random_seeks(); admission(); cache_disk_tests(); range_error_tests(); range_race_tests();
+    ranges_and_pins(); priorities(); cached_read_during_prefetch(); random_seeks(); admission(); cache_disk_tests(); range_error_tests(); range_race_tests();
     printf("audio range/cache tests passed: pool=%zu, range state=%zu, cache state=%zu, index=%zu bytes\n",
         (size_t)MEMORY_BUDGET_ENCRYPTED_BLOCKS, sizeof(RangeFetcher), sizeof(AudioCache), sizeof(((AudioCache *)0)->entries)); return 0;
 }

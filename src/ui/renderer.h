@@ -17,7 +17,7 @@ typedef enum UiRenderResult {
     UI_RENDER_DEVICE_LOST, UI_RENDER_OCCLUDED, UI_RENDER_SUSPENDED, UI_RENDER_OS_ERROR
 } UiRenderResult;
 typedef enum UiQuadMode { UI_QUAD_SOLID, UI_QUAD_BORDER, UI_QUAD_SHADOW,
-    UI_QUAD_IMAGE, UI_QUAD_GLYPH } UiQuadMode;
+    UI_QUAD_IMAGE, UI_QUAD_GLYPH, UI_QUAD_ICON } UiQuadMode;
 typedef uint32_t UiTexture;
 typedef struct UiRect { float x, y, w, h; } UiRect;
 typedef struct QuadInstance {

@@ -116,6 +116,9 @@ static void detail_artwork(void)
     CHECK(previous.generation==cs_app.model.generation);
     cs_action(APP_MORE,0); cs_fixture("album-next");
     CHECK(cs_app.image_count>=1 && artwork_id_equal(cs_app.images[0].id,previous));
+    cs_action(APP_GO_SEARCH,0); query(); cs_fixture("search");
+    cs_action(APP_CATALOG_SECTION,SEARCH_ALBUMS); cs_tick(cs_now+250); cs_fixture("search");
+    CHECK(cs_app.image_count==1 && cs_app.images[0].id.size==160); /* Large cards must not request a 40px decode. */
     cs_action(APP_GO_SETTINGS,0);
     CHECK(!cs_app.catalog.artwork[0] && !cs_app.image_count);
     ArtworkHandle handle; CHECK(!artwork_lookup(art,previous,&handle));

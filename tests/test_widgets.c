@@ -198,7 +198,7 @@ static bool track_frame(UiWidgetInput input, bool disabled, bool current)
         Clay_RenderCommand *c=Clay_RenderCommandArray_Get(&commands,i);
         if (c->commandType==CLAY_RENDER_COMMAND_TYPE_TEXT) {
             text=true;
-            CHECK(c->renderData.text.textColor.g==(disabled ? 145 : current ? 215 : 245));
+            CHECK(c->renderData.text.textColor.g==(disabled ? 124 : current ? 215 : 255));
         }
     }
     CHECK(text); return hit;

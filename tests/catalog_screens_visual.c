@@ -11,7 +11,11 @@ static int capture(const char *name, const char *size, uint32_t width, uint32_t 
     FontMeasureContext text={.cache=&fonts,.config={.dpi=dpi,.weight=400,.max_width=260,.ellipsis=true}};
     app_bind_fonts(&cs_app,&text);
     for (unsigned n=0;n<100;++n) {
-        CHECK(font_prepare_pending(&fonts)==FONT_OK && font_upload_renderer(&fonts,&renderer)==FONT_OK);
+        FontResult prepared=font_prepare_pending(&fonts), uploaded=font_upload_renderer(&fonts,&renderer);
+        if (prepared!=FONT_OK || uploaded!=FONT_OK) {
+            fprintf(stderr,"capture %s %s %u: font prepare=%u upload=%u\n",name,size,dpi,(unsigned)prepared,(unsigned)uploaded);
+        }
+        CHECK(prepared==FONT_OK && uploaded==FONT_OK);
         Clay_RenderCommandArray c=cs_layout((float)width,(float)height,(float)dpi);
         CHECK(ui_frame_begin(&frame,width,height,(float)dpi/96)==UI_RENDER_OK);
         UiClayBridge bridge={.custom=app_render_custom,.context=&cs_app};
@@ -51,6 +55,28 @@ int cs_visual(void)
                 result=capture(names[screen],sizes[size],widths[size]*dpi[scale]/96,720u*dpi[scale]/96,dpi[scale]);
             }
         }
+    }
+    if (!result) {
+        cs_action(APP_GO_SEARCH,0); cs_query("missing"); cs_tick(cs_now+250);
+        for (unsigned scale=0;scale<4 && !result;++scale) {
+            result=capture("search-loading","default",1100u*dpi[scale]/96,720u*dpi[scale]/96,dpi[scale]);
+        }
+        cs_response("{\"data\":{\"searchV2\":{\"topResultsV2\":{\"itemsV2\":[]}}}}",200);
+        for (unsigned scale=0;scale<4 && !result;++scale) {
+            result=capture("search-empty","default",1100u*dpi[scale]/96,720u*dpi[scale]/96,dpi[scale]);
+        }
+        cs_action(APP_RETRY,0); cs_tick(cs_now+250); cs_response("",500);
+        for (unsigned scale=0;scale<4 && !result;++scale) {
+            result=capture("search-error","default",1100u*dpi[scale]/96,720u*dpi[scale]/96,dpi[scale]);
+        }
+        cs_action(APP_RETRY,0); cs_tick(cs_now+250); cs_fixture("search");
+        (void)cs_layout(1100,720,96); cs_app.widgets.focus=CLAY_ID("CatalogList").id;
+        cs_app.widgets.lists[0].focus=app_catalog_key(&cs_app,2);
+        CHECK(app_context_open(&cs_app,0,0,true)==APP_OK);
+        for (unsigned scale=0;scale<4 && !result;++scale) {
+            result=capture("search-menu","default",1100u*dpi[scale]/96,720u*dpi[scale]/96,dpi[scale]);
+        }
+        app_context_close(&cs_app);
     }
     font_cache_destroy(&fonts); CHECK(font_stats(&fonts).com_objects==0);
     cs_close_visual(); return result;

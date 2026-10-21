@@ -57,6 +57,9 @@ dkms.conf
 # Local builds, references, and caches
 /build/
 /build-rel/
+/build-issues-41-43/
+/build-rel-issues-41-43/
+/build-live/
 /ref/
 /.cache/
 

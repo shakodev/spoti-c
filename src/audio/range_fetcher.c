@@ -109,8 +109,13 @@ RangeResult range_request(RangeFetcher *f, RangeSource source, uint64_t offset, 
             .deadline = core_deadline_after(core_clock_now(&f->config.clock), f->config.timeout_ms), .result = RANGE_PENDING};
         *id = r->id; f->needs_drive = true;
         if (priority == RANGE_CURRENT && f->active >= 0 && f->blocks[f->active].priority == RANGE_PREFETCH) {
+            /* A cache-resident current read needs no transport. Resolve its
+             * status before deciding whether to interrupt useful read-ahead. */
+            range_update_requests(f);
             RangeBlock *b = &f->blocks[f->active];
-            if (!range_reserved(f, b, true)) { b->preempted = true; (void)range_transfer_cancel(f, f->http_id); ++f->stats.preemptions; }
+            if (r->result == RANGE_PENDING && !b->preempted && !range_reserved(f, b, true)) {
+                b->preempted = true; (void)range_transfer_cancel(f, f->http_id); ++f->stats.preemptions;
+            }
         }
         return RANGE_OK;
     }

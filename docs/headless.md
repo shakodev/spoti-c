@@ -101,6 +101,11 @@ joins cache jobs and owners, closes HTTP/AP/device handles, verifies accounting,
 then securely wipes and releases the fixed VM storage. On an OS teardown timeout,
 live storage is retained with explicit failure to avoid freeing a worker's buffers.
 
+`--diagnostics` additionally enables bounded lifetime timing/underrun counters;
+`--once` then emits approximately one JSON sample per second. See the
+[issue #39 investigation](verification/audio-glitches.md) for metric meanings,
+controlled stall coverage, GUI opt-in and pending TE-C listening acceptance.
+
 The headless PCM ring is fixed at 64 KiB (8,192 stereo float32 frames); stop and
 device reopen preserve that capacity. Other sink callers retain the existing
 256-KiB default. Arena cleanup wipes the complete lifetime high-water range,

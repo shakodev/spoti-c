@@ -2,6 +2,7 @@
 #define SPOTIC_AUDIO_SINK_H
 #include "audio_format.h"
 #include "core/spsc_ring.h"
+#include "core/audio_diagnostics.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -37,6 +38,9 @@ typedef struct SinkBackend {
     SinkClock (*clock)(void *);
 } SinkBackend;
 struct AudioSink {
+    _Atomic(AudioDiagnostics *) diagnostics; /* Set only while stopped, before first start. */
+    uint64_t diagnostic_callback_qpc; /* Callback writer; reset while joined. */
+    _Atomic uint64_t diagnostic_wake_qpc;
     SpscRing ring;
     AudioFormat format;
     const SinkBackend *backend;

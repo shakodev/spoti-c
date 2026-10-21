@@ -30,6 +30,8 @@ void player_command(Player *p, const PlayerCommand *c)
 {
     if (c->type >= PLAYER_SOURCE_READY) { source_reply(p, c); return; }
     if (p->closing) { return; }
+    audio_diagnostic_record(p->config.sink->diagnostics, AD_PLAYER_COMMAND, c->type,
+        audio_diagnostic_now(p->config.sink->diagnostics));
     switch (c->type) {
     case PLAYER_TRANSFER:
         stop(p); p->queue_count = c->transfer->count; memset(p->durations, 0, sizeof(p->durations));

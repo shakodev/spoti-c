@@ -1,8 +1,10 @@
 #include "internal.h"
+#include "core/thread.h"
 #include <wchar.h>
 
 static DWORD WINAPI network(void *ctx)
 {
+    core_thread_register_background();
     Headless *h = ctx; bool ok = hl_network_open(h);
     if (ok) {
         h->decode_thread = CreateThread(NULL, 0, hl_decode, h, 0, NULL);
@@ -38,11 +40,11 @@ bool headless_open(const HeadlessConfig *config, Headless **out)
         (!config->fixture_url && (!config->credential_path || !config->country || !config->catalogue)) ||
         (config->credential_path && wcslen(config->credential_path) >= 240) ||
         (config->country && strlen(config->country) != 2) || (config->catalogue && strlen(config->catalogue) >= 33)) { return false; }
-    /* COM can initialize USER32 on its first caller. For the opt-in device
-     * path, resolve it here before creating the non-GUI decode owner. */
-    if (config->wasapi) { (void)IsGUIThread(FALSE); }
     Headless *h = VirtualAlloc(NULL, sizeof(*h), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
     if (!h) { return false; }
+    if (!audio_diagnostics_init(&h->diagnostic_storage)) { VirtualFree(h,0,MEM_RELEASE); return false; }
+    h->diagnostics = config->diagnostics ? &h->diagnostic_storage : NULL;
+    atomic_init(&h->output_rate, 0); atomic_init(&h->output_channels, 0); atomic_init(&h->output_buffer_frames, 0);
     if (!metrics_init(&h->accounting)) { VirtualFree(h,0,MEM_RELEASE); return false; }
     atomic_init(&h->failed,false); atomic_init(&h->closing,false); atomic_init(&h->decode_finished,false);
     atomic_init(&h->frames,0); atomic_init(&h->wakes,0); atomic_init(&h->callback_ticks,0);

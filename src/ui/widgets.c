@@ -1,4 +1,5 @@
 #include "widgets.h"
+#include "components.h"
 #include <math.h>
 #include <string.h>
 
@@ -112,39 +113,19 @@ static bool button_event(UiWidgets *ui, Clay_ElementId id, bool disabled)
     if (ui->input.released && ui->active == id.id) { activated = over && !ui->input.cancel; ui->active = 0; }
     return activated || (ui->focus == id.id && ui->input.activate && !ui->input.cancel);
 }
+UiControlState ui_control_state(UiWidgets *ui, Clay_ElementId id, bool disabled)
+{
+    if (!declare(ui,id)) { return (UiControlState){0}; }
+    bool hit=button_event(ui,id,disabled);
+    return (UiControlState){ui->hover==id.id,ui->active==id.id,ui->focus==id.id,hit};
+}
 bool ui_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, float height, bool disabled)
 {
-    if (!declare(ui,id)) { return false; }
-    if (!isfinite(width) || !isfinite(height) || width <= 0 || height <= 0) {
-        ui_widgets_fail(ui,UI_WIDGET_INVALID); return false;
-    }
-    bool activated = button_event(ui,id,disabled);
-    Clay_Color color = disabled ? (Clay_Color){45,45,45,255} :
-        ui->active == id.id ? (Clay_Color){35,110,60,255} :
-        ui->hover == id.id ? (Clay_Color){70,70,70,255} : (Clay_Color){50,50,50,255};
-    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(height)},
-        .childAlignment={CLAY_ALIGN_X_CENTER,CLAY_ALIGN_Y_CENTER}},.backgroundColor=color,
-        .cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color={220,220,220,255},
-        .width=CLAY_BORDER_ALL(ui->focus == id.id ? 1 : 0)}}) {
-        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor={240,240,240,255},.wrapMode=CLAY_TEXT_WRAP_NONE}));
-    }
-    return activated;
+    return ui_component_button(ui,id,label,width,height,disabled,(UiButtonStyle){0});
 }
 bool ui_track_button(UiWidgets *ui, Clay_ElementId id, Clay_String label, float width, bool disabled, bool current)
 {
-    if (!declare(ui,id)) { return false; }
-    if (!isfinite(width) || width<=0) { ui_widgets_fail(ui,UI_WIDGET_INVALID); return false; }
-    bool activated=button_event(ui,id,disabled);
-    Clay_Color color=disabled ? (Clay_Color){145,145,145,255} : current ?
-        (Clay_Color){30,215,96,255} : (Clay_Color){245,245,245,255};
-    CLAY(id,{.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)},
-        .childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.clip={.horizontal=true,.vertical=true},
-        .backgroundColor=ui->hover==id.id ? (Clay_Color){55,55,55,255} : (Clay_Color){0},
-        .cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color={220,220,220,255},
-        .width=CLAY_BORDER_ALL(!disabled && ui->focus==id.id ? 1 : 0)}}) {
-        CLAY_TEXT(label,CLAY_TEXT_CONFIG({.fontSize=16,.textColor=color,.wrapMode=CLAY_TEXT_WRAP_NONE}));
-    }
-    return activated;
+    return ui_component_button(ui,id,label,width,28,disabled,(UiButtonStyle){.kind=UI_BUTTON_ROW,.current=current});
 }
 void ui_seek_slider(UiWidgets *ui, Clay_ElementId id, UiSeekSlider *slider, float width)
 {

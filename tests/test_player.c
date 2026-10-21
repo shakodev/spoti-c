@@ -240,7 +240,7 @@ static DWORD WINAPI run(void *ctx)
 {
     (void)ctx; pt_load_fixtures(); DWORD before, after; CHECK(GetProcessHandleCount(GetCurrentProcess(), &before));
     command_matrix(); underrun_and_format(); queue_and_mpsc(); clock_refresh(); rapid_commands();
-    shutdown_and_errors(); timeline_ledger(); queue_policy(); seek_limits(); unavailable_device();
+    shutdown_and_errors(); timeline_ledger(); queue_policy(); seek_limits(); unavailable_device(); pt_stall_tests();
     CHECK(GetProcessHandleCount(GetCurrentProcess(), &after)); CHECK(before == after);
     puts("player: passed"); return 0;
 }

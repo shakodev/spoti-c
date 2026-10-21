@@ -43,6 +43,8 @@ static bool response(HeadlessServer *s)
     if (last >= s->bytes) { last = s->bytes - 1; }
     atomic_fetch_add(&s->requests, 1);
     unsigned fault = atomic_load(&s->fault);
+    unsigned delay = atomic_load(&s->delay_ms);
+    if (delay && WaitForSingleObject(s->stop, delay) != WAIT_TIMEOUT) { return false; }
     char header[300];
     int n = sprintf_s(header, sizeof(header), "HTTP/1.1 206 Partial Content\r\nContent-Type: application/octet-stream\r\n"
         "Content-Range: bytes %llu-%llu/%llu\r\nContent-Length: %llu\r\nConnection: close\r\n\r\n",

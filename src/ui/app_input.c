@@ -38,7 +38,14 @@ void app_scroll(App *a, double delta)
 }
 AppResult app_key(App *a, AppKey key, bool shift)
 {
-    if (!a || !a->alive || key > APP_KEY_PAGE_DOWN) { return APP_INVALID; }
+    if (!a || !a->alive || key > APP_KEY_ESCAPE) { return APP_INVALID; }
+    if (a->menu.open) { return app_context_key(a,key); }
+    if (key==APP_KEY_ESCAPE) {
+        for (uint32_t n=0;n<UI_WIDGET_SEEKS;++n) {
+            if (a->widgets.seeks[n].dragging) { (void)ui_seek_cancel(&a->widgets.seeks[n]); }
+        }
+        a->widgets.active=0; return APP_OK;
+    }
     if (key == APP_KEY_BACK) { return app_enqueue(a,(AppAction){.type=APP_BACK}); }
     if (!a->control_count) { return APP_PENDING; }
     uint32_t focused = 0;
@@ -56,14 +63,15 @@ AppResult app_key(App *a, AppKey key, bool shift)
     if (a->model.location.screen==APP_LYRICS && control->id.id==CLAY_ID("LyricsList").id) {
         if (key==APP_KEY_UP || key==APP_KEY_DOWN || key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN || key==APP_KEY_HOME || key==APP_KEY_END) {
             if (key==APP_KEY_HOME) { a->widgets.lists[0].scroll=0; }
-            else if (key==APP_KEY_END) { a->widgets.lists[0].scroll=48.0*LYRICS_LINE_CAP; }
-            else { app_scroll(a,(key==APP_KEY_UP || key==APP_KEY_PAGE_UP ? -1 : 1)*(key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN ? 240 : 48)); }
+            else if (key==APP_KEY_END) { a->widgets.lists[0].scroll=(double)UI_LYRIC_HEIGHT*LYRICS_LINE_CAP; }
+            else { app_scroll(a,(key==APP_KEY_UP || key==APP_KEY_PAGE_UP ? -1 : 1)*(key==APP_KEY_PAGE_UP || key==APP_KEY_PAGE_DOWN ? 5*UI_LYRIC_HEIGHT : UI_LYRIC_HEIGHT)); }
             app_lyrics_hold(a); return APP_OK;
         }
     }
     if (a->catalog.page && control->action.type==APP_CATALOG_SELECT) {
         UiVirtualList *list=&a->widgets.lists[0];
         if (control->action.value>=0) { list->focus=app_catalog_key(a,(uint32_t)control->action.value); }
+        if (app_catalog_cards(a) && app_catalog_grid_key(a,key)) { return APP_OK; }
         UiNav nav;
         switch (key) {
         case APP_KEY_UP: nav=UI_NAV_UP; break; case APP_KEY_DOWN: nav=UI_NAV_DOWN; break;
@@ -93,7 +101,7 @@ AppResult app_key(App *a, AppKey key, bool shift)
         default: nav=(UiNav)-1; break;
         }
         if ((int)nav>=0) {
-            (void)ui_virtual_navigate(list,p->count,40,fmin(360,fmax(0,a->geometry.viewport-104)),nav,true,playlist_key,playlist_index,p);
+            (void)ui_virtual_navigate(list,p->count,UI_TRACK_HEIGHT,app_playlist_viewport(a),nav,true,playlist_key,playlist_index,p);
             (void)playlist_select(p,list->selection,false); a->widgets.focus=CLAY_ID("PlaylistList").id; return APP_OK;
         }
         if (key==APP_KEY_ENTER) { return app_enqueue(a,(AppAction){.type=APP_TRACK_PLAY,.value=(double)list->focus}); }

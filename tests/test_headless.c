@@ -54,7 +54,8 @@ static void duration_and_gapless(HeadlessFixture *f)
         CHECK(fopen_s(&golden, HEADLESS_FIXTURE_DIR "/synthetic.f32", "rb") == 0); compared = 0;
         atomic_init(&state_edges,0);
         Headless *h; HeadlessConfig c = {.cache_directory = f->cache, .fixture_url = f->url, .observe = compare,
-            .state_changed=state_changed,.state_context=&state_edges};
+            .state_changed=state_changed,.state_context=&state_edges,.diagnostics=run==0};
+        atomic_store(&f->server.delay_ms, run ? 0 : 20);
         CHECK(headless_open(&c, &h)); hf_load(h, false);
         uint64_t clock=headless_snapshot(h).clock_serial;
         CHECK(headless_refresh_clock(h)==PLAYER_OK);
@@ -72,6 +73,16 @@ static void duration_and_gapless(HeadlessFixture *f)
         CHECK(atomic_load(&state_edges)>=3 && atomic_load(&state_edges)<m.callbacks);
         CHECK(m.peak_working_set >= peak && m.peak_working_set >= m.working_set);
         CHECK(m.working_set > 0 && m.process_handles > 0);
+        CHECK(m.diagnostics_enabled == (run == 0));
+        if (!run) {
+            CHECK(m.diagnostics.values[AD_RANGE_TICKS].maximum >= m.qpc_frequency / 50);
+            CHECK(m.diagnostics.values[AD_READ_WAIT_TICKS].count > 0);
+            CHECK(m.diagnostics.values[AD_DECRYPT_TICKS].count > 0);
+            CHECK(m.diagnostics.values[AD_CACHE_READ_TICKS].count > 0);
+            CHECK(m.diagnostics.values[AD_CACHE_WRITE_TICKS].count > 0);
+            CHECK(m.diagnostics.values[AD_UNDERRUN_FRAMES].total == 0);
+            CHECK(m.diagnostics.values[AD_TRACK_BOUNDARY].count == 1);
+        } else { CHECK(m.diagnostics.values[AD_CALLBACK_TICKS].count == 0); }
         if (run) { CHECK(m.cache_hits > 0); }
         CHECK(fclose(golden) == 0);
     }

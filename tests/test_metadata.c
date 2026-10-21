@@ -110,6 +110,8 @@ static void envelope_tests(void)
     track(&root, 0, 0); Envelope e = defaults();
     MediaTrack selected = decode(&root, e, MEDIA_OK);
     CHECK(selected.format == 0 && selected.duration_ms == 210000 && selected.file_id[0] == 10);
+    e.provider = 200; (void)decode(&root, e, MEDIA_OK); e = defaults();
+    e.provider = 201; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();
     e.kind = 12; (void)decode(&root, e, MEDIA_MALFORMED); e = defaults();
     e.status = 404; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();
     e.provider = 500; (void)decode(&root, e, MEDIA_HTTP_ERROR); e = defaults();

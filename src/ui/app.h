@@ -1,6 +1,7 @@
 #ifndef SPOTIC_UI_APP_H
 #define SPOTIC_UI_APP_H
 #include "widgets.h"
+#include "components.h"
 #include "font.h"
 #include "artwork.h"
 #include "ui_scheduler.h"
@@ -57,6 +58,15 @@ typedef enum AppActionType { APP_GO_HOME, APP_GO_LIBRARY, APP_GO_SETTINGS, APP_B
     APP_CATALOG_SELECT, APP_LYRICS_FOLLOW, APP_MUTE, APP_READ_MESSAGES } AppActionType;
 typedef struct AppAction { AppActionType type; AppEntity entity; double value; } AppAction;
 typedef struct AppControl { Clay_ElementId id; AppAction action; bool disabled; } AppControl;
+typedef struct AppMenu {
+    AppAction actions[3];
+    const char *labels[3];
+    char reason[128];
+    uint64_t generation;
+    uint32_t count, selected, return_focus;
+    float x,y;
+    bool open, disabled[3];
+} AppMenu;
 typedef struct AppImage { AppEntity entity; ArtworkId id; ArtworkHandle handle; } AppImage;
 typedef struct AppMeasure { FontConfig config; Clay_Dimensions dimensions; char text[128]; uint32_t length; } AppMeasure;
 typedef struct AppGeometry { float width, height, sidebar, main, viewport, detail, bar; bool compact; } AppGeometry;
@@ -109,6 +119,7 @@ typedef struct App {
     uint16_t measure_dpi;
     AppGeometry geometry;
     AppMessages messages;
+    AppMenu menu;
     FontMeasureContext *fonts; /* Optional; caller prepares pending text. */
     Clay_RenderCommandArray commands;
     char time[64], volume[40];
@@ -135,6 +146,11 @@ AppResult app_publish_player(App *, PlayerSnapshot, uint64_t now);
 void app_refresh_clock(App *, uint32_t dirty);
 Clay_RenderCommandArray app_layout(App *, float physical_width, float physical_height, float dpi, UiWidgetInput);
 bool app_button(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled);
+bool app_component(App *, Clay_ElementId, Clay_String, float width, float height, AppAction,
+    bool disabled, UiButtonStyle);
+bool app_tab(App *, Clay_ElementId, Clay_String, float width, AppAction, bool selected);
+void app_heading(Clay_String, uint16_t size);
+float app_playlist_viewport(const App *);
 bool app_track_control(App *, Clay_ElementId, Clay_String, float width, AppAction, bool disabled, bool current);
 void app_label(Clay_String, uint16_t size, Clay_Color);
 Clay_String app_text(App *, Clay_String); /* Frame-owned stable text copy. */
@@ -143,7 +159,18 @@ AppResult app_image(App *, uint64_t generation, const AppEntity *, ArtworkId,
     const ArtworkSource *, size_t count); /* Safe preparation only. */
 UiRenderResult app_render_custom(void *, UiRenderFrame *, const Clay_RenderCommand *);
 typedef enum AppKey { APP_KEY_TAB, APP_KEY_ENTER, APP_KEY_BACK, APP_KEY_UP, APP_KEY_DOWN,
-    APP_KEY_HOME, APP_KEY_END, APP_KEY_LEFT, APP_KEY_RIGHT, APP_KEY_PAGE_UP, APP_KEY_PAGE_DOWN } AppKey;
+    APP_KEY_HOME, APP_KEY_END, APP_KEY_LEFT, APP_KEY_RIGHT, APP_KEY_PAGE_UP, APP_KEY_PAGE_DOWN, APP_KEY_ESCAPE } AppKey;
+AppResult app_context_open(App *, float x, float y, bool keyboard);
+AppResult app_context_key(App *, AppKey);
+void app_context_close(App *);
+void app_context_layout(App *);
+void app_control_hint(App *);
+bool app_catalog_cards(const App *);
+uint32_t app_catalog_columns(const App *);
+float app_catalog_card_height(const App *);
+void app_catalog_grid(App *);
+void app_catalog_featured(App *);
+bool app_catalog_grid_key(App *, AppKey);
 AppResult app_key(App *, AppKey, bool shift);
 AppResult app_pointer(App *, UiWidgetInput);
 void app_scroll(App *, double dips);

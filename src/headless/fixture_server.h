@@ -10,6 +10,7 @@ typedef struct HeadlessServer {
     uint64_t bytes;
     _Atomic uint64_t requests;
     _Atomic unsigned fault; /* 1: wrong range; 2: truncated response; 3: ciphertext corruption; 4: stall. */
+    _Atomic unsigned delay_ms; /* Explicit fixture-only response delay, interruptible by stop. */
     bool winsock;
     unsigned short port;
 } HeadlessServer;

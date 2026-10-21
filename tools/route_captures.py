@@ -13,15 +13,20 @@ def chunk(kind, data):
 
 def convert(source, output):
     widths = {'narrow': 400, 'default': 1100, 'wide': 1440}
-    pattern = r'(?:catalog-(?:search|album|artist|lyrics)|playlist)-(narrow|default|wide)-(96|120|144|192)\.rgba'
+    pattern = r'(?:catalog-(?:search|album|artist|lyrics)(?:-(?:loading|empty|error|menu))?|playlist)-(narrow|default|wide)-(96|120|144|192)\.rgba'
     count = 0
     for path in sorted(source.glob('*.rgba')):
+        component = re.fullmatch(r'components-default-(96|120|144|192)\.rgba', path.name)
         match = re.fullmatch(pattern, path.name)
-        if not match:
+        if not match and not component:
             continue
-        size, scale = match.groups()
-        dpi = int(scale)
-        width, height = widths[size] * dpi // 96, 720 * dpi // 96
+        if component:
+            dpi = int(component.group(1))
+            width, height = 800 * dpi // 96, 640 * dpi // 96
+        else:
+            size, scale = match.groups()
+            dpi = int(scale)
+            width, height = widths[size] * dpi // 96, 720 * dpi // 96
         pixels = path.read_bytes()
         if len(pixels) != width * height * 4:
             raise ValueError(f'{path}: capture length does not match dimensions')

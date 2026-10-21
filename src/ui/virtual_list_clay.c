@@ -1,4 +1,5 @@
 #include "widgets.h"
+#include "design_tokens.h"
 #include <math.h>
 
 static Clay_ElementId child_id(Clay_ElementId parent, uint64_t key)
@@ -53,11 +54,11 @@ UiWidgetResult ui_virtual_list(UiWidgets *ui, Clay_ElementId id, UiVirtualList *
                     uint64_t key = key_at(model,i);
                     if (!key) { ui_widgets_fail(ui,UI_WIDGET_INVALID); break; }
                     Clay_ElementId row_id = child_id(id,key);
-                    Clay_Color color = list->selection == key ? (Clay_Color){35,70,50,255} :
-                        list->hover == key ? (Clay_Color){50,50,50,255} : (Clay_Color){20,20,20,255};
+                    Clay_Color color = list->selection == key ? UI_ELEVATED_HOVER :
+                        list->hover == key ? UI_HIGHLIGHT : (Clay_Color){0};
                     CLAY(row_id,{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED((float)height)}},
-                        .backgroundColor=color,.border={.color={180,180,180,255},
-                        .width=CLAY_BORDER_ALL(list->focus == key ? 1 : 0)}}) { row(model,i,key); }
+                        .backgroundColor=color,.cornerRadius=CLAY_CORNER_RADIUS(4),.border={.color=UI_TEXT,
+                        .width=CLAY_BORDER_ALL(ui->focus==id.id && list->focus == key ? 2 : 0)}}) { row(model,i,key); }
                 }
             }
         }

@@ -74,6 +74,9 @@ static void device_change(Player *p)
 PlayerResult player_pump(Player *p)
 {
     if (!player_owner(p) || p->busy) { return PLAYER_BAD_STATE; }
+    AudioDiagnostics *diagnostics = p->config.sink->diagnostics;
+    uint64_t before = audio_diagnostic_now(diagnostics);
+    PlayerState old_state = p->view.state;
     p->busy = true; p->more = false;
     AcquireSRWLockExclusive(&p->lock); ResetEvent(p->wake);
     p->view.clock_serial=p->clock_requested; ReleaseSRWLockExclusive(&p->lock);
@@ -88,6 +91,10 @@ PlayerResult player_pump(Player *p)
     ReleaseSRWLockShared(&p->lock);
     bool closed = p->closing && !queued && !requests && p->slots[0].state == PS_FREE && p->slots[1].state == PS_FREE;
     p->more |= queued; p->busy = false;
+    if (old_state != p->view.state) {
+        audio_diagnostic_record(diagnostics, AD_PLAYER_STATE, p->view.state, audio_diagnostic_now(diagnostics));
+    }
+    audio_diagnostic_elapsed(diagnostics, AD_PUMP_TICKS, before);
     return closed ? PLAYER_CLOSED : p->more ? PLAYER_MORE : PLAYER_OK;
 }
 size_t player_wait_handles(Player *p, HANDLE output[3])

@@ -92,6 +92,7 @@ static RangeResult fetch(RangeFetcher *f, RangeBlock *b, const RangeRequest *req
     HttpResult result = range_transfer_submit(f, &description, &f->http_id);
     if (result == HTTP_FULL) { return RANGE_PENDING; }
     if (result != HTTP_OK) { return RANGE_HTTP_ERROR; }
+    f->diagnostic_transfer_qpc = audio_diagnostic_now(f->config.diagnostics);
     b->url = url; b->priority = request->priority; ++b->attempts; ++f->stats.network_attempts;
     f->active = (int)(b - f->blocks); return RANGE_PENDING;
 }

@@ -51,6 +51,14 @@ void sink_render(AudioSink *s, float *output, uint32_t frames)
     if (atomic_load_explicit(&s->state, memory_order_acquire) != SINK_RUNNING) {
         memset(output, 0, (size_t)frames * stride); rendering = NULL; return;
     }
+    uint64_t before = audio_diagnostic_now(s->diagnostics);
+    if (s->diagnostics) {
+        audio_diagnostic_record(s->diagnostics, AD_CALLBACK_FRAMES, frames, before);
+        if (s->diagnostic_callback_qpc) {
+            audio_diagnostic_record(s->diagnostics, AD_CALLBACK_GAP_TICKS, before - s->diagnostic_callback_qpc, before);
+        }
+        s->diagnostic_callback_qpc = before;
+    }
     size_t got = spsc_read(&s->ring, output, frames);
     float gain = (float)atomic_load_explicit(&s->gain, memory_order_relaxed) / 65536.0f;
     for (size_t i = 0; i < got * s->format.channels; ++i) {
@@ -62,9 +70,16 @@ void sink_render(AudioSink *s, float *output, uint32_t frames)
     uint64_t submitted = atomic_fetch_add_explicit(&s->submitted_frames, frames, memory_order_relaxed);
     sink_timeline_record(s, submitted, media, frames, (uint32_t)got);
     atomic_fetch_add_explicit(&s->underrun_frames, frames - got, memory_order_relaxed);
-    if (spsc_readable(&s->ring) <= s->low_water && atomic_exchange(&s->wake_armed, 0)) {
+    size_t remaining = spsc_readable(&s->ring);
+    if (s->diagnostics) {
+        if (got < frames) { audio_diagnostic_record(s->diagnostics, AD_UNDERRUN_FRAMES, frames - got, before); }
+        if (remaining <= s->low_water) { audio_diagnostic_record(s->diagnostics, AD_LOW_WATER_FRAMES, remaining, before); }
+    }
+    if (remaining <= s->low_water && atomic_exchange(&s->wake_armed, 0)) {
+        if (s->diagnostics) { atomic_store_explicit(&s->diagnostic_wake_qpc, before, memory_order_release); }
         atomic_fetch_add_explicit(&s->producer_wakes, 1, memory_order_relaxed);
         SetEvent(s->producer_event);
     }
+    audio_diagnostic_elapsed(s->diagnostics, AD_CALLBACK_TICKS, before);
     rendering = NULL;
 }

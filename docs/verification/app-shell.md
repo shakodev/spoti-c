@@ -63,10 +63,13 @@ track on Home or its shelf page to start it; use Tab/Enter, pointer controls,
 Back/Alt-Left and Settings for navigation, playback and volume. Use
 `--demo-wasapi` only when audible synthetic output is desired.
 
-The default executable is signed out with no live transport configured. A live
-host must enqueue collection/account requests through `AppServices`, publish
-immutable pages and player snapshots, and connect the already documented native
-Library RPC bridge. The shell does not invent an HTTP replacement for that
-bridge. `app_account_action` is an account-owner helper, not a blocking UI
+The original executable was signed out with no live transport configured. The
+[live host integration](live-app.md) now supplies that owner; its live acceptance
+is separate from the fixture-driven results above. A live host must enqueue
+collection/account requests through `AppServices`, publish
+immutable pages and player snapshots. The current host uses an explicitly
+playlist-only adapter over the documented native rootlist backing service; it
+does not implement the official client's Library IPC aggregate.
+`app_account_action` is an account-owner helper, not a blocking UI
 callback. Live login, account browsing and packaged fixture deployment remain
 outside this fixture-driven shell verification.

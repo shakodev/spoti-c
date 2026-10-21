@@ -128,6 +128,10 @@ FontConfig font_clay_config(const FontMeasureContext *context, uint16_t face, ui
     FontConfig config = context->config;
     config.face = face; config.size = size; config.letter_spacing = spacing; config.line_height = height;
     if (face==FONT_FACE_NOTICE) { config.face=0; config.max_width=0; config.ellipsis=false; }
+    if (face==FONT_FACE_BOLD || face==FONT_FACE_HEADING) { config.face=0; config.weight=700; }
+    if (face==FONT_FACE_HEADING && context->heading_width>0) {
+        config.max_width=context->heading_width; config.ellipsis=true;
+    }
     return config;
 }
 Clay_Dimensions font_measure(Clay_StringSlice text, Clay_TextElementConfig *config, void *user_data)

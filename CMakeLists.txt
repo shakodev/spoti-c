@@ -72,7 +72,7 @@ target_link_libraries(spotic_windows INTERFACE
 
 include(CTest)
 add_library(spotic_core STATIC
-    src/core/arena.c src/core/spsc_ring.c src/core/clock.c
+    src/core/arena.c src/core/spsc_ring.c src/core/clock.c src/core/thread.c src/core/audio_diagnostics.c
     src/core/event_queue.c src/core/worker.c src/core/metrics.c src/core/log.c src/core/state_cache.c)
 target_include_directories(spotic_core PUBLIC src)
 target_link_libraries(spotic_core PUBLIC spotic_build_options PRIVATE psapi)
@@ -231,10 +231,10 @@ target_include_directories(spotic_clay PUBLIC vendor)
 target_link_libraries(spotic_clay PUBLIC spotic_build_options)
 target_link_libraries(spotic_font PUBLIC spotic_renderer spotic_clay PRIVATE dwrite uuid)
 
-add_library(spotic_widgets STATIC src/ui/widgets.c src/ui/virtual_list.c
+add_library(spotic_widgets STATIC src/ui/widgets.c src/ui/components.c src/ui/icons.c src/ui/virtual_list.c
     src/ui/virtual_list_clay.c src/ui/text_input.c src/ui/text_input_win32.c src/ui/seek_slider.c)
 target_include_directories(spotic_widgets PUBLIC src vendor)
-target_link_libraries(spotic_widgets PUBLIC spotic_clay PRIVATE user32 imm32)
+target_link_libraries(spotic_widgets PUBLIC spotic_clay spotic_renderer PRIVATE user32 imm32)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_font)
 add_library(spotic_artwork STATIC src/ui/artwork.c src/ui/image_decode.c
     src/ui/image_wic.c src/ui/texture_cache.c src/ui/artwork_http.c)
@@ -246,7 +246,7 @@ add_library(spotic_app STATIC src/ui/app.c src/ui/startup.c src/ui/startup_shell
     src/ui/app_playlist.c src/ui/track_filter.c src/ui/track_match.c src/ui/track_disk.c
     src/ui/sidebar.c src/ui/now_playing.c src/ui/app_volume.c src/ui/screens/home.c src/ui/screens/library.c
     src/ui/screens/playlist.c src/ui/screens/tracklist.c src/ui/screens/playlist_input.c
-    src/ui/screens/catalog_view.c src/ui/screens/search.c src/ui/screens/album.c
+    src/ui/context_menu.c src/ui/control_hint.c src/ui/screens/catalog_view.c src/ui/screens/catalog_cards.c src/ui/screens/search.c src/ui/screens/album.c
     src/ui/screens/artist.c src/ui/screens/lyrics.c)
 add_library(spotic_media_controls STATIC src/ui/media_controls.c src/ui/media_controls_winrt.c src/ui/media_controls_events.c)
 target_include_directories(spotic_media_controls PUBLIC src)
@@ -264,12 +264,31 @@ target_link_libraries(spotic_app_fixture PUBLIC spotic_app)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_app spotic_app_fixture)
 target_link_libraries(spotic_ui_surface PUBLIC spotic_media_controls)
 add_executable(spotic WIN32 src/ui/main.c src/ui/benchmark.c)
-target_link_libraries(spotic PRIVATE spotic_ui_surface spotic_app_fixture spotic_headless spotic_headless_fixture)
+add_library(spotic_app_live STATIC src/ui/app_live.c src/ui/live_account.c src/ui/live_http.c
+    src/ui/live_pages.c src/ui/live_playlist.c src/ui/live_wire.c src/ui/live_metadata.c src/ui/live_lyrics.c src/ui/live_home.c)
+target_link_libraries(spotic_app_live PUBLIC spotic_app spotic_headless)
+add_executable(spotic-live-probe EXCLUDE_FROM_ALL tools/live_probe.c)
+target_link_libraries(spotic-live-probe PRIVATE spotic_app_live)
+target_link_libraries(spotic PRIVATE spotic_ui_surface spotic_app_fixture spotic_app_live spotic_headless spotic_headless_fixture)
 target_compile_definitions(spotic PRIVATE
     APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app"
     APP_AUDIO_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio/synthetic.enc")
 
 if(BUILD_TESTING)
+    add_executable(test_live_wire tests/test_live_wire.c)
+    target_include_directories(test_live_wire PRIVATE tests)
+    target_link_libraries(test_live_wire PRIVATE spotic_app_live)
+    add_test(NAME app_live_wire COMMAND test_live_wire)
+    add_executable(test_app_live tests/test_app_live.c)
+    target_include_directories(test_app_live PRIVATE tests)
+    target_link_libraries(test_app_live PRIVATE spotic_app_live)
+    add_test(NAME app_live_host COMMAND test_app_live)
+    add_executable(test_live_http tests/test_live_http.c tests/support/http_server.c)
+    target_include_directories(test_live_http PRIVATE tests)
+    target_link_libraries(test_live_http PRIVATE spotic_app_live)
+    add_test(NAME app_live_http COMMAND test_live_http)
+    set_tests_properties(app_live_http PROPERTIES TIMEOUT 30)
+    set_tests_properties(app_live_wire app_live_host PROPERTIES TIMEOUT 45)
     add_executable(test_release_metrics tests/test_release_metrics.c)
     target_include_directories(test_release_metrics PRIVATE tests)
     target_link_libraries(test_release_metrics PRIVATE spotic_core)
@@ -331,7 +350,7 @@ if(BUILD_TESTING)
         set_tests_properties(app_media_controls_native PROPERTIES TIMEOUT 60 LABELS "native;optional" SKIP_RETURN_CODE 77)
     endif()
     add_executable(test_catalog_screens tests/test_catalog_screens.c tests/catalog_screens_support.c
-        tests/catalog_screens_faults.c tests/catalog_screens_visual.c)
+        tests/catalog_screens_faults.c tests/catalog_screens_interactions.c tests/catalog_screens_visual.c)
     target_include_directories(test_catalog_screens PRIVATE tests)
     target_compile_definitions(test_catalog_screens PRIVATE APP_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/app")
     target_link_libraries(test_catalog_screens PRIVATE spotic_app spotic_app_fixture)
@@ -396,6 +415,14 @@ if(BUILD_TESTING)
     target_link_libraries(test_widgets PRIVATE spotic_widgets spotic_renderer)
     add_test(NAME ui_widgets COMMAND test_widgets)
     set_tests_properties(ui_widgets PROPERTIES TIMEOUT 30)
+    add_executable(test_ui_components tests/test_ui_components.c tests/ui_components_visual.c)
+    target_include_directories(test_ui_components PRIVATE tests)
+    target_link_libraries(test_ui_components PRIVATE spotic_widgets spotic_font)
+    add_test(NAME ui_components COMMAND test_ui_components)
+    if(ENABLE_RENDERER_GPU_TESTS)
+        add_test(NAME ui_components_visual COMMAND test_ui_components --visual)
+        set_tests_properties(ui_components_visual PROPERTIES TIMEOUT 120 SKIP_RETURN_CODE 77 LABELS "gpu;optional")
+    endif()
     add_executable(test_virtual_list tests/test_virtual_list.c)
     target_include_directories(test_virtual_list PRIVATE tests)
     target_link_libraries(test_virtual_list PRIVATE spotic_widgets)
@@ -534,6 +561,14 @@ if(BUILD_TESTING)
     target_link_libraries(test_headless PRIVATE spotic_headless_fixture spotic_headless)
     add_test(NAME audio_headless_smoke COMMAND test_headless)
     set_tests_properties(audio_headless_smoke PROPERTIES TIMEOUT 120)
+
+    add_executable(test_headless_stalls tests/test_headless_stalls.c tests/headless_support.c)
+    target_include_directories(test_headless_stalls PRIVATE tests)
+    target_compile_definitions(test_headless_stalls PRIVATE HEADLESS_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/audio"
+        HEADLESS_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+    target_link_libraries(test_headless_stalls PRIVATE spotic_headless_fixture spotic_headless)
+    add_test(NAME audio_headless_stalls COMMAND test_headless_stalls)
+    set_tests_properties(audio_headless_stalls PROPERTIES TIMEOUT 45)
     if(ENABLE_LIVE_HEADLESS_TEST)
         add_executable(test_headless_live tests/test_headless_live.c)
         target_include_directories(test_headless_live PRIVATE tests)
@@ -558,6 +593,7 @@ if(BUILD_TESTING)
         add_test(NAME audio_${player_test} COMMAND test_${player_test})
         set_tests_properties(audio_${player_test} PROPERTIES TIMEOUT 90)
     endforeach()
+    target_sources(test_player PRIVATE tests/test_playback_stalls.c)
     foreach(connect_test IN ITEMS dealer connect)
         add_executable(test_${connect_test} tests/test_${connect_test}.c tests/player_test_support.c)
         target_include_directories(test_${connect_test} PRIVATE tests)

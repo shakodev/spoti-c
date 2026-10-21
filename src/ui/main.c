@@ -2,6 +2,7 @@
 #include "headless/headless.h"
 #include "app_desktop.h"
 #include "app_fixture.h"
+#include "app_live.h"
 #include "benchmark.h"
 #include <windowsx.h>
 #include <wchar.h>
@@ -15,6 +16,7 @@ static AppDesktop desktop;
 static AppFixture fixtures;
 static HeadlessServer server={.listener=INVALID_SOCKET,.peer=INVALID_SOCKET,.file=INVALID_HANDLE_VALUE};
 static Headless *playback;
+static AppLive *live;
 static _Alignas(64) unsigned char clay[UI_CLAY_BYTES];
 static unsigned char scratch[UI_SCRATCH_BYTES], storage[MEMORY_BUDGET_CORE];
 static Startup startup;
@@ -76,9 +78,18 @@ static void deferred(UiWindow *window)
             }
             desktop.app.services=services; (void)app_session(&desktop.app,true,true,GetTickCount64());
         }
+        if (!demo && !probe && !benchmark.shared) {
+            wchar_t directory[230]; DWORD length=GetEnvironmentVariableW(L"LOCALAPPDATA",directory,200);
+            if (length && length<200) {
+                wcscat_s(directory,230,L"/spoti-c");
+                if (app_live_open(&arena,queue,&desktop.app,directory,&live)==APP_OK) { desktop.app.services=app_live_services(live); }
+                else { strcpy_s(desktop.app.model.notice,sizeof(desktop.app.model.notice),"Could not start account services."); }
+            }
+        }
         if (!probe) { (void)app_desktop_media_open(&desktop,window); }
         startup_mark(&startup.times,STARTUP_SERVICES);
     }
+    if (live) { app_live_pump(live); }
     if (!demo && desktop.app.model.logged_in && desktop.app.model.online) { startup_mark(&startup.times,STARTUP_ONLINE); }
     if (probe) {
         if (probe_times) { *probe_times=startup.times; }
@@ -154,6 +165,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command, int s
     if (!app_desktop_media_close(&desktop)) { return 1; }
     /* Font binding borrows the Clay arena: unbind before disposing App. */
     ui_surface_destroy(&desktop.surface); app_dispose(&desktop.app);
+    if (live && !app_live_close(live)) { return 1; }
     if (desktop.fixture && !app_fixture_stop(desktop.fixture)) { return 1; }
     if (playback) { HeadlessMetrics metrics; if (!headless_close(playback,&metrics)) { return 1; } }
     if (!headless_server_close(&server)) { return 1; }

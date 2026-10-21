@@ -47,7 +47,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The reviewed Debug suite contains 53 tests. Project targets use `/W4 /WX` on
+The reviewed Debug suite contains 56 tests. Project targets use `/W4 /WX` on
 MSVC or `-Wall -Wextra -Werror` with compatible drivers. Protobuf generation
 verifies pinned inputs; [the codec specification](docs/specs/protobuf.md)
 documents generation and the optional C/runtime audit. Vendored sources and
@@ -68,8 +68,17 @@ from the default suite. A skipped live test is not evidence of compatibility.
 
 ## Executables and source
 
-- `build/spotic.exe`: Win32/DX11 application shell; the default host is signed
-  out and has no configured live collection/account transport. Run
+- `build/spotic.exe`: Win32/DX11 application with a live account host. Click
+  **Sign in** to open the system browser. Successful OAuth and encrypted AP
+  authentication save DPAPI-protected credentials under
+  `%LOCALAPPDATA%/spoti-c/credentials.dat` for restart. Home, playlist Library
+  and playlist playback use the live services. When personalized Home is denied,
+  Home visibly falls back to the account's actual playlists. Search/Album/Artist
+  and Lyrics are wired but their live compatibility remains unverified. The
+  Library adapter currently lists rootlist playlists, rather than the official
+  client's full aggregate of saved albums/artists/folders. Live account acceptance
+  is recorded separately in [host verification](docs/verification/live-app.md).
+  Run
   `build/spotic.exe --demo` for synthetic Home/Library pages and real playback
   through the offline fake device. `--demo-wasapi` explicitly enables audible
   synthetic audio on a physical device. See [shell usage and verification](docs/verification/app-shell.md)

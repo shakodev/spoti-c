@@ -66,7 +66,7 @@ static void flow(void)
     CHECK(cs_app.catalog.timeline.document && cs_app.catalog.lyric.line==0 && cs_app.catalog.lyric.valid);
     CHECK(cs_app.catalog.lyric.deadline_ms==800);
     cs_action(APP_SEEK,0.8); CHECK(cs_command.type==PLAYER_SEEK); cs_tick(310);
-    CHECK(cs_app.catalog.lyric.line==8 && cs_app.widgets.lists[0].scroll==288);
+    CHECK(cs_app.catalog.lyric.line==8 && cs_app.widgets.lists[0].scroll==6*UI_LYRIC_HEIGHT);
     app_scroll(&cs_app,96); double manual=cs_app.widgets.lists[0].scroll;
     CHECK(cs_app.catalog.hold==5310); cs_action(APP_SEEK,0.1); cs_tick(320);
     CHECK(cs_app.catalog.lyric.line==1 && cs_app.widgets.lists[0].scroll==manual);
@@ -138,7 +138,7 @@ static void soak(void)
 static DWORD WINAPI run(void *context)
 {
     bool visual=*(bool *)context;
-    flow(); scheduling(); play_admission(); soak(); cs_faults();
+    flow(); scheduling(); play_admission(); soak(); cs_faults(); cs_interactions();
     if (visual) { return (DWORD)cs_visual(); }
     puts("app_catalog_screens: fixture routes, stable IDs, debounce, pages, lyrics, keyboard and ownership passed"); return 0;
 }

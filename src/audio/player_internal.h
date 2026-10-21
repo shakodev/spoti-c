@@ -10,7 +10,7 @@ typedef struct PlayerSlot {
     PlayerSource source;
     VorbisDecoder *decoder;
     size_t frames, offset;
-    bool targeted, eof, retirement_sent;
+    bool targeted, eof, retirement_sent, diagnostic_format_recorded;
     AudioResult failure;
     float block[PLAYER_BLOCK_FRAMES * 2];
 } PlayerSlot;

@@ -12,6 +12,7 @@ static _Alignas(64) unsigned char clay[UI_CLAY_BYTES];
 static unsigned char scratch[UI_SCRATCH_BYTES];
 static uint32_t calls, key_calls, indices, first_row;
 static uint32_t row_twenty_id;
+static uint32_t first_row_id;
 static bool reverse_order;
 static uint32_t model_total = 10000;
 static void error(void *context, UiWidgetResult result) { (void)context; (void)result; }
@@ -30,7 +31,7 @@ static bool index_of(void *model, uint64_t key, uint32_t *index)
 static void row(void *model, uint32_t index, uint64_t key)
 {
     (void)model;
-    if (!calls) { first_row = index; }
+    if (!calls) { first_row = index; first_row_id=Clay_GetOpenElementId(); }
     CHECK(key > UINT64_C(0x100000000)); ++calls;
     if (index == 20) { row_twenty_id = Clay_GetOpenElementId(); }
     CLAY_TEXT(CLAY_STRING("A row"),CLAY_TEXT_CONFIG({.fontSize=16,.textColor={230,230,230,255}}));
@@ -118,12 +119,10 @@ static Clay_RenderCommandArray layout_frame(uint32_t total, double scroll, UiWid
 }
 static uint32_t find_row_id(Clay_RenderCommandArray commands, uint32_t first)
 {
-    for (int32_t i = 0; i < commands.length; ++i) {
-        Clay_RenderCommand c = commands.internalArray[i];
-        if (c.commandType == CLAY_RENDER_COMMAND_TYPE_RECTANGLE && c.boundingBox.width > 100 &&
-            fabsf(c.boundingBox.height - 19.2f) < 0.01f && first == first_row) { return c.id; }
-    }
-    return 0;
+    (void)commands; /* Transparent rows need not emit a background draw command. */
+    Clay_ElementData data=Clay_GetElementData((Clay_ElementId){.id=first_row_id});
+    CHECK(data.found && data.boundingBox.width>100 && fabsf(data.boundingBox.height-19.2f)<0.01f);
+    return first==first_row ? first_row_id : 0;
 }
 static void layout_checks(void)
 {

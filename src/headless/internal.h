@@ -16,11 +16,11 @@ typedef struct HeadlessSource {
     MediaId media_id;
     MediaSource media;
     RangeSource range;
-    RangeId prefix, payload;
+    RangeId prefix, payload, ahead;
     DecryptStream stream;
     DecryptOperation operation;
     _Atomic unsigned phase;
-    uint64_t offset, bytes;
+    uint64_t offset, bytes, diagnostic_read_qpc, ahead_offset;
     size_t capacity;
     bool used, ready, retiring, failed;
 } HeadlessSource;
@@ -38,6 +38,9 @@ struct Headless {
     bool resources_released;
     Player *player;
     AudioSink sink;
+    AudioDiagnostics diagnostic_storage;
+    AudioDiagnostics *diagnostics;
+    _Atomic uint32_t output_rate, output_channels, output_buffer_frames;
     Arena arenas[HL_ARENAS];
     Metrics accounting;
     MetricsArena bindings[HL_ARENAS];
@@ -52,7 +55,7 @@ struct Headless {
     uint8_t scratch[DECRYPT_SCRATCH_MAX];
     _Atomic uint64_t frames, wakes, callback_ticks, callbacks, underruns;
     _Atomic uint64_t network_attempts, cache_hits;
-    uint64_t device_frames;
+    uint64_t device_frames, device_deadline_ms;
     LARGE_INTEGER frequency;
     HeadlessMetrics final;
     CredentialRecord credentials;

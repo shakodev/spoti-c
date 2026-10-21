@@ -19,7 +19,7 @@ typedef struct CacheJob {
     void *data;
     CacheCallback callback;
     void *context;
-    uint64_t ticket;
+    uint64_t ticket, diagnostic_submitted;
     CacheResult result;
 } CacheJob;
 struct AudioCache {

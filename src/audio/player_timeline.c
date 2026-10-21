@@ -13,6 +13,8 @@ void player_timeline(Player *p)
         PlayerMarker *next = &p->markers[(p->marker_head + 1) % PLAYER_MARKERS];
         if (next->media > i.played_media_frames) { break; }
         p->marker_head = (p->marker_head + 1) % PLAYER_MARKERS; --p->marker_count;
+        audio_diagnostic_record(p->config.sink->diagnostics, AD_TRACK_BOUNDARY, next->generation,
+            audio_diagnostic_now(p->config.sink->diagnostics));
     }
     PlayerMarker *m = &p->markers[p->marker_head];
     uint64_t elapsed = i.played_media_frames >= m->media ? i.played_media_frames - m->media : 0;

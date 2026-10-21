@@ -30,7 +30,12 @@ static AudioResult fake_open(void *ctx, AudioSink *s, AudioFormat *f, size_t *os
 {
     (void)ctx; (void)s; *f = pt.format; *os_bytes = 4096; return AUDIO_OK;
 }
-static AudioResult fake_start(void *ctx) { (void)ctx; ++pt.starts; pt.output_frames = 0; return AUDIO_OK; }
+static AudioResult fake_start(void *ctx)
+{
+    (void)ctx; ++pt.starts; pt.output_frames = 0;
+    if (pt.start_frames) { pt_render(pt.start_frames); }
+    return AUDIO_OK;
+}
 static AudioResult fake_stop(void *ctx) { (void)ctx; ++pt.stops; return AUDIO_OK; }
 static void fake_close(void *ctx) { (void)ctx; ++pt.closes; }
 static SinkClock fake_clock(void *ctx)
@@ -55,8 +60,13 @@ static AudioResult read_source(void *ctx, uint64_t ticket, uint64_t offset, void
 }
 void pt_open(void)
 {
+    pt_open_bytes(MEMORY_BUDGET_PCM);
+}
+void pt_open_bytes(size_t bytes)
+{
     pt.format = (AudioFormat){48000,2,AUDIO_FLOAT32}; pt.clock_valid = true;
     pt.starts = pt.stops = pt.closes = pt.resolved = pt.retired = pt.peak_readers = 0;
+    pt.start_frames = 0;
     pt.latency = 0; pt.held_count = 0; pt.hold_network = pt.hold_retire = pt.fail_prefetch = false;
     memset(pt.readers, 0, sizeof(pt.readers));
     CHECK(arena_init(&pt.core, core_bytes, sizeof(core_bytes)));
@@ -64,7 +74,7 @@ void pt_open(void)
         CHECK(arena_init(&pt.codec[i], codecs[i], sizeof(codecs[i])));
         CHECK(arena_init(&pt.work[i], works[i], sizeof(works[i])));
     }
-    CHECK(sink_open(&pt.sink, pcm, &backend, NULL) == AUDIO_OK);
+    CHECK(sink_open_with_buffer(&pt.sink, pcm, bytes, &backend, NULL) == AUDIO_OK);
     PlayerConfig config = {.sink = &pt.sink, .codec = {&pt.codec[0], &pt.codec[1]}, .work = {&pt.work[0], &pt.work[1]}};
     CHECK(player_create(&pt.core, &config, &pt.player) == PLAYER_OK);
 }
@@ -117,7 +127,7 @@ void pt_drive(void)
 }
 void pt_render(uint32_t frames)
 {
-    CHECK(frames * pt.format.channels <= 8192);
+    CHECK(frames * pt.format.channels <= 16384);
     sink_render(&pt.sink, pt.output, frames); pt.output_frames += frames;
 }
 void pt_compare(const float *a, const float *b, size_t samples)

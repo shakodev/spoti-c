@@ -10,6 +10,8 @@
 #define FONT_ATLAS_SIDE 1024u
 #define FONT_SCRATCH_BYTES (256u * 1024u)
 #define FONT_FACE_NOTICE 2u /* Clay semantic role; shaped with Segoe UI, without trimming. */
+#define FONT_FACE_BOLD 3u /* System fallback for component labels/headings. */
+#define FONT_FACE_HEADING 4u /* Bounded to the actual available hero width. */
 
 typedef enum FontResult { FONT_OK, FONT_PENDING_WORK, FONT_FULL, FONT_INVALID,
     FONT_STALE, FONT_OS_ERROR, FONT_UNSUPPORTED } FontResult;
@@ -73,7 +75,7 @@ _Static_assert(sizeof(((FontCache *)0)->runs)+sizeof(((FontCache *)0)->pending)+
     sizeof(((FontCache *)0)->entries)+sizeof(((FontCache *)0)->utf16)<=256u*1024u,
     "bounded font CPU records, descriptors and UTF-16 staging");
 _Static_assert(sizeof(((FontCache *)0)->atlas) == 1024u * 1024u, "R8 atlas backing budget");
-typedef struct FontMeasureContext { FontCache *cache; FontConfig config; FontResult last_result; } FontMeasureContext;
+typedef struct FontMeasureContext { FontCache *cache; FontConfig config; FontResult last_result; float heading_width; } FontMeasureContext;
 
 /* Caller-owned zero-initialized storage. UI-thread only; no copies while live.
  * DirectWrite allocations are confined to create/prepare/destroy. Font face 0

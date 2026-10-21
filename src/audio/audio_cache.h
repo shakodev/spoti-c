@@ -1,6 +1,7 @@
 #ifndef SPOTIC_AUDIO_CACHE_H
 #define SPOTIC_AUDIO_CACHE_H
 #include "core/worker.h"
+#include "core/audio_diagnostics.h"
 
 enum { AUDIO_CACHE_BLOCK = 65536, AUDIO_CACHE_ENTRIES = 4096, AUDIO_CACHE_JOBS = 8 };
 #define AUDIO_CACHE_QUOTA (UINT64_C(256) * 1024 * 1024)
@@ -12,6 +13,7 @@ typedef enum CacheResult { CACHE_OK, CACHE_PENDING, CACHE_MISS, CACHE_FULL,
 typedef struct CacheRecord { uint8_t file_id[20]; uint64_t offset, total; size_t bytes; } CacheRecord;
 typedef void (*CacheCallback)(void *, uint64_t ticket, CacheResult, const CacheRecord *);
 typedef struct AudioCacheConfig {
+    AudioDiagnostics *diagnostics; /* Optional; borrowed through worker join. */
     Worker *worker; /* Borrowed blocking worker, alive through cache shutdown. */
     const wchar_t *directory; /* Copied absolute existing-parent directory, <=240 chars. */
     Metrics *metrics;

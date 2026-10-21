@@ -1,4 +1,5 @@
 #include "worker.h"
+#include "thread.h"
 
 enum { SLOT_FREE, SLOT_QUEUED, SLOT_RUNNING, SLOT_COMPLETING };
 
@@ -78,6 +79,7 @@ static void execute(Worker *worker, WorkerSlot *slot)
 
 static DWORD WINAPI worker_main(void *context)
 {
+    core_thread_register_background();
     Worker *worker = context;
     for (;;) {
         uint64_t next;

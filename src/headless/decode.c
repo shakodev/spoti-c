@@ -1,10 +1,14 @@
 #include "internal.h"
+#include "core/thread.h"
 
 static AudioResult fake_open(void *ctx, AudioSink *sink, AudioFormat *format, size_t *bytes)
 {
     (void)ctx; (void)sink; *format = (AudioFormat){48000,2,AUDIO_FLOAT32}; *bytes = 0; return AUDIO_OK;
 }
-static AudioResult fake_start(void *ctx) { ((Headless *)ctx)->device_frames = 0; return AUDIO_OK; }
+static AudioResult fake_start(void *ctx)
+{
+    Headless *h = ctx; h->device_frames = 0; h->device_deadline_ms = GetTickCount64(); return AUDIO_OK;
+}
 static AudioResult fake_stop(void *ctx) { (void)ctx; return AUDIO_OK; }
 static void fake_close(void *ctx) { (void)ctx; }
 static SinkClock fake_clock(void *ctx)
@@ -16,18 +20,22 @@ static SinkClock fake_clock(void *ctx)
 static const SinkBackend fake = {fake_open,fake_start,fake_stop,fake_close,fake_clock};
 DWORD WINAPI hl_decode(void *ctx)
 {
+    core_thread_register_background();
     Headless *h = ctx; crypto_init(&h->crypto);
-    bool ok = sink_open_with_buffer(&h->sink,h->pcm,sizeof(h->pcm),h->config.wasapi ? NULL : &fake,h) == AUDIO_OK;
+    AudioResult audio = sink_open_with_buffer(&h->sink,h->pcm,sizeof(h->pcm),h->config.wasapi ? NULL : &fake,h);
+    if (audio == AUDIO_OK) { h->sink.diagnostics = h->diagnostics; }
+    PlayerResult created = PLAYER_INVALID;
+    bool ok = audio == AUDIO_OK;
     if (ok) {
         PlayerConfig pc = {.sink = &h->sink, .codec = {&h->arenas[7],&h->arenas[8]}, .work = {&h->arenas[9],&h->arenas[10]}};
-        ok = player_create(&h->arenas[0], &pc, &h->player) == PLAYER_OK;
+        created = player_create(&h->arenas[0], &pc, &h->player); ok = created == PLAYER_OK;
     }
     if (!ok) {
         if (h->sink.opened) { (void)sink_close(&h->sink); }
-        fprintf(stderr,"headless startup: decode/device\n"); atomic_store(&h->failed, true); SetEvent(h->decode_ready); return 1;
+        fprintf(stderr,"headless startup: audio %u, player %u\n",(unsigned)audio,(unsigned)created);
+        atomic_store(&h->failed, true); SetEvent(h->decode_ready); return 1;
     }
     SetEvent(h->decode_ready);
-    uint64_t next = GetTickCount64();
     PlayerSnapshot previous = {0};
     for (;;) {
         PlayerResult result = player_pump(h->player);
@@ -45,19 +53,26 @@ DWORD WINAPI hl_decode(void *ctx)
         }
         if (!h->config.wasapi && atomic_load(&h->sink.state) == SINK_RUNNING) {
             size_t available = spsc_readable(&h->sink.ring);
-            if (available && (!h->config.realtime || GetTickCount64() >= next)) {
-                uint32_t n = available > 480 ? 480 : (uint32_t)available;
+            if ((available || h->config.realtime) && (!h->config.realtime || GetTickCount64() >= h->device_deadline_ms)) {
+                /* Realtime fixtures keep device periods even when the producer
+                 * is waiting on input. Pausing consumption would hide underruns. */
+                uint32_t n = h->config.realtime || available > 480 ? 480 : (uint32_t)available;
                 float output[960]; LARGE_INTEGER before, after;
+                uint64_t media = atomic_load(&h->sink.media_frames);
                 QueryPerformanceCounter(&before); sink_render(&h->sink, output, n); QueryPerformanceCounter(&after);
                 atomic_fetch_add(&h->callback_ticks, (uint64_t)(after.QuadPart - before.QuadPart));
-                atomic_fetch_add(&h->callbacks, 1); atomic_fetch_add(&h->frames, n); h->device_frames += n;
+                atomic_fetch_add(&h->callbacks, 1);
+                atomic_fetch_add(&h->frames, atomic_load(&h->sink.media_frames) - media); h->device_frames += n;
                 if (h->config.observe) { h->config.observe(h->config.observe_context, output, n); }
-                next += 10;
+                h->device_deadline_ms += 10;
                 continue;
             }
         }
         SinkInfo info = sink_info(&h->sink); atomic_store(&h->underruns, info.underrun_frames);
-        if (info.state != SINK_RUNNING) { next = GetTickCount64(); }
+        atomic_store(&h->output_rate, info.format.sample_rate); atomic_store(&h->output_channels, info.format.channels);
+        atomic_store(&h->output_buffer_frames, info.format.channels ?
+            (uint32_t)(info.os_buffer_bytes / (info.format.channels * sizeof(float))) : 0);
+        if (info.state != SINK_RUNNING) { h->device_deadline_ms = GetTickCount64(); }
         if (h->config.wasapi) {
             atomic_store(&h->frames, info.media_frames);
             atomic_store(&h->callback_ticks, info.callback_ticks); atomic_store(&h->callbacks, info.callback_count);
@@ -68,11 +83,16 @@ DWORD WINAPI hl_decode(void *ctx)
             /* Fake callbacks share this owner. Do not wait on the producer's
              * low-water event when waiting for network input. */
             n = n > 2 ? 2 : n;
-            if (atomic_load(&h->sink.state) == SINK_RUNNING && spsc_readable(&h->sink.ring)) {
+            if (atomic_load(&h->sink.state) == SINK_RUNNING && (h->config.realtime || spsc_readable(&h->sink.ring))) {
                 if (wait > 10) { wait = h->config.realtime ? 10 : 0; }
             }
         }
-        if (WaitForMultipleObjects((DWORD)n, handles, FALSE, wait) == WAIT_FAILED) { ok = false; break; }
+        DWORD woke = WaitForMultipleObjects((DWORD)n, handles, FALSE, wait);
+        if (woke == WAIT_FAILED) { ok = false; break; }
+        if (h->diagnostics && woke < n && handles[woke] == h->sink.producer_event) {
+            uint64_t signaled = atomic_exchange_explicit(&h->sink.diagnostic_wake_qpc, 0, memory_order_acquire);
+            if (signaled) { audio_diagnostic_elapsed(h->diagnostics, AD_PRODUCER_WAKE_TICKS, signaled); }
+        }
         atomic_fetch_add(&h->wakes, 1);
     }
     atomic_store_explicit(&h->decode_finished, true, memory_order_release); SetEvent(h->read_wake);

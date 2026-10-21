@@ -34,6 +34,45 @@ float roundedDistance(float2 position, float2 size, float4 radii) {
     float2 q = abs(p) - size * 0.5 + r;
     return length(max(q, 0)) + min(max(q.x,q.y),0) - r;
 }
+// Independently authored 24-DIP glyphs. One instanced quad, no atlas/font or
+// texture allocation, analytic antialiasing at the actual physical scale.
+float segmentDistance(float2 p, float2 a, float2 b) {
+    float2 v = b-a;
+    return length(p-a-v*saturate(dot(p-a,v)/dot(v,v)));
+}
+float iconDistance(float2 p, int glyph) {
+    float d = 100;
+    if (glyph == 1) { // filled play triangle (7,4) (21,12) (7,20)
+        float edge = min(segmentDistance(p,float2(7,4),float2(21,12)),
+            min(segmentDistance(p,float2(21,12),float2(7,20)),segmentDistance(p,float2(7,20),float2(7,4))));
+        bool inside = p.x >= 7 && p.x <= 21-1.75*abs(p.y-12);
+        return inside ? -edge : edge;
+    }
+    if (glyph == 2) { return min(roundedDistance(p-float2(6,4),float2(4,16),0),
+        roundedDistance(p-float2(14,4),float2(4,16),0)); }
+    if (glyph == 3 || glyph == 4) {
+        if (glyph == 4) { p.x=24-p.x; }
+        d=min(segmentDistance(p,float2(15,4),float2(7,12)),segmentDistance(p,float2(7,12),float2(15,20)));
+    } else if (glyph == 5) {
+        d=min(abs(length(p-float2(10,10))-6.5),segmentDistance(p,float2(15,15),float2(21,21)));
+    } else if (glyph == 6) {
+        return min(length(p-float2(5,12)),min(length(p-float2(12,12)),length(p-float2(19,12))))-1.6;
+    } else if (glyph == 7) {
+        d=min(abs(length(p-12)-9),min(segmentDistance(p,float2(12,6),float2(12,12)),
+            segmentDistance(p,float2(12,12),float2(16,14))));
+    } else if (glyph == 8) {
+        d=min(segmentDistance(p,float2(5,5),float2(19,19)),segmentDistance(p,float2(19,5),float2(5,19)));
+    } else if (glyph == 9) {
+        d=min(segmentDistance(p,float2(4,12),float2(9,17)),segmentDistance(p,float2(9,17),float2(20,6)));
+    } else if (glyph == 10) {
+        d=min(segmentDistance(p,float2(12,4),float2(12,20)),segmentDistance(p,float2(4,12),float2(20,12)));
+    } else if (glyph == 11) {
+        d=min(segmentDistance(p,float2(10,17),float2(10,5)),segmentDistance(p,float2(10,5),float2(19,3)));
+        d=min(d,segmentDistance(p,float2(19,3),float2(19,15)));
+        return min(d-0.9,min(length((p-float2(7,18))/float2(1.4,1)),length((p-float2(16,16))/float2(1.4,1)))-2);
+    }
+    return d-0.9;
+}
 float4 ps_main(Pixel p) : SV_Target {
     float d = roundedDistance(p.local, p.box.zw, p.radii);
     float coverage = saturate(0.5 - d * scale);
@@ -48,7 +87,10 @@ float4 ps_main(Pixel p) : SV_Target {
         coverage = p.effect.y > 0 ? pow(saturate(1 - max(d,0) / p.effect.y),2) : coverage;
     }
     float4 color = p.color;
-    if (p.effect.x >= 3) {
+    if (p.effect.x == 5) {
+        float units = min(p.box.z,p.box.w)/24;
+        coverage *= saturate(0.5-iconDistance(p.local/units,(int)p.effect.y)*units*scale);
+    } else if (p.effect.x >= 3) {
         float2 uv = lerp(p.uv.xy, p.uv.zw, p.local / p.box.zw);
         float4 texel = image.Sample(linearClamp, uv);
         if (p.effect.x == 4) { coverage *= texel.r; }

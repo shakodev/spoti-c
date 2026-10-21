@@ -15,6 +15,7 @@ static void release_page(App *a)
 static AppResult generation(App *a)
 {
     if (a->model.generation == UINT64_MAX) { return APP_FULL; }
+    app_context_close(a);
     if (a->model.pending && a->services.cancel) { a->services.cancel(a->services.context,&a->model.request); }
     a->model.pending = false; release_page(a); app_catalog_clear(a); ++a->model.generation;
     if (!a->model.auth_pending) { a->model.notice[0]=0; }
