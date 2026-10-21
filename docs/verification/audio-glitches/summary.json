@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "device": "fake 48000 Hz stereo float32",
+  "windows": "sys.getwindowsversion(major=10, minor=0, build=26200, platform=2, service_pack='')",
+  "processors": 12,
+  "executable_sha256": "c6bae714934fd06bcb45db95e6f3fc5da102ce7a3288108da3ebf21224541a8c",
+  "executable_bytes": 533504,
+  "live_acceptance": "pending",
+  "scope": "8-second intervals; no GUI, WASAPI or release-gate claim",
+  "runs": [
+    {
+      "diagnostics": false,
+      "cold_cache": true,
+      "raw": "audio-probe-off.jsonl",
+      "peak_working_set": 7573504,
+      "intervals": [
+        {
+          "state": "playing",
+          "seconds": 8.0002791,
+          "frames": 384000,
+          "core_percent": 0.3906113725457403,
+          "machine_percent": 0.03255094771214503,
+          "working_set": 7127040
+        },
+        {
+          "state": "paused",
+          "seconds": 8.000512,
+          "frames": 0,
+          "core_percent": 0.0,
+          "machine_percent": 0.0,
+          "working_set": 7458816
+        }
+      ]
+    },
+    {
+      "diagnostics": true,
+      "cold_cache": true,
+      "raw": "audio-probe-on.jsonl",
+      "peak_working_set": 7557120,
+      "intervals": [
+        {
+          "state": "playing",
+          "seconds": 8.0003879,
+          "frames": 384480,
+          "core_percent": 1.5624242419545682,
+          "machine_percent": 0.13020202016288068,
+          "working_set": 7110656
+        },
+        {
+          "state": "paused",
+          "seconds": 8.0001115,
+          "frames": 0,
+          "core_percent": 0.0,
+          "machine_percent": 0.0,
+          "working_set": 7442432
+        }
+      ],
+      "diagnostics_final": {
+        "invalidations": 0,
+        "callback_ticks": {
+          "count": 897,
+          "total": 31517,
+          "maximum": 1610,
+          "last": 36,
+          "last_qpc": 968289094852,
+          "maximum_qpc": 968223429038
+        },
+        "callback_gap_ticks": {
+          "count": 896,
+          "total": 89533881,
+          "maximum": 307376,
+          "last": 155484,
+          "last_qpc": 968289094816,
+          "maximum_qpc": 968235318573
+        },
+        "low_water_frames": {
+          "count": 0,
+          "total": 0,
+          "maximum": 0,
+          "last": 0,
+          "last_qpc": 0,
+          "maximum_qpc": 0
+        },
+        "underrun_frames": {
+          "count": 0,
+          "total": 0,
+          "maximum": 0,
+          "last": 0,
+          "last_qpc": 0,
+          "maximum_qpc": 0
+        },
+        "producer_wake_ticks": {
+          "count": 0,
+          "total": 0,
+          "maximum": 0,
+          "last": 0,
+          "last_qpc": 0,
+          "maximum_qpc": 0
+        },
+        "pump_ticks": {
+          "count": 1519,
+          "total": 714555,
+          "maximum": 18412,
+          "last": 14,
+          "last_qpc": 968379165503,
+          "maximum_qpc": 968199560931
+        },
+        "read_wait_ticks": {
+          "count": 24,
+          "total": 1299467,
+          "maximum": 395365,
+          "last": 177,
+          "last_qpc": 968289654310,
+          "maximum_qpc": 968289574780
+        },
+        "decrypt_ticks": {
+          "count": 24,
+          "total": 55756,
+          "maximum": 7737,
+          "last": 1191,
+          "last_qpc": 968289655625,
+          "maximum_qpc": 968240077190
+        },
+        "network_pump_ticks": {
+          "count": 159,
+          "total": 12307,
+          "maximum": 951,
+          "last": 377,
+          "last_qpc": 968379165453,
+          "maximum_qpc": 968224397838
+        },
+        "range_ticks": {
+          "count": 9,
+          "total": 1377496,
+          "maximum": 237435,
+          "last": 156942,
+          "last_qpc": 968289574639,
+          "maximum_qpc": 968289417513
+        },
+        "cache_read_ticks": {
+          "count": 13,
+          "total": 25124,
+          "maximum": 6551,
+          "last": 6028,
+          "last_qpc": 968289646271,
+          "maximum_qpc": 968289626444
+        },
+        "cache_write_ticks": {
+          "count": 9,
+          "total": 527287,
+          "maximum": 67721,
+          "last": 44701,
+          "last_qpc": 968289619790,
+          "maximum_qpc": 968199609540
+        },
+        "cache_queue_ticks": {
+          "count": 24,
+          "total": 42572,
+          "maximum": 38973,
+          "last": 104,
+          "last_qpc": 968379167594,
+          "maximum_qpc": 968289619893
+        },
+        "player_state": {
+          "count": 4,
+          "total": 9,
+          "maximum": 4,
+          "last": 0,
+          "last_qpc": 968379164961,
+          "maximum_qpc": 968289163279
+        },
+        "player_command": {
+          "count": 3,
+          "total": 14,
+          "maximum": 12,
+          "last": 12,
+          "last_qpc": 968379164548,
+          "maximum_qpc": 968379164548
+        },
+        "track_boundary": {
+          "count": 0,
+          "total": 0,
+          "maximum": 0,
+          "last": 0,
+          "last_qpc": 0,
+          "maximum_qpc": 0
+        },
+        "callback_frames": {
+          "count": 897,
+          "total": 430560,
+          "maximum": 480,
+          "last": 480,
+          "last_qpc": 968289094816,
+          "maximum_qpc": 968199560935
+        },
+        "source_rate": {
+          "count": 2,
+          "total": 96000,
+          "maximum": 48000,
+          "last": 48000,
+          "last_qpc": 968289179456,
+          "maximum_qpc": 968199556142
+        },
+        "source_channels": {
+          "count": 2,
+          "total": 4,
+          "maximum": 2,
+          "last": 2,
+          "last_qpc": 968289179456,
+          "maximum_qpc": 968199556142
+        }
+      }
+    }
+  ]
+}
