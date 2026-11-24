@@ -38,6 +38,8 @@ AudioResult sink_open_with_buffer(AudioSink *s, void *pcm, size_t pcm_bytes, con
     atomic_init(&s->media_frames, 0); atomic_init(&s->submitted_frames, 0);
     atomic_init(&s->underrun_frames, 0); atomic_init(&s->producer_wakes, 0);
     atomic_init(&s->callback_ticks, 0); atomic_init(&s->callback_count, 0);
+    atomic_init(&s->diagnostic_wake_qpc, 0);
+    atomic_init(&s->diagnostics, NULL);
     atomic_init(&s->device_bytes, 0); atomic_init(&s->device_peak, 0);
     atomic_init(&s->callback_violations, 0);
     atomic_init(&s->span_read, 0); atomic_init(&s->span_write, 0); atomic_init(&s->span_overflow, 0);
@@ -85,6 +87,7 @@ AudioResult sink_start(AudioSink *s)
         atomic_fetch_and(&s->producer_gate, ~1u); return AUDIO_BAD_STATE;
     }
     ++s->clock_epoch;
+    s->diagnostic_callback_qpc = 0;
     AudioResult r = s->backend->start(s->backend_context);
     if (r != AUDIO_OK) { sink_device_lost(s); }
     return r;
@@ -117,6 +120,7 @@ AudioResult sink_resume(AudioSink *s)
     if (!atomic_compare_exchange_strong(&s->state, &expected, SINK_RUNNING)) { return AUDIO_BAD_STATE; }
     ++s->clock_epoch;
     s->output_base = atomic_load(&s->submitted_frames);
+    s->diagnostic_callback_qpc = 0;
     AudioResult r = s->backend->start(s->backend_context);
     if (r != AUDIO_OK) { sink_device_lost(s); }
     return r;
@@ -136,6 +140,7 @@ AudioResult sink_stop(AudioSink *s)
     AudioResult r = s->backend->stop(s->backend_context);
     if (atomic_load(&s->invalidated)) { atomic_store(&s->state, SINK_LOST); }
     atomic_store(&s->wake_armed, 0);
+    atomic_store(&s->diagnostic_wake_qpc, 0);
     /* Both endpoints now quiescent; no live reset. */
     (void)spsc_init_pcm(&s->ring, s->pcm, s->pcm_bytes, s->format.channels * sizeof(float));
     return r;
@@ -145,12 +150,14 @@ AudioResult sink_switch(AudioSink *s)
     if (!owner(s)) { return AUDIO_BAD_STATE; }
     const SinkBackend *backend = s->backend; void *ctx = s->backend_context, *pcm = s->pcm;
     size_t pcm_bytes = s->pcm_bytes;
+    AudioDiagnostics *diagnostics = s->diagnostics;
     (void)sink_stop(s);
     s->backend->close(s->backend_context);
     CloseHandle(s->producer_event); CloseHandle(s->control_event); s->opened = false;
     /* Production backend context was owned and released by close. */
     if (backend == &sink_wasapi_backend) { ctx = NULL; }
-    return sink_open_with_buffer(s, pcm, pcm_bytes, backend, ctx);
+    AudioResult result = sink_open_with_buffer(s, pcm, pcm_bytes, backend, ctx);
+    s->diagnostics = diagnostics; return result;
 }
 AudioResult sink_close(AudioSink *s)
 {
@@ -201,6 +208,7 @@ bool sink_producer_arm(AudioSink *s)
 }
 void sink_device_lost(AudioSink *s)
 {
+    if (s->diagnostics) { atomic_fetch_add_explicit(&s->diagnostics->invalidations, 1, memory_order_relaxed); }
     atomic_store(&s->invalidated, 1);
     atomic_store(&s->state, SINK_LOST); atomic_fetch_and(&s->producer_gate, ~1u);
     SetEvent(s->control_event); SetEvent(s->producer_event);

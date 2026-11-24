@@ -10,7 +10,7 @@ typedef struct HeadlessConfig {
     const char *fixture_url; /* Explicit loopback ciphertext URL; NULL selects account. */
     const wchar_t *credential_path; /* Private DPAPI record for opt-in live mode. */
     const char *country, *catalogue;
-    bool wasapi, realtime;
+    bool wasapi, realtime, diagnostics; /* Opt-in timing counters; no payload logging. */
     void (*observe)(void *, const float *, size_t); /* Fake sink, decode owner. */
     void *observe_context;
     /* Optional nonblocking state-edge wake from decode owner, never WASAPI.
@@ -26,6 +26,10 @@ typedef struct HeadlessMetrics {
     uint64_t qpc_frequency;
     uint32_t process_handles;
     bool balanced;
+    bool diagnostics_enabled;
+    uint32_t output_rate, output_channels, output_buffer_frames;
+    uint64_t sample_qpc, process_cpu_100ns;
+    AudioDiagnosticSnapshot diagnostics;
 } HeadlessMetrics;
 /* Fixed VM allocation; explicit failure, no silent pool growth. Opens owners
  * asynchronously, waits for startup. No GUI or audio-callback allocations. */

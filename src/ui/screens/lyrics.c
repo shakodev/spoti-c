@@ -28,13 +28,22 @@ static void artwork(App *a)
         request_artwork(a,&a->model.location.entity,(JsonString){a->catalog.artwork,strlen(a->catalog.artwork)},
             a->catalog.artwork_width,a->catalog.artwork_height,160);
     }
+    if (a->model.location.screen==APP_SEARCH && a->model.location.selector==SEARCH_TOP && page->count) {
+        AppEntity entity; const CatalogItem *item=&page->items[0];
+        if (app_catalog_entity(item,&entity)==APP_OK) {
+            request_artwork(a,&entity,item->image.url,item->image.width,item->image.height,96);
+        }
+    }
     UiListRange range;
-    if (ui_virtual_range(page->count,APP_CATALOG_ROW,a->widgets.lists[0].scroll,
-        app_catalog_viewport(a),0,&range)!=UI_WIDGET_OK) { return; }
-    for (uint32_t i=range.first;i<range.end && i<range.first+APP_IMAGES;++i) {
+    uint32_t columns=app_catalog_cards(a) ? app_catalog_columns(a) : 1;
+    if (ui_virtual_range((page->count+columns-1)/columns,app_catalog_cards(a) ? app_catalog_card_height(a) : APP_CATALOG_ROW,
+        a->widgets.lists[0].scroll,app_catalog_viewport(a),0,&range)!=UI_WIDGET_OK) { return; }
+    uint32_t first=range.first*columns, end=range.end*columns;
+    for (uint32_t i=first;i<end && i<page->count && i<first+APP_IMAGES;++i) {
         const CatalogItem *item=&page->items[i]; AppEntity entity;
         if (!item->image.url.bytes || app_catalog_entity(item,&entity)!=APP_OK) { continue; }
-        request_artwork(a,&entity,item->image.url,item->image.width,item->image.height,40);
+        request_artwork(a,&entity,item->image.url,item->image.width,item->image.height,
+            (uint16_t)(app_catalog_cards(a) ? 160 : 40));
     }
 }
 void app_catalog_prepare(App *a, uint64_t now)
@@ -51,7 +60,7 @@ void app_catalog_prepare(App *a, uint64_t now)
         a->catalog.lyric=lyrics_timeline_update(&a->catalog.timeline,&a->model.player,visible,now);
         if (core_deadline_expired(now,a->catalog.hold)) { a->catalog.hold=CORE_CLOCK_NEVER; }
         if (a->catalog.hold==CORE_CLOCK_NEVER && a->catalog.lyric.line!=LYRICS_NO_LINE) {
-            a->widgets.lists[0].scroll=fmax(0,(double)a->catalog.lyric.line*48-96);
+            a->widgets.lists[0].scroll=fmax(0,(double)a->catalog.lyric.line*UI_LYRIC_HEIGHT-2*UI_LYRIC_HEIGHT);
         }
         if (a->scheduler) {
             ui_scheduler_lyrics(a->scheduler,visible,a->catalog.lyric.deadline_ms);
@@ -70,9 +79,12 @@ static void line(void *context, uint32_t index, uint64_t key)
      * service clips its bounded run; don't turn a long lyric into a UI error. */
     size_t n=text.bytes<191 ? text.bytes : 191;
     while (n<text.bytes && n && ((unsigned char)text.data[n]&0xc0)==0x80) { --n; }
-    Clay_Color color=a->catalog.lyric.valid && index==a->catalog.lyric.line ? (Clay_Color){110,235,155,255} : (Clay_Color){185,185,185,255};
-    CLAY(CLAY_IDI("LyricLine",index),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(48)},.padding={4,4,8,8}},
-        .clip={.horizontal=true,.vertical=true}}) { app_label(app_text(a,(Clay_String){false,(int32_t)n,text.data}),22,color); }
+    Clay_Color color=a->catalog.lyric.valid && index==a->catalog.lyric.line ? UI_TEXT : (Clay_Color){210,190,218,255};
+    CLAY(CLAY_IDI("LyricLine",index),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(UI_LYRIC_HEIGHT)},
+        .padding={16,16,8,8},.childAlignment={.y=CLAY_ALIGN_Y_CENTER}},.clip={.horizontal=true,.vertical=true}}) {
+        CLAY_TEXT(app_text(a,(Clay_String){false,(int32_t)n,text.data}),CLAY_TEXT_CONFIG({.fontId=FONT_FACE_HEADING,
+            .fontSize=a->geometry.compact ? 28 : 36,.textColor=color,.wrapMode=CLAY_TEXT_WRAP_NONE}));
+    }
 }
 void app_lyrics(App *a)
 {
@@ -88,8 +100,11 @@ void app_lyrics(App *a)
     (void)app_button(a,CLAY_ID("LyricsFollow"),a->catalog.hold==CORE_CLOCK_NEVER ? CLAY_STRING("Following") : CLAY_STRING("Resume follow"),120,
         (AppAction){.type=APP_LYRICS_FOLLOW},a->catalog.hold==CORE_CLOCK_NEVER);
     UiListRange range; double scroll=a->widgets.lists[0].scroll;
-    (void)ui_virtual_list(&a->widgets,CLAY_ID("LyricsList"),&a->widgets.lists[0],doc->count+doc->preview_count,
-        48,fminf(384,fmaxf(48,a->geometry.viewport-72)),0,line_key,line,a,&range);
+    CLAY(CLAY_ID("LyricsPanel"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIT()}},
+        .backgroundColor={68,38,82,255},.cornerRadius=CLAY_CORNER_RADIUS(UI_PANEL_RADIUS)}) {
+        (void)ui_virtual_list(&a->widgets,CLAY_ID("LyricsList"),&a->widgets.lists[0],doc->count+doc->preview_count,
+            UI_LYRIC_HEIGHT,fminf(384,fmaxf(UI_LYRIC_HEIGHT,a->geometry.viewport-72)),0,line_key,line,a,&range);
+    }
     if (scroll!=a->widgets.lists[0].scroll && a->widgets.input.down) { app_lyrics_hold(a); }
     if (a->control_count<APP_CONTROLS) { a->controls[a->control_count++]=(AppControl){.id=CLAY_ID("LyricsList"),.action={.type=APP_LYRICS_FOLLOW}}; }
 }

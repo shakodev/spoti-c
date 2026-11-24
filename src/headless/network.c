@@ -45,23 +45,25 @@ bool hl_network_open(Headless *h)
     } else if (!hl_live_open(h)) { return false; }
     if (cdn_client_create(&h->arenas[2],&h->accounting,h->config.fixture_url != NULL,&h->cdn) != HTTP_OK) { return false; }
     if (worker_start(&h->arenas[0], 8, (CoreClock){0}, &h->disk) != CORE_OK) { fprintf(stderr,"headless startup: disk worker\n"); return false; }
-    AudioCacheConfig cc = {.worker = h->disk, .directory = h->cache_path, .metrics = &h->accounting, .entry_limit = 64};
+    AudioCacheConfig cc = {.worker = h->disk, .directory = h->cache_path, .metrics = &h->accounting, .entry_limit = 64,
+        .diagnostics = h->diagnostics};
     CacheResult cr = audio_cache_create(&h->arenas[5], &cc, &h->cache);
     if (cr != CACHE_OK) { fprintf(stderr,"headless startup: cache %u\n",(unsigned)cr); return false; }
     RangeConfig rc = {.http = h->http, .cache = h->cache, .fixture_loopback_http = h->config.fixture_url != NULL,
-        .refresh = refresh, .context = h, .max_attempts = 1, .transport = cdn_client_transport(h->cdn)};
+        .refresh = refresh, .context = h, .max_attempts = 1, .transport = cdn_client_transport(h->cdn), .diagnostics = h->diagnostics};
     RangeResult rr = range_fetcher_create(&h->arenas[4], &h->arenas[6], &rc, &h->ranges);
     if (rr != RANGE_OK) { fprintf(stderr,"headless startup: range %u\n",(unsigned)rr); }
     return rr == RANGE_OK;
 }
 bool hl_network_poll(Headless *h)
 {
+    uint64_t before = audio_diagnostic_now(h->diagnostics);
     if ((h->http && http_pump(h->http) != HTTP_OK) || !hl_live_poll(h)) { return false; }
     (void)media_source_poll(h->media);
     (void)range_poll(h->ranges);
     RangeStats stats = range_stats(h->ranges);
     atomic_store(&h->network_attempts, stats.network_attempts); atomic_store(&h->cache_hits, stats.cache_hits);
-    return hl_sources(h);
+    bool ok = hl_sources(h); audio_diagnostic_elapsed(h->diagnostics, AD_NETWORK_PUMP_TICKS, before); return ok;
 }
 static DWORD minimum(DWORD a, DWORD b) { return a < b ? a : b; }
 void hl_network_wait(Headless *h, DWORD maximum)

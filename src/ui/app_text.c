@@ -11,6 +11,7 @@ static bool same(FontConfig a, FontConfig b)
 static Clay_Dimensions measure(Clay_StringSlice text, Clay_TextElementConfig *style, void *context)
 {
     App *a=context; FontMeasureContext *font=a->fonts;
+    if (!font) { return (Clay_Dimensions){text.length*(float)style->fontSize*0.5f,(float)style->fontSize}; }
     FontConfig key=font_clay_config(font,style->fontId,style->fontSize,style->letterSpacing,style->lineHeight);
     key.measure_only=true;
     if (a->measure_generation!=a->model.generation || a->measure_dpi!=key.dpi) {

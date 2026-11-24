@@ -19,6 +19,7 @@ typedef struct RangeSpan { const uint8_t *data; size_t bytes; uint64_t offset; }
 typedef struct RangeLease { uint64_t ticket; RangeSource source; size_t count, bytes; RangeSpan spans[RANGE_BLOCKS]; } RangeLease;
 
 typedef struct RangeConfig {
+    AudioDiagnostics *diagnostics;
     HttpClient *http;
     AudioCache *cache; /* Optional. Keep alive until fetcher shutdown completes. */
     CoreClock clock;

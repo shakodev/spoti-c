@@ -16,14 +16,16 @@ typedef struct PlayerTest {
     uint64_t output_frames;
     uint32_t latency;
     uint32_t source_duration_ms;
-    unsigned starts, stops, closes, resolved, retired, peak_readers;
+    unsigned starts, stops, closes, resolved, retired, peak_readers, start_frames;
     bool hold_network, hold_retire, fail_prefetch, clock_valid;
     PlayerRequest held[16]; size_t held_count;
-    float output[8192];
+    float output[16384];
 } PlayerTest;
 extern PlayerTest pt;
 void pt_load_fixtures(void);
 void pt_open(void);
+void pt_open_bytes(size_t);
+void pt_stall_tests(void);
 void pt_command(PlayerCommand);
 void pt_track(PlayerCommandType, unsigned track, bool play);
 void pt_network(void);

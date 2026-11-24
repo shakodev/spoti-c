@@ -126,7 +126,11 @@ FontResult font_metrics(FontCache *c, FontHandle handle, FontMetrics *out)
 
 FontConfig font_clay_config(const FontMeasureContext *context, uint16_t face, uint16_t size, uint16_t spacing, uint16_t height)
 {
-    return font_config_for_clay(context->config,face,size,spacing,height);
+    FontConfig config=font_config_for_clay(context->config,face,size,spacing,height);
+    if (face==FONT_FACE_HEADING && context->heading_width>0) {
+        config.max_width=context->heading_width; config.ellipsis=true;
+    }
+    return config;
 }
 Clay_Dimensions font_measure(Clay_StringSlice text, Clay_TextElementConfig *config, void *user_data)
 {

@@ -1,0 +1,96 @@
+Start testing: Oct 21 17:50 W. Europe Daylight Time
+----------------------------------------------------------
+7/68 Testing: app_catalog_screens
+7/68 Test: app_catalog_screens
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_catalog_screens.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"app_catalog_screens" start time: Oct 21 17:50 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+catalog: App=246616 host-model=519104; 600 route transitions, 1000 allocation-free layouts
+app_catalog_screens: fixture routes, stable IDs, debounce, pages, lyrics, keyboard and ownership passed
+<end of output>
+Test time =   1.86 sec
+----------------------------------------------------------
+Test Passed.
+"app_catalog_screens" end time: Oct 21 17:50 W. Europe Daylight Time
+"app_catalog_screens" time elapsed: 00:00:01
+----------------------------------------------------------
+
+8/68 Testing: app_catalog_visual
+8/68 Test: app_catalog_visual
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_catalog_screens.exe" "--visual"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"app_catalog_visual" start time: Oct 21 17:50 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+catalog: App=246616 host-model=519104; 600 route transitions, 1000 allocation-free layouts
+<end of output>
+Test time =  49.82 sec
+----------------------------------------------------------
+Test Passed.
+"app_catalog_visual" end time: Oct 21 17:51 W. Europe Daylight Time
+"app_catalog_visual" time elapsed: 00:00:49
+----------------------------------------------------------
+
+11/68 Testing: app_shell
+11/68 Test: app_shell
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_app_shell.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"app_shell" start time: Oct 21 17:51 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+app state=246616 bytes; 2000 warm layouts: zero Debug heap calls; 600 route transitions bounded
+account owner: existing PKCE begin/cancel and credential logout passed without browser/account
+artwork navigation: request coalescing, generation cancellation, stale rejection and handle balance passed
+volume: continuous input, mute, snapshot ordering/backpressure, Settings, compact layouts, restart and real player passed
+1000 DirectWrite/Clay/renderer warm frames: no heap calls, no pending text, no new shaping
+native shell: real HWND keyboard/pointer/capture routing passed
+app_shell: routes, immutable pages, stale delivery, auth/offline, keyboard, playback and bounds passed
+<end of output>
+Test time =   7.58 sec
+----------------------------------------------------------
+Test Passed.
+"app_shell" end time: Oct 21 17:51 W. Europe Daylight Time
+"app_shell" time elapsed: 00:00:07
+----------------------------------------------------------
+
+16/68 Testing: ui_components
+16/68 Test: ui_components
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_ui_components.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"ui_components" start time: Oct 21 17:51 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+ui_components: selected/disabled/focus/capture, scalable glyph bounds and 2000 allocation-free frames passed
+<end of output>
+Test time =   0.11 sec
+----------------------------------------------------------
+Test Passed.
+"ui_components" end time: Oct 21 17:51 W. Europe Daylight Time
+"ui_components" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/68 Testing: ui_font
+20/68 Test: ui_font
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_font.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"ui_font" start time: Oct 21 17:51 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+advances: Hello=36.852 Arabic=44.086 emoji=21.969 ellipsis=75.656
+1000 warm Clay layout/render frames: 0 CRT allocations, 0 new preparation requests
+ui_font: Unicode, DirectWrite metrics, pending coalescing, warm cache, LRU and lifetime passed
+<end of output>
+Test time =   0.38 sec
+----------------------------------------------------------
+Test Passed.
+"ui_font" end time: Oct 21 17:51 W. Europe Daylight Time
+"ui_font" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 21 17:51 W. Europe Daylight Time
+
+gpu =  49.82 sec*proc
+
+optional =  49.82 sec*proc

@@ -47,7 +47,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The reviewed Debug suite contains 53 tests. Project targets use `/W4 /WX` on
+The reviewed Debug suite contains 56 tests. Project targets use `/W4 /WX` on
 MSVC or `-Wall -Wextra -Werror` with compatible drivers. Protobuf generation
 verifies pinned inputs; [the codec specification](docs/specs/protobuf.md)
 documents generation and the optional C/runtime audit. Vendored sources and

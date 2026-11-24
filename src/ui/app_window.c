@@ -45,6 +45,12 @@ bool app_desktop_input(void *context, UiWindow *w, UINT message, WPARAM wp, LPAR
         ((MINMAXINFO *)lp)->ptMinTrackSize = (POINT){MulDiv(420,(int)dpi,96),MulDiv(560,(int)dpi,96)}; return true;
     }
     if (!d->app.alive) { return false; }
+    if (message==WM_CONTEXTMENU) {
+        POINT p={GET_X_LPARAM(lp),GET_Y_LPARAM(lp)}; bool keyboard=p.x==-1 && p.y==-1;
+        if (!keyboard) { ScreenToClient(w->hwnd,&p); }
+        (void)app_context_open(&d->app,(float)p.x*96/w->dpi,(float)p.y*96/w->dpi,keyboard);
+        ui_scheduler_dirty(&w->scheduler,UI_DIRTY_INPUT); return true;
+    }
     if (d->media.alive && message==WM_APPCOMMAND &&
         media_controls_appcommand(&d->media,GET_APPCOMMAND_LPARAM(lp),GetTickCount64())!=MEDIA_UNSUPPORTED) { *out=TRUE; return true; }
     if (d->media.alive && message==WM_KEYDOWN &&

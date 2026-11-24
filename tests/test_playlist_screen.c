@@ -118,10 +118,15 @@ static void filters_and_identity(void)
     uint64_t generation=playlist.generation; char oversized[TRACK_QUERY_BYTES+1]; memset(oversized,'x',sizeof(oversized)-1); oversized[sizeof(oversized)-1]=0;
     CHECK(playlist_query(&playlist,oversized,TRACK_SOURCE_ORDER)==TRACK_FULL && playlist.generation==generation);
     CHECK(playlist_query(&playlist,"\xc0\x80",TRACK_SOURCE_ORDER)==TRACK_INVALID && playlist.generation==generation);
-    const float widths[]={400,760,1100,1440}, dpis[]={96,120,192};
-    for (unsigned i=0;i<4;++i) { for (unsigned j=0;j<3;++j) {
+    const float widths[]={400,760,1100,1440}, dpis[]={96,120,144,192};
+    for (unsigned i=0;i<4;++i) { for (unsigned j=0;j<4;++j) {
         CHECK(app_layout(&app,widths[i]*dpis[j]/96,720*dpis[j]/96,dpis[j],(UiWidgetInput){0}).length>0);
         CHECK(app.widgets.error==UI_WIDGET_OK && playlist.rendered_rows<=16);
+        Clay_ElementData hero=Clay_GetElementData(CLAY_ID("PlaylistHero")), list=Clay_GetElementData(CLAY_ID("PlaylistList"));
+        Clay_ElementData player=Clay_GetElementData(CLAY_ID("AppNowPlaying"));
+        CHECK(hero.found && list.found && player.found);
+        CHECK(hero.boundingBox.y+hero.boundingBox.height<=list.boundingBox.y);
+        CHECK(list.boundingBox.y+list.boundingBox.height<=player.boundingBox.y);
     } }
     layout();
 }
@@ -132,10 +137,13 @@ static void scroll_keyboard_play(void)
     CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,0);
     CHECK(queues==1 && copied.ordinals[0]==1);
     pt_drive(); queues=0;
-    app.widgets.lists[0].scroll=40.0*5000; settle(); layout();
+    app.widgets.lists[0].scroll=(double)UI_TRACK_HEIGHT*5000; settle(); layout();
     CHECK(playlist_row(&playlist,5000) && !playlist_row(&playlist,0));
     CHECK(playlist_select(&playlist,5001,false)==TRACK_OK);
     app.widgets.focus=CLAY_ID("PlaylistList").id; app.widgets.lists[0].focus=5001;
+    CHECK(app_context_open(&app,0,0,true)==APP_OK && app.menu.count==1);
+    CHECK(app.menu.actions[0].value==5001 && !app.menu.disabled[0]);
+    CHECK(app_key(&app,APP_KEY_ESCAPE,false)==APP_OK && !app.menu.open);
     CHECK(app_key(&app,APP_KEY_DOWN,false)==APP_OK && playlist.selected==5002);
     CHECK(app_key(&app,APP_KEY_ENTER,false)==APP_OK); (void)app_update(&app,0);
     CHECK(queues==1 && copied.ordinals[0]==5001 && copied.transfer.count==PLAYER_QUEUE_CAP);

@@ -1,4 +1,5 @@
 #include "window.h"
+#include "resource.h"
 #include <dwmapi.h>
 
 static const wchar_t window_class[] = L"SpoticWindow25";
@@ -157,7 +158,9 @@ bool ui_window_create(UiWindow *w, const UiWindowConfig *config)
     cls.cbSize = sizeof(cls); cls.lpfnWndProc = window_proc;
     cls.hInstance = config->instance; cls.lpszClassName = window_class;
     cls.hCursor = LoadCursorW(NULL, IDC_ARROW);
-    cls.hIcon = LoadIconW(NULL, IDI_APPLICATION); cls.hIconSm = cls.hIcon;
+    cls.hIcon = LoadIconW(config->instance, MAKEINTRESOURCEW(IDI_SPOTIC));
+    if (!cls.hIcon) { cls.hIcon = LoadIconW(NULL, IDI_APPLICATION); }
+    cls.hIconSm = cls.hIcon;
     /* One owning window per class: explicit failure rather than shared lifetime. */
     if (!RegisterClassExW(&cls)) { return false; }
     w->class_owned = true;

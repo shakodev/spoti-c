@@ -25,6 +25,7 @@ RangeResult range_http_poll(RangeFetcher *f)
     if (f->active < 0) { return RANGE_OK; }
     HttpCompletion completion; HttpResult consumed = range_transfer_consume(f, f->http_id, &completion);
     if (consumed == HTTP_PENDING) { return RANGE_OK; }
+    audio_diagnostic_elapsed(f->config.diagnostics, AD_RANGE_TICKS, f->diagnostic_transfer_qpc);
     RangeBlock *b = &f->blocks[f->active]; f->active = -1;
     RangeSourceRecord *s = range_source(f, b->source);
     if (s == NULL || s->cancelled || f->shutdown || b->preempted) { range_clear_block(f, b); f->needs_drive = true; return RANGE_OK; }

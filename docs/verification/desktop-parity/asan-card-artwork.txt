@@ -1,0 +1,36 @@
+Start testing: Oct 21 17:53 W. Europe Daylight Time
+----------------------------------------------------------
+7/68 Testing: app_catalog_screens
+7/68 Test: app_catalog_screens
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_catalog_screens.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"app_catalog_screens" start time: Oct 21 17:53 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+catalog: App=246616 host-model=519104; 600 route transitions, 1000 allocation-free layouts
+app_catalog_screens: fixture routes, stable IDs, debounce, pages, lyrics, keyboard and ownership passed
+<end of output>
+Test time =   1.73 sec
+----------------------------------------------------------
+Test Passed.
+"app_catalog_screens" end time: Oct 21 17:53 W. Europe Daylight Time
+"app_catalog_screens" time elapsed: 00:00:01
+----------------------------------------------------------
+
+19/68 Testing: ui_artwork
+19/68 Test: ui_artwork
+Command: "C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43/test_artwork.exe"
+Directory: C:/Users/Daan/Documents/Projects/spoti-c/build-issues-41-43
+"ui_artwork" start time: Oct 21 17:53 W. Europe Daylight Time
+Output:
+----------------------------------------------------------
+artwork: bounded decode/cache/worker ownership checks passed
+<end of output>
+Test time =   0.48 sec
+----------------------------------------------------------
+Test Passed.
+"ui_artwork" end time: Oct 21 17:53 W. Europe Daylight Time
+"ui_artwork" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 21 17:53 W. Europe Daylight Time

@@ -84,6 +84,13 @@ AudioResult player_slot_read(Player *p, unsigned at)
     s->frames = s->offset = 0;
     AudioResult r = decoder_read_frames(s->decoder, s->decoder_generation, s->block, PLAYER_BLOCK_FRAMES, &s->frames);
     DecoderInfo info = decoder_info(s->decoder);
+    if (info.ready && !s->diagnostic_format_recorded) {
+        AudioDiagnostics *diagnostics = p->config.sink->diagnostics;
+        uint64_t now = audio_diagnostic_now(diagnostics);
+        audio_diagnostic_record(diagnostics, AD_SOURCE_RATE, info.native.sample_rate, now);
+        audio_diagnostic_record(diagnostics, AD_SOURCE_CHANNELS, info.native.channels, now);
+        s->diagnostic_format_recorded = true;
+    }
     if (info.length_known) { p->durations[s->index] = info.total_frames; }
     if (r == AUDIO_EOF) { s->eof = true; }
     return r;
@@ -105,18 +112,18 @@ void player_decode_drive(Player *p)
         }
     }
     AudioSink *sink = p->config.sink;
-    if (p->want_play && atomic_load(&sink->state) == SINK_STOPPED && p->written) {
-        AudioResult r = sink_start(sink); if (r != AUDIO_OK) { player_fail(p, r); return; }
-    }
+    bool waiting = false, boundary = false;
     for (unsigned budget = 0; budget < 32; ++budget) {
         PlayerSlot *s = &p->slots[p->current];
         if (s->frames == s->offset && spsc_writable(&sink->ring) == 0) { break; }
         AudioResult r = player_slot_read(p, (unsigned)p->current);
         if (r == AUDIO_NEED_MORE) {
+            waiting = true;
             if (p->want_play && spsc_writable(&sink->ring) == sink->ring.capacity) { p->view.state = PLAYER_BUFFERING; }
             break;
         }
         if (r == AUDIO_EOF) {
+            boundary = true;
             if (!p->marker_count && !player_marker_add(p, s->index, s->target)) { player_fail(p, AUDIO_LIMIT); break; }
             unsigned index;
             if (!player_next_index(p, p->producer_index, true, &index)) {
@@ -125,6 +132,7 @@ void player_decode_drive(Player *p)
                 break;
             }
             if (p->next < 0 || p->marker_count == PLAYER_MARKERS) {
+                waiting = true;
                 if (p->want_play && spsc_writable(&sink->ring) == sink->ring.capacity) { p->view.state = PLAYER_BUFFERING; }
                 break;
             }
@@ -132,6 +140,7 @@ void player_decode_drive(Player *p)
             if (next->state == PS_FAILED) { p->pending_error = next->failure; p->final_eof = true; break; }
             r = player_slot_read(p, (unsigned)p->next);
             if (r == AUDIO_NEED_MORE) {
+                waiting = true;
                 if (p->want_play && spsc_writable(&sink->ring) == sink->ring.capacity) { p->view.state = PLAYER_BUFFERING; }
                 break;
             }
@@ -149,12 +158,22 @@ void player_decode_drive(Player *p)
         r = sink_write(sink, s->block + s->offset * sink->format.channels, s->frames - s->offset, &written);
         s->offset += written; p->written += written;
         if (r != AUDIO_OK && r != AUDIO_FULL) { player_fail(p, r); break; }
-        if (p->want_play && atomic_load(&sink->state) == SINK_STOPPED && p->written) {
-            r = sink_start(sink); if (r != AUDIO_OK) { player_fail(p, r); break; }
-        }
-        p->view.state = p->want_play ? PLAYER_PLAYING : PLAYER_PAUSED;
+        p->view.state = !p->want_play ? PLAYER_PAUSED :
+            atomic_load(&sink->state) == SINK_RUNNING ? PLAYER_PLAYING : PLAYER_BUFFERING;
         if (r == AUDIO_FULL) { break; }
         if (budget == 31) { p->more = true; }
     }
-    (void)sink_producer_arm(sink);
+    /* start may render synchronously. Prime the existing ring before admitting
+     * a callback; a short track/boundary may drain its complete remaining tail. */
+    if (p->want_play && p->view.state != PLAYER_ERROR && atomic_load(&sink->state) == SINK_STOPPED &&
+        spsc_readable(&sink->ring) && (!spsc_writable(&sink->ring) || boundary || p->final_eof)) {
+        AudioResult r = sink_start(sink);
+        if (r != AUDIO_OK) { player_fail(p, r); return; }
+        p->view.state = PLAYER_PLAYING;
+    }
+    /* Consumption can cross low water before arming, including inside start.
+     * Retry runnable work immediately; input stalls still wait for DATA_READY. */
+    if (!sink_producer_arm(sink) && atomic_load(&sink->state) == SINK_RUNNING && !waiting && !p->final_eof) {
+        p->more = true;
+    }
 }

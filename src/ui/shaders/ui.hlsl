@@ -57,7 +57,17 @@ float speakerDistance(float2 p) {
 }
 float iconDistance(float2 p, uint icon) {
     float d = 100;
-    if (icon == 1) {
+    if (icon == 27) {
+        d = abs(length(p-float2(12,12))-9)-0.85;
+        d = min(d,min(segmentDistance(p,float2(12,6),float2(12,12)),
+            segmentDistance(p,float2(12,12),float2(17,14)))-0.85);
+    } else if (icon == 28) {
+        d = min(segmentDistance(p,float2(10,17),float2(10,5)),
+            segmentDistance(p,float2(10,5),float2(19,3)))-0.9;
+        d = min(d,segmentDistance(p,float2(19,3),float2(19,15))-0.9);
+        d = min(d,min(length((p-float2(7,18))/float2(1.4,1)),
+            length((p-float2(16,16))/float2(1.4,1)))-2);
+    } else if (icon == 1) {
         d = min(segmentDistance(p,float2(3.5,10),float2(12,3)),
                 segmentDistance(p,float2(12,3),float2(20.5,10)));
         d = min(d,segmentDistance(p,float2(6,8.5),float2(6,20)));

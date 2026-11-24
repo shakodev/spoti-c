@@ -36,7 +36,7 @@ struct RangeFetcher {
     RangeBlock blocks[RANGE_BLOCKS];
     RangeRequest requests[RANGE_REQUESTS];
     RangeTicket leases[RANGE_LEASES];
-    uint64_t generation, sequence, ticket, stamp;
+    uint64_t generation, sequence, ticket, stamp, diagnostic_transfer_qpc;
     RangeStats stats;
     int active;
     HttpRequestId http_id;

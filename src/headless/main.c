@@ -12,6 +12,7 @@ int wmain(int argc, wchar_t **argv)
     bool automatic = false;
     for (int i = 1; i < argc; ++i) {
         if (!wcscmp(argv[i], L"--wasapi")) { config.wasapi = true; continue; }
+        if (!wcscmp(argv[i], L"--diagnostics")) { config.diagnostics = true; continue; }
         if (!wcscmp(argv[i], L"--once")) { automatic = true; continue; }
         if (i + 1 == argc) { goto usage; }
         if (!wcscmp(argv[i], L"--fixture")) { fixture = argv[++i]; }
@@ -45,10 +46,15 @@ int wmain(int argc, wchar_t **argv)
     bool ok = headless_submit(h, &load) == PLAYER_OK;
     if (automatic) {
         uint64_t until = GetTickCount64() + 15 * 60 * 1000;
+        uint64_t next_metrics = 0;
         while (ok) {
             PlayerSnapshot snapshot = headless_snapshot(h);
             if (snapshot.state == PLAYER_ENDED) { break; }
             if (snapshot.state == PLAYER_ERROR || GetTickCount64() >= until) { ok = false; break; }
+            if (config.diagnostics && GetTickCount64() >= next_metrics) {
+                HeadlessMetrics sample; ok = headless_metrics(h, &sample) && headless_write_metrics(stdout, &sample);
+                next_metrics = GetTickCount64() + 1000;
+            }
             Sleep(50);
         }
     } else {
@@ -70,7 +76,7 @@ int wmain(int argc, wchar_t **argv)
     if (fixture) { ok &= headless_server_close(&server); }
     return ok ? 0 : 1;
 usage:
-    fputs("spotic-headless --fixture synthetic.enc --cache <private-directory> [--wasapi] [--once]\n"
-        "spotic-headless --live spotify:track:... --credentials <DPAPI-file> --country NL --catalogue premium --cache <directory> [--once]\n", stderr);
+    fputs("spotic-headless --fixture synthetic.enc --cache <private-directory> [--wasapi] [--once] [--diagnostics]\n"
+        "spotic-headless --live spotify:track:... --credentials <DPAPI-file> --country NL --catalogue premium --cache <directory> [--once] [--diagnostics]\n", stderr);
     return 2;
 }

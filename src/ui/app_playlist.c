@@ -14,7 +14,7 @@ void app_playlist_prepare(App *a)
 {
     Playlist *p=a->services.playlist;
     bool changed=track_filter_done(p->filter)!=NULL;
-    TrackResult r=playlist_prepare(p,&a->widgets.lists[0],fminf(360,fmaxf(0,a->geometry.viewport-104)));
+    TrackResult r=playlist_prepare(p,&a->widgets.lists[0],app_playlist_viewport(a));
     if (changed) { Clay_SetCurrentContext(a->widgets.clay); Clay_ResetMeasureTextCache(); }
     if (a->model.location.screen!=APP_PLAYLIST || !p->active || p->route!=a->model.generation) {
         a->browse.play_route=0; return;

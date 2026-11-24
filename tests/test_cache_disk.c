@@ -131,4 +131,30 @@ static void worker_backpressure(void)
     CHECK(get(r) == CACHE_MISS && audio_cache_retry_handle(rt.cache) == NULL && range_wait_handles(rt.fetcher, handles) == 2);
     CHECK(CloseHandle(b.entered) && CloseHandle(b.release)); rt_close();
 }
-void cache_disk_tests(void) { quota_and_holes(); corruption(); cancellation_and_full(); worker_backpressure(); }
+static void delayed_disk_diagnostics(void)
+{
+    rt_open(NULL, true, 0, 0, 0);
+    CacheRecord r = record(0, AUDIO_CACHE_BLOCK); CHECK(put(r, 0x37) == CACHE_OK);
+    CHECK(WaitForSingleObject(worker_idle_handle(rt.worker), 5000) == WAIT_OBJECT_0);
+    AudioDiagnostics diagnostics; CHECK(audio_diagnostics_init(&diagnostics));
+    rt.cache->config.diagnostics = &diagnostics;
+    Barrier b = {.entered = CreateEventW(NULL, TRUE, FALSE, NULL), .release = CreateEventW(NULL, TRUE, FALSE, NULL)};
+    atomic_init(&b.complete, 0); CHECK(b.entered && b.release);
+    WorkerJob blocker = {.run=block_worker,.complete=block_done,.context=&b,.deadline=CORE_CLOCK_NEVER,.priority=WORKER_DISK};
+    uint64_t ticket; CHECK(worker_submit(rt.worker, &blocker, &ticket) == CORE_OK);
+    CHECK(WaitForSingleObject(b.entered, 5000) == WAIT_OBJECT_0);
+    memset(output, 0, sizeof(output));
+    CHECK(audio_cache_get(rt.cache, &r, output, rt_cache_done, NULL, &ticket) == CACHE_OK);
+    uint64_t before = audio_diagnostic_now(&diagnostics);
+    Sleep(25); /* Controlled disk-worker delay; the actual read must remain exact. */
+    uint64_t held = audio_diagnostic_now(&diagnostics) - before;
+    CHECK(SetEvent(b.release) && rt_cache_finish() == CACHE_OK); check_output(0x37, sizeof(output));
+    AudioDiagnosticSnapshot snapshot = audio_diagnostics_snapshot(&diagnostics);
+    CHECK(snapshot.values[AD_CACHE_QUEUE_TICKS].count == 1 && snapshot.values[AD_CACHE_QUEUE_TICKS].maximum >= held);
+    CHECK(snapshot.values[AD_CACHE_READ_TICKS].count == 1);
+    CHECK(CloseHandle(b.entered) && CloseHandle(b.release)); rt_close();
+}
+void cache_disk_tests(void)
+{
+    quota_and_holes(); corruption(); cancellation_and_full(); worker_backpressure(); delayed_disk_diagnostics();
+}

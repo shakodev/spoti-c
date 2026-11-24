@@ -22,5 +22,6 @@ Clay_RenderCommandArray cs_layout(float, float, float);
 void cs_response(const char *, unsigned);
 void cs_fixture(const char *);
 void cs_faults(void);
+void cs_interactions(void);
 int cs_visual(void);
 #endif

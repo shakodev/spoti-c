@@ -210,11 +210,14 @@ static void row(void *context, uint32_t index, uint64_t key)
 void app_catalog_rows(App *a)
 {
     const CatalogPage *p=a->catalog.page; if (!p) { return; }
-    UiListRange range; a->catalog.rendered=0;
-    (void)ui_virtual_list(&a->widgets,CLAY_ID("CatalogList"),&a->widgets.lists[0],p->count,
-        APP_CATALOG_ROW,app_catalog_viewport(a),0,app_catalog_key,row,a,&range);
-    if (a->control_count<APP_CONTROLS) { a->controls[a->control_count++]=(AppControl){.id=CLAY_ID("CatalogList"),
-        .action={.type=APP_CATALOG_SELECT,.value=-1},.disabled=a->model.pending}; }
+    if (app_catalog_cards(a)) { app_catalog_grid(a); }
+    else {
+        UiListRange range; a->catalog.rendered=0;
+        (void)ui_virtual_list(&a->widgets,CLAY_ID("CatalogList"),&a->widgets.lists[0],p->count,
+            APP_CATALOG_ROW,app_catalog_viewport(a),0,app_catalog_key,row,a,&range);
+        if (a->control_count<APP_CONTROLS) { a->controls[a->control_count++]=(AppControl){.id=CLAY_ID("CatalogList"),
+            .action={.type=APP_CATALOG_SELECT,.value=-1},.disabled=a->model.pending}; }
+    }
     if (p->partial || p->truncated || p->boundary) {
         app_message(a,CLAY_STRING("Partial results / service boundary"),APP_WARNING);
     }
@@ -225,8 +228,10 @@ void app_catalog_rows(App *a)
 float app_catalog_viewport(const App *a)
 {
     float header=a->model.location.screen==APP_ALBUM || a->model.location.screen==APP_ARTIST ?
-        (a->geometry.compact ? 116.0f : 172.0f) : 0;
-    return fminf(336,fmaxf(48,a->geometry.viewport-120-header));
+        (a->geometry.compact ? 152.0f : 216.0f) : 0;
+    if (a->model.location.screen==APP_SEARCH && a->model.location.selector==SEARCH_TOP &&
+        a->catalog.page && a->catalog.page->count && a->model.status==APP_CONTENT && !a->model.pending) { header=136; }
+    return fminf(336,fmaxf(56,a->geometry.viewport-80-header));
 }
 void app_catalog_header(App *a)
 {
@@ -235,7 +240,7 @@ void app_catalog_header(App *a)
     for (uint32_t i=0;i<a->image_count;++i) {
         if (!strcmp(a->images[i].entity.uri,a->model.location.entity.uri)) { image=&a->images[i]; break; }
     }
-    float cover=a->geometry.compact ? 72.0f : 128.0f;
+    float cover=a->geometry.compact ? 96.0f : 160.0f;
     CLAY(CLAY_ID("CatalogHero"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(cover)},
         .childGap=16,.childAlignment={.y=CLAY_ALIGN_Y_BOTTOM}},.clip={.horizontal=true,.vertical=true}}) {
         CLAY(CLAY_ID("CatalogCover"),{.layout={.sizing={CLAY_SIZING_FIXED(cover),CLAY_SIZING_FIXED(cover)}},
@@ -244,13 +249,18 @@ void app_catalog_header(App *a)
         CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(cover)},.childGap=8,
             .layoutDirection=CLAY_TOP_TO_BOTTOM,.childAlignment={.y=CLAY_ALIGN_Y_BOTTOM}},.clip={.horizontal=true,.vertical=true}}) {
             app_label(a->model.location.screen==APP_ARTIST ? CLAY_STRING("Artist") : CLAY_STRING("Album"),12,(Clay_Color){220,220,220,255});
-            app_label(app_text(a,(Clay_String){false,(int32_t)strlen(s),s}),a->geometry.compact ? 24 : 32,(Clay_Color){255,255,255,255});
+            app_heading(app_text(a,(Clay_String){false,(int32_t)strlen(s),s}),a->geometry.compact ? 28 : 48);
             app_label((Clay_String){false,(int32_t)strlen(a->catalog.subtitle),a->catalog.subtitle},14,(Clay_Color){190,190,190,255});
         }
     }
     uint32_t index=app_catalog_play_index(a);
-    (void)app_button(a,CLAY_ID("CatalogPlay"),CLAY_STRING("Play first track"),128,
-        (AppAction){.type=APP_CATALOG_SELECT,.value=index==CATALOG_END ? -1 : (double)index},index==CATALOG_END);
+    CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(UI_PRIMARY_TARGET)},
+        .childGap=16,.childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
+        (void)app_component(a,CLAY_ID("CatalogPlay"),CLAY_STRING(""),56,56,
+            (AppAction){.type=APP_CATALOG_SELECT,.value=index==CATALOG_END ? -1 : (double)index},index==CATALOG_END,
+            (UiButtonStyle){.kind=UI_BUTTON_PRIMARY,.icon=UI_ICON_PLAY});
+        app_label(CLAY_STRING("Play first track"),14,UI_SUBDUED);
+    }
     if (index==CATALOG_END && a->model.status==APP_CONTENT) {
         app_label(CLAY_STRING("No playable tracks on this page"),12,(Clay_Color){180,180,180,255});
     }

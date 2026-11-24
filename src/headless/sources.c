@@ -15,7 +15,9 @@ AudioResult hl_read(void *context, uint64_t ticket, uint64_t offset, void *out, 
     if (phase == HL_PREPARED) {
         AudioResult result = AUDIO_NEED_MORE;
         if (s->offset == offset && s->capacity <= cap) {
+            uint64_t before = audio_diagnostic_now(h->diagnostics);
             DecryptResult r = decrypt_read_at(&s->operation, &h->crypto, h->scratch, sizeof(h->scratch), out, cap, got, NULL);
+            audio_diagnostic_elapsed(h->diagnostics, AD_DECRYPT_TICKS, before);
             if (r != DECRYPT_OK) { fprintf(stderr,"headless decrypt result=%u offset=%llu cap=%zu\n",(unsigned)r,(unsigned long long)offset,cap); }
             result = r == DECRYPT_OK ? (offset + *got == s->bytes ? AUDIO_EOF : AUDIO_OK) : AUDIO_CORRUPT;
         }
@@ -26,6 +28,7 @@ AudioResult hl_read(void *context, uint64_t ticket, uint64_t offset, void *out, 
     }
     if (phase != HL_IDLE) { return AUDIO_NEED_MORE; }
     s->offset = offset; s->capacity = cap > DECRYPT_SCRATCH_MAX ? DECRYPT_SCRATCH_MAX : cap;
+    s->diagnostic_read_qpc = audio_diagnostic_now(h->diagnostics);
     atomic_store_explicit(&s->phase, HL_REQUEST, memory_order_release); SetEvent(h->read_wake);
     return AUDIO_NEED_MORE;
 }
@@ -37,13 +40,32 @@ static void consume(Headless *h, RangeId *id)
 {
     if (id->value) { (void)range_status(h->ranges, *id, true); id->value = 0; }
 }
+static void read_ahead(Headless *h, HeadlessSource *s)
+{
+    /* Keep one following ciphertext block reserved in the existing eight-block
+     * pool. Start while the decoder still has compressed input and queued PCM,
+     * rather than making a low-water refill pay the next HTTP round trip. */
+    uint64_t end = s->offset + SPOTIFY_OGG_PREFIX + s->capacity;
+    uint64_t next = (end + RANGE_BLOCK_BYTES - 1) / RANGE_BLOCK_BYTES * RANGE_BLOCK_BYTES;
+    if (s->ahead.value) {
+        RangeResult r = status(h, s->ahead);
+        if (s->ahead_offset == next || r == RANGE_PENDING) { return; }
+        consume(h, &s->ahead);
+    }
+    if (next >= s->bytes + SPOTIFY_OGG_PREFIX) { return; }
+    RangeId id = {0};
+    if (range_request(h->ranges, s->range, next, RANGE_BLOCK_BYTES, RANGE_PREFETCH, &id) == RANGE_OK) {
+        s->ahead = id; s->ahead_offset = next;
+    }
+}
 static bool retire(Headless *h, HeadlessSource *s)
 {
     if (s->stream.active && decrypt_stream_finish(&s->stream, &s->operation) != DECRYPT_OK) { return false; }
     if (s->stream.media) { (void)decrypt_stream_retire(&s->stream); }
     if (s->range.generation) { (void)range_cancel_generation(h->ranges, s->range); }
-    /* Cancellation completes reservations; release them before slot reuse. */
-    consume(h, &s->prefix); consume(h, &s->payload);
+    /* Cancellation completes requests; release their reservations before the
+     * slot is reused, including requests abandoned by seek or shutdown. */
+    consume(h, &s->prefix); consume(h, &s->payload); consume(h, &s->ahead);
     if (s->media_id.generation) {
         MediaResult r = media_source_retire(h->media, s->media_id);
         if (r != MEDIA_OK && r != MEDIA_STALE) { return false; }
@@ -66,6 +88,8 @@ static bool prepare_read(Headless *h, HeadlessSource *s)
         DecryptResult r = decrypt_stream_prepare(&s->stream, s->offset, s->capacity, &s->operation);
         if (r != DECRYPT_OK) { fprintf(stderr,"headless read prepare=%u\n",(unsigned)r); return false; }
         consume(h, &s->prefix); consume(h, &s->payload);
+        read_ahead(h, s);
+        audio_diagnostic_elapsed(h->diagnostics, AD_READ_WAIT_TICKS, s->diagnostic_read_qpc);
         atomic_store_explicit(&s->phase, HL_PREPARED, memory_order_release);
         return hl_reply(h, (PlayerCommand){.type = PLAYER_DATA_READY, .ticket = s->request.ticket});
     }

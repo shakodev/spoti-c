@@ -165,10 +165,30 @@ static void handle_lifetime(void)
     }
     CHECK(GetProcessHandleCount(GetCurrentProcess(), &after)); CHECK(before == after);
 }
+static void diagnostic_lifetime(void)
+{
+    FakeSink f; fake_init(&f); AudioDiagnostics diagnostics;
+    CHECK(audio_diagnostics_init(&diagnostics));
+    CHECK(sink_open(&sink, pcm, &fake_sink_backend, &f) == AUDIO_OK);
+    sink.diagnostics = &diagnostics; CHECK(sink_start(&sink) == AUDIO_OK);
+    sink_render(&sink, output, 32);
+    CHECK(sink_pause(&sink) == AUDIO_OK); sink_render(&sink, output, 8);
+    AudioDiagnosticSnapshot snapshot = audio_diagnostics_snapshot(&diagnostics);
+    CHECK(snapshot.values[AD_UNDERRUN_FRAMES].total == 32 && snapshot.values[AD_CALLBACK_TICKS].count == 1);
+    CHECK(sink_resume(&sink) == AUDIO_OK); sink_render(&sink, output, 16);
+    snapshot = audio_diagnostics_snapshot(&diagnostics);
+    CHECK(snapshot.values[AD_CALLBACK_GAP_TICKS].count == 0); /* Pause time is not callback jitter. */
+    sink_device_lost(&sink); CHECK(sink_switch(&sink) == AUDIO_OK && sink.diagnostics == &diagnostics);
+    CHECK(sink_start(&sink) == AUDIO_OK); sink_render(&sink, output, 8);
+    snapshot = audio_diagnostics_snapshot(&diagnostics);
+    CHECK(snapshot.invalidations == 1 && snapshot.values[AD_UNDERRUN_FRAMES].total == 56);
+    CHECK(snapshot.values[AD_CALLBACK_FRAMES].total == 56 && sink_info(&sink).underrun_frames == 8);
+    CHECK(sink_info(&sink).callback_violations == 0 && sink_close(&sink) == AUDIO_OK);
+}
 static DWORD WINAPI run_tests(void *ctx)
 {
     (void)ctx;
-    consumption(); wrap_and_wake(); lifecycle(); allocation_limits(); handle_lifetime(); sink_race_tests();
+    consumption(); wrap_and_wake(); lifecycle(); allocation_limits(); handle_lifetime(); sink_race_tests(); diagnostic_lifetime();
     FakeSink f; fake_init(&f);
     CHECK(sink_open_with_buffer(&sink,pcm,4095,&fake_sink_backend,&f)==AUDIO_INVALID);
     CHECK(sink_open_with_buffer(&sink,pcm,65537,&fake_sink_backend,&f)==AUDIO_INVALID);

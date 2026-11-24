@@ -1,4 +1,5 @@
 #include "playlist.h"
+#include "ui/design_tokens.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -124,7 +125,7 @@ TrackResult playlist_prepare(Playlist *p, UiVirtualList *list, float viewport)
     }
     if (!p->ready || p->result!=TRACK_OK) { return p->result; }
     UiListRange range;
-    if (ui_virtual_range(p->count,40,list->scroll,viewport,2,&range)!=UI_WIDGET_OK || range.end-range.first>TRACK_BATCH) { return TRACK_INVALID; }
+    if (ui_virtual_range(p->count,UI_TRACK_HEIGHT,list->scroll,viewport,2,&range)!=UI_WIDGET_OK || range.end-range.first>TRACK_BATCH) { return TRACK_INVALID; }
     bool missing=false;
     for (uint32_t i=range.first;i<range.end;++i) {
         job.rows[job.count++]=p->map[i]; missing|=playlist_row(p,p->map[i])==NULL;

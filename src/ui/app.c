@@ -1,4 +1,5 @@
 #include "app.h"
+#include "detail_components.h"
 #include "startup.h"
 #include "screens/playlist.h"
 #include <math.h>
@@ -37,11 +38,24 @@ void app_label(Clay_String text, uint16_t size, Clay_Color color)
 }
 bool app_button(App *a, Clay_ElementId id, Clay_String text, float width, AppAction action, bool disabled)
 {
+    return app_component(a,id,text,width,28,action,disabled,(UiButtonStyle){0});
+}
+void app_heading(Clay_String text, uint16_t size)
+{
+    CLAY_TEXT(text,CLAY_TEXT_CONFIG({.fontId=FONT_FACE_HEADING,.fontSize=size,.textColor=UI_TEXT,.wrapMode=CLAY_TEXT_WRAP_NONE}));
+}
+bool app_tab(App *a, Clay_ElementId id, Clay_String text, float width, AppAction action, bool selected)
+{
+    return app_component(a,id,text,width,32,action,false,(UiButtonStyle){.kind=UI_BUTTON_TAB,.selected=selected});
+}
+bool app_component(App *a, Clay_ElementId id, Clay_String text, float width, float height,
+    AppAction action, bool disabled, UiButtonStyle style)
+{
     if (a->control_count == APP_CONTROLS) { ui_widgets_fail(&a->widgets,UI_WIDGET_FULL); return false; }
     a->controls[a->control_count++] = (AppControl){id,action,disabled};
     bool hit = false;
-    CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(28)}},.clip={.horizontal=true,.vertical=true}}) {
-        hit = ui_button(&a->widgets,id,app_text(a,text),width,28,disabled);
+    CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(width),CLAY_SIZING_FIXED(height)}},.clip={.horizontal=true,.vertical=true}}) {
+        hit = ui_detail_button(&a->widgets,id,app_text(a,text),width,height,disabled,style);
     }
     if (hit) { (void)app_enqueue(a,action); } return hit;
 }
@@ -99,7 +113,16 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
     AppGeometry *g = &a->geometry;
     if (a->browse.collapsed && g->sidebar>64) { g->main+=g->sidebar-64; g->sidebar=64; }
     input=app_profile_input(a,input);
+    if (a->fonts) {
+        bool hero=a->model.location.screen==APP_ALBUM || a->model.location.screen==APP_ARTIST || a->model.location.screen==APP_PLAYLIST;
+        float heading=fmaxf(80,g->main-(hero ? (g->compact ? 96.0f : 160.0f) : 0)-64);
+        if (a->fonts->heading_width!=heading) {
+            a->fonts->heading_width=heading;
+            Clay_SetCurrentContext(a->widgets.clay); Clay_ResetMeasureTextCache();
+        }
+    }
     if (ui_widgets_begin(&a->widgets,g->width,g->height,input) != UI_WIDGET_OK) { return (Clay_RenderCommandArray){0}; }
+    if (a->menu.open) { a->widgets.input=(UiWidgetInput){.x=-1,.y=-1}; }
     a->control_count = a->label_count = 0;
     app_browse_begin(a);
     a->sidebar.visible_count=0;
@@ -111,7 +134,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
             app_sidebar(a);
             CLAY(CLAY_ID("AppMain"),{.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_GROW()},
                 .padding=CLAY_PADDING_ALL(12),.childGap=8,.layoutDirection=CLAY_TOP_TO_BOTTOM},
-                .backgroundColor={18,18,18,255},.cornerRadius=CLAY_CORNER_RADIUS(8),.clip={.horizontal=true,.vertical=true}}) {
+                .backgroundColor=UI_PANEL,.cornerRadius=CLAY_CORNER_RADIUS(UI_PANEL_RADIUS),.clip={.horizontal=true,.vertical=true}}) {
                 CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_GROW(),CLAY_SIZING_FIXED(28)},.childGap=8}}) {
                     (void)app_button(a,CLAY_ID("AppBack"),CLAY_STRING("Back"),56,(AppAction){.type=APP_BACK},!a->model.history_count);
                     CLAY_AUTO_ID({.layout={.sizing={CLAY_SIZING_FIXED(fmaxf(0,g->main-224)),CLAY_SIZING_FIXED(28)}},.clip={.horizontal=true,.vertical=true}}) {
@@ -158,6 +181,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
         app_now_playing(a);
         app_profile_menu(a);
     }
+    a->widgets.input=input; app_context_layout(a); app_control_hint(a);
     a->commands = ui_widgets_end(&a->widgets); ++a->frames;
     app_browse_end(a);
     app_sidebar_end(a);
@@ -165,7 +189,7 @@ Clay_RenderCommandArray app_layout(App *a, float width, float height, float dpi,
     for (uint32_t i = 0; i < a->control_count; ++i) {
         if (a->controls[i].id.id==a->widgets.focus && !a->controls[i].disabled) { found=true; }
     }
-    if (!found) {
+    if (!found && !a->menu.open) {
         a->widgets.focus=0;
         for (uint32_t i=0;i<a->control_count;++i) {
             if (!a->controls[i].disabled) { a->widgets.focus=a->controls[i].id.id; break; }
@@ -192,6 +216,7 @@ AppResult app_image(App *a, uint64_t gen, const AppEntity *entity, ArtworkId id,
 UiRenderResult app_render_custom(void *context, UiRenderFrame *frame, const Clay_RenderCommand *c)
 {
     App *a = context;
+    if (ui_icon_command(c)) { return ui_icon_render(frame,c); }
     if (c->commandType == CLAY_RENDER_COMMAND_TYPE_TEXT) {
         if (!a->fonts) { return UI_RENDER_OK; }
         UiRenderResult r = font_render_clay(a->fonts,frame,c);

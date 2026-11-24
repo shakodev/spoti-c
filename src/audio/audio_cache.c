@@ -4,10 +4,16 @@
 static void run(const Event *event, const CancelToken *cancel, void *context)
 {
     (void)event; CacheJob *j = context; AudioCache *c = j->owner;
+    uint64_t before = audio_diagnostic_now(c->config.diagnostics);
+    audio_diagnostic_record(c->config.diagnostics, AD_CACHE_QUEUE_TICKS, before - j->diagnostic_submitted, before);
     if (j->operation == CO_OPEN) { j->result = cache_disk_open(c, cancel); }
     else if (j->operation == CO_READ) { j->result = cache_disk_get(j, cancel); }
     else if (j->operation == CO_WRITE) { j->result = cache_disk_put(j, cancel); }
     else { j->result = cache_disk_close(c); }
+    if (j->operation == CO_READ || j->operation == CO_WRITE) {
+        audio_diagnostic_elapsed(c->config.diagnostics,
+            j->operation == CO_READ ? AD_CACHE_READ_TICKS : AD_CACHE_WRITE_TICKS, before);
+    }
 }
 static void complete(const Event *event, WorkerOutcome outcome, void *context)
 {
@@ -29,6 +35,7 @@ static CacheResult submit(AudioCache *c, enum CacheOperation operation, const Ca
     *j = (CacheJob){.owner = c, .operation = operation, .state = CJ_ACTIVE, .data = data,
         .callback = callback, .context = context, .result = CACHE_CANCELLED};
     if (record != NULL) { j->record = *record; }
+    j->diagnostic_submitted = audio_diagnostic_now(c->config.diagnostics);
     WorkerJob job = {.run = run, .complete = complete, .context = j, .deadline = CORE_CLOCK_NEVER, .priority = WORKER_DISK};
     CoreResult result = worker_submit(c->config.worker, &job, &j->ticket);
     c->worker_blocked = result == CORE_FULL;

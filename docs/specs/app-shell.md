@@ -82,8 +82,10 @@ discard a pending login, while logout invalidates prior auth completions.
 credential APIs; the owner continues OAuth/AP/token establishment and reports
 the resulting session. It must quiesce AP credential use before logout.
 
-The standalone default intentionally has unconfigured account/collection
-callbacks. `--demo` explicitly binds a serialized four-slot worker, synthetic
+The original standalone default had unconfigured account/collection callbacks.
+The [live host](live-app.md) now binds them after the first useful frame;
+[live acceptance](../verification/live-app.md) tracks the remaining verification.
+`--demo` explicitly binds a serialized four-slot worker, synthetic
 JSON fixtures, the existing collection parser and shared page pool, plus the
 existing headless player with loopback encrypted audio and a fake output device.
 `--demo-wasapi` opts into physical audio. These are development fixture paths,

@@ -12,7 +12,7 @@ FontConfig font_config_for_clay(FontConfig base, uint16_t font_id,
     base.face = 0; base.rtl = (font_id & FONT_ROLE_RTL) != 0;
     switch (role) {
     case FONT_ROLE_BODY: base.weight = 400; break;
-    case FONT_ROLE_BOLD: case FONT_ROLE_TITLE: base.weight = 700; break;
+    case FONT_FACE_BOLD: case FONT_FACE_HEADING: case FONT_ROLE_BOLD: case FONT_ROLE_TITLE: base.weight = 700; break;
     case FONT_ROLE_HEADLINE: base.weight = 800; break;
     default: base.face = UINT16_MAX; break;
     }
